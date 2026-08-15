@@ -1,0 +1,57 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+
+# Dependencies and build output
+node_modules/
+.next/
+out/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Go and test output
+bin/
+*.test
+*.out
+
+# Local data and generated service state
+supabase/.branches/
+supabase/.temp/
+supabase/.env
+.volumes/
+
+# Agent/tool local state
+.codegraph/
+.hermes/
+.prism-history.md
+context/private/
+context/inbox/
+
+# Sessions, credentials, logs, and temporary files
+.sessions/
+sessions/
+credentials/
+*.log
+*.tmp
+*.bak
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Package-manager debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
