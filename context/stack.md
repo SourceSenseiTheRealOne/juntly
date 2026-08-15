@@ -15,9 +15,9 @@
 - npm `11.8.0` (installed host tool; lockfile is authoritative).
 - Next.js and create-next-app `16.3.1`; stable 16.3 release: https://nextjs.org/blog/next-16-3
 - React and React DOM `19.2.8`; React 19.2 release: https://react.dev/blog/2025/10/01/react-19-2
-- TypeScript `7.0.2` in strict mode.
+- TypeScript `5.9.3` in strict mode, selected by the official generator. TypeScript 7.0.2 was evaluated but rejected because Next 16.3.1's bundled `typescript-eslint@8.67.0` peer range is below 6.1.
 - `next-intl` `4.13.6` for App Router localization: https://next-intl.dev/docs/getting-started/app-router
-- Vitest `4.1.10`, Testing Library React `16.3.2`, jest-dom `7.0.1`, and jsdom `30.0.1`.
+- Vitest `4.1.10`, Testing Library React `16.3.2`, jest-dom `7.0.1`, and jsdom `29.1.1`. jsdom 30.0.1 was rejected because it requires Node 24.15.0 or newer.
 - Prettier `3.9.6` and prettier-plugin-tailwindcss `0.8.1`.
 
 ## Approved future baseline

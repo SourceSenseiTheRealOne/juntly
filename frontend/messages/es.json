@@ -1,0 +1,30 @@
+{
+  "Metadata": {
+    "title": "Juntly — Servicios locales, habilidades reales",
+    "description": "Encuentra personas y servicios locales cerca de ti. Juntly acerca comunidades, clientes y profesionales de confianza."
+  },
+  "Landing": {
+    "eyebrow": "Local people. Real skills.",
+    "tagline": "Encuentra a quien sabe hacerlo.",
+    "heading": "Servicios locales, más cerca de ti.",
+    "description": "Una forma sencilla de encontrar personas con habilidades reales en tu comunidad — empezando en el Portugal rural.",
+    "statusLabel": "La plataforma está tomando forma.",
+    "visionLinkLabel": "Descubrir la visión",
+    "visionTitle": "Creada para conexiones locales reales",
+    "visionDescription": "Descubrimiento, contacto y confianza sin quitar elección a las personas. Juntly conecta a quien necesita ayuda con quien sabe hacerla.",
+    "footerLabel": "Juntly — nacida en Portugal."
+  },
+  "Errors": {
+    "title": "Algo salió mal",
+    "description": "No hemos podido cargar esta página. Inténtalo de nuevo.",
+    "retry": "Intentar de nuevo"
+  },
+  "NotFound": {
+    "title": "Página no encontrada",
+    "description": "La página que buscas no existe o ha cambiado de ubicación.",
+    "home": "Volver al inicio"
+  },
+  "Loading": {
+    "label": "Cargando Juntly…"
+  }
+}
