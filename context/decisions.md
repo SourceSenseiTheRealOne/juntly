@@ -73,3 +73,10 @@
 - Decision: The first repository delivery contains durable context and a verified localized Next.js shell only.
 - Alternatives: complete Go/OpenAPI/Docker/Supabase tracer in the initial commit.
 - Consequences: matches the requested starting scope. Documentation and reports must not call the full-stack foundation complete until the later vertical tracer exists.
+
+## ADR-011: Semantic CSS variables for themes and fluid responsiveness
+
+- Status: accepted
+- Date: 2026-08-20
+- Decision: Keep raw frontend colors in one primitive CSS palette, expose light/dark semantic color variables, and map Tailwind utilities to those variables. Use shared fluid CSS variables for reusable responsive dimensions and typography; reserve named Tailwind breakpoint variants for structural layout changes that CSS custom properties cannot express in ordinary media-query conditions.
+- Consequences: component markup remains theme-agnostic, explicit and system-preference themes share one component tree, responsive values stay centralized, and future UI work must extend the semantic contract instead of introducing raw colors or reusable arbitrary literals in components.

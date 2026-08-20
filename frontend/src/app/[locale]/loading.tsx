@@ -11,7 +11,7 @@ export default async function LoadingPage() {
     >
       <div className="flex items-center gap-3 text-sm font-medium text-muted">
         <span
-          className="h-3 w-3 animate-pulse rounded-full bg-accent motion-reduce:animate-none"
+          className="h-3 w-3 animate-pulse rounded-pill bg-accent motion-reduce:animate-none"
           aria-hidden="true"
         />
         {t("label")}

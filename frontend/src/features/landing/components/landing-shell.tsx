@@ -24,10 +24,10 @@ export function LandingShell({
   return (
     <div className="flex min-h-screen flex-col overflow-hidden bg-canvas text-ink">
       <header className="relative z-10 border-b border-line/80 bg-canvas/90 backdrop-blur-sm">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 sm:px-8 lg:px-10">
+        <div className="mx-auto flex w-full max-w-content items-center justify-between px-page py-header">
           <a
             href="#content"
-            className="rounded-sm text-2xl font-bold tracking-[-0.04em] text-ink transition-colors outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-4 focus-visible:ring-offset-canvas"
+            className="inline-flex min-h-touch items-center rounded-control text-2xl font-bold tracking-brand text-ink transition-colors outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-4 focus-visible:ring-offset-canvas"
             aria-label="Juntly"
           >
             Juntly<span className="text-accent">.</span>
@@ -41,34 +41,34 @@ export function LandingShell({
       <main id="content" className="flex-1">
         <section className="relative isolate">
           <div className="absolute inset-0 -z-10 opacity-70" aria-hidden="true">
-            <div className="absolute -top-36 right-[-9rem] h-96 w-96 rounded-full bg-accent-soft blur-3xl" />
-            <div className="absolute bottom-[-12rem] left-[-10rem] h-80 w-80 rounded-full bg-earth-soft blur-3xl" />
+            <div className="absolute top-[var(--offset-ambient-primary-block)] right-[var(--offset-ambient-primary-inline)] size-[var(--size-ambient-primary)] rounded-pill bg-accent-soft blur-3xl" />
+            <div className="absolute bottom-[var(--offset-ambient-secondary-block)] left-[var(--offset-ambient-secondary-inline)] size-[var(--size-ambient-secondary)] rounded-pill bg-earth-soft blur-3xl" />
           </div>
 
-          <div className="mx-auto grid min-h-[70vh] w-full max-w-6xl items-center gap-14 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[1.35fr_0.65fr] lg:px-10 lg:py-32">
-            <div className="max-w-3xl">
-              <p className="mb-5 text-sm font-semibold tracking-[0.16em] text-accent uppercase">
+          <div className="mx-auto grid min-h-hero w-full max-w-content items-center gap-content-gap px-page py-section lg:grid-cols-[var(--layout-hero-columns)]">
+            <div className="max-w-copy">
+              <p className="mb-5 text-sm font-semibold tracking-label text-accent uppercase">
                 {tagline}
               </p>
-              <h1 className="text-5xl leading-[0.98] font-semibold tracking-[-0.055em] text-balance text-ink sm:text-6xl lg:text-7xl">
+              <h1 className="text-display leading-display font-semibold tracking-display text-balance text-ink">
                 {heading}
               </h1>
-              <p className="mt-7 max-w-2xl text-lg leading-8 text-pretty text-muted sm:text-xl">
+              <p className="mt-7 max-w-lead text-lead leading-8 text-pretty text-muted">
                 {description}
               </p>
               <div className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
                 <a
                   href="#vision"
-                  className="inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-6 py-3 text-sm font-semibold text-canvas transition-transform outline-none hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-4 focus-visible:ring-offset-canvas motion-reduce:transform-none"
+                  className="inline-flex min-h-touch items-center justify-center rounded-pill bg-accent px-6 py-3 text-sm font-semibold text-inverse transition-[color,background-color,transform] outline-none hover:-translate-y-0.5 hover:bg-accent-hover focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-4 focus-visible:ring-offset-canvas motion-reduce:transform-none"
                 >
                   {visionLinkLabel}
                   <span className="ml-2" aria-hidden="true">
                     ↓
                   </span>
                 </a>
-                <span className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-5 text-sm font-medium text-muted shadow-sm">
+                <span className="inline-flex min-h-touch items-center rounded-pill border border-line bg-surface px-5 text-sm font-medium text-muted shadow-surface">
                   <span
-                    className="mr-3 h-2.5 w-2.5 rounded-full bg-accent"
+                    className="mr-3 size-status-dot rounded-pill bg-success"
                     aria-hidden="true"
                   />
                   {statusLabel}
@@ -76,25 +76,25 @@ export function LandingShell({
               </div>
             </div>
 
-            <div className="relative mx-auto hidden aspect-square w-full max-w-sm lg:block">
-              <div className="absolute inset-0 rounded-full border border-line bg-surface/70 shadow-[0_32px_90px_rgba(53,45,35,0.10)]" />
-              <div className="absolute inset-[16%] rounded-full border border-accent/25 bg-accent-soft/70" />
-              <div className="absolute inset-[34%] grid place-items-center rounded-full bg-accent text-5xl font-bold tracking-[-0.08em] text-white shadow-xl">
+            <div className="relative mx-auto hidden aspect-square w-full max-w-orbit lg:block">
+              <div className="absolute inset-0 rounded-pill border border-line bg-surface/70 shadow-elevated" />
+              <div className="absolute inset-[var(--layout-orbit-ring-inset)] rounded-pill border border-accent/25 bg-accent-soft/70" />
+              <div className="absolute inset-[var(--layout-orbit-core-inset)] grid place-items-center rounded-pill bg-accent text-5xl font-bold tracking-display text-inverse shadow-elevated">
                 J
               </div>
-              <span className="absolute top-[12%] right-[8%] h-5 w-5 rounded-full bg-earth" />
-              <span className="absolute bottom-[18%] left-[6%] h-3 w-3 rounded-full bg-accent" />
+              <span className="absolute top-[var(--layout-orbit-dot-top)] right-[var(--layout-orbit-dot-right)] size-orbit-dot-lg rounded-pill bg-earth" />
+              <span className="absolute bottom-[var(--layout-orbit-dot-bottom)] left-[var(--layout-orbit-dot-left)] size-orbit-dot-sm rounded-pill bg-accent" />
             </div>
           </div>
         </section>
 
         <section id="vision" className="border-y border-line bg-surface">
-          <div className="mx-auto grid w-full max-w-6xl gap-7 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[0.8fr_1.2fr] lg:px-10">
-            <p className="text-sm font-semibold tracking-[0.16em] text-accent uppercase">
+          <div className="mx-auto grid w-full max-w-content gap-content-gap px-page py-section lg:grid-cols-[0.8fr_1.2fr]">
+            <p className="text-sm font-semibold tracking-label text-accent uppercase">
               Juntly
             </p>
             <div>
-              <h2 className="text-3xl font-semibold tracking-[-0.035em] text-balance sm:text-4xl">
+              <h2 className="text-section-title font-semibold tracking-heading text-balance">
                 {visionTitle}
               </h2>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-muted">
@@ -106,8 +106,8 @@ export function LandingShell({
       </main>
 
       <footer className="bg-ink text-canvas">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-5 py-8 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
-          <strong className="text-lg tracking-[-0.03em]">Juntly.</strong>
+        <div className="mx-auto flex w-full max-w-content flex-col gap-3 px-page py-footer text-sm sm:flex-row sm:items-center sm:justify-between">
+          <strong className="text-lg tracking-heading">Juntly.</strong>
           <p className="text-canvas/70">{footerLabel}</p>
         </div>
       </footer>

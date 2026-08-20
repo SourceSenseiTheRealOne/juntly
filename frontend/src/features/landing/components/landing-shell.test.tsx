@@ -30,6 +30,14 @@ describe("LandingShell", () => {
     expect(screen.getByText(copy.statusLabel)).toBeInTheDocument();
   });
 
+  it("provides touch-sized interactive links", () => {
+    render(<LandingShell {...copy} />);
+
+    for (const link of screen.getAllByRole("link")) {
+      expect(link).toHaveClass("min-h-touch");
+    }
+  });
+
   it("provides a focusable link to the vision section", () => {
     render(<LandingShell {...copy} />);
 

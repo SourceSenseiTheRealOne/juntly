@@ -15,10 +15,13 @@ The bootstrap uses neutral, high-contrast foundation tokens only. Final brand vi
 
 ## Design-token baseline
 
-- Semantic color tokens for canvas, surface, text, muted text, border, accent, success, warning, danger, and focus.
-- Mobile-first spacing and type scale with readable body copy.
-- Minimum 44×44px interactive targets.
-- Restrained radii/shadows and minimal animation.
+- `frontend/src/app/globals.css` is the frontend token authority. Raw color values belong only in its primitive palette; components consume semantic Tailwind utilities mapped to CSS custom properties.
+- Semantic light/dark color tokens cover canvas, surfaces, primary/secondary/inverse text, borders, actions, accents, status colors, focus, and elevation shadows.
+- Light mode is the deterministic fallback. `prefers-color-scheme` selects dark mode automatically, while `data-theme="light"` and `data-theme="dark"` provide explicit overrides without duplicating component styles.
+- Fluid responsive CSS variables use `clamp()` for page gutters, section rhythm, content gaps, container widths, hero sizing, display/body type, touch targets, and decorative scale.
+- Structural layout changes continue to use named Tailwind breakpoint variants because CSS custom properties cannot be used as ordinary media-query thresholds. Breakpoint-specific values must still resolve through shared variables rather than raw component literals.
+- Minimum interactive targets are 44×44px through the shared touch-target token.
+- Restrained radii/shadows and minimal animation use shared shape/elevation tokens.
 - Motion never carries essential information and respects `prefers-reduced-motion`.
 
 ## Component architecture
