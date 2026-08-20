@@ -12,6 +12,11 @@ export default async function HomePage() {
       heading={t("heading")}
       description={t("description")}
       statusLabel={t("statusLabel")}
+      healthStatusLabels={{
+        checking: t("healthStatus.checking"),
+        available: t("healthStatus.available"),
+        unavailable: t("healthStatus.unavailable"),
+      }}
       visionLinkLabel={t("visionLinkLabel")}
       visionTitle={t("visionTitle")}
       visionDescription={t("visionDescription")}

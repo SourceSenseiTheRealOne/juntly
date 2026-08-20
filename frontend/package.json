@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "codegen": "openapi-ts",
+    "codegen:check": "node scripts/check-codegen.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -13,7 +15,7 @@
     "test:watch": "vitest",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "next typegen && tsc --noEmit",
-    "verify": "npm run format:check && npm test && npm run lint && npm run typecheck && npm run build && npm audit --audit-level=high"
+    "verify": "npm run codegen:check && npm run format:check && npm test && npm run lint && npm run typecheck && npm run build && npm audit --audit-level=high"
   },
   "dependencies": {
     "next": "16.3.1",
@@ -22,6 +24,7 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@hey-api/openapi-ts": "0.97.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.2",

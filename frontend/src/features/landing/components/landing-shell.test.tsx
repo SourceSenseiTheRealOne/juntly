@@ -9,6 +9,11 @@ const copy = {
   heading: "Serviços locais, mais perto de si.",
   description: "Uma forma simples de encontrar pessoas com competências reais.",
   statusLabel: "A plataforma está a nascer.",
+  healthStatusLabels: {
+    checking: "A verificar a API.",
+    available: "API disponível.",
+    unavailable: "API temporariamente indisponível.",
+  },
   visionLinkLabel: "Conhecer a visão",
   visionTitle: "Criada para ligações locais reais",
   visionDescription:

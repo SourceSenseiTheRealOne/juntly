@@ -1,0 +1,113 @@
+openapi: 3.1.0
+info:
+  title: Juntly API
+  version: 0.1.0
+  summary: Versioned Juntly REST API contract.
+servers:
+  - url: http://localhost:8080
+    description: Local Go API
+paths:
+  /api/v1/health:
+    get:
+      operationId: getHealth
+      summary: Read API health.
+      description: Returns privacy-safe API health with correlation evidence.
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+      responses:
+        "200":
+          description: API is available.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "503":
+          description: API is unavailable.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  parameters:
+    RequestIdHeader:
+      name: X-Request-ID
+      in: header
+      required: false
+      description: Optional client-supplied correlation identifier.
+      schema:
+        $ref: "#/components/schemas/RequestId"
+  headers:
+    RequestIdHeader:
+      description: Correlation identifier attached to this response.
+      schema:
+        $ref: "#/components/schemas/RequestId"
+  schemas:
+    RequestId:
+      type: string
+      minLength: 8
+      maxLength: 128
+      pattern: "^[A-Za-z0-9._:-]+$"
+      examples:
+        - req_01juntlyhealth
+    HealthStatus:
+      type: string
+      enum:
+        - ok
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - service
+        - version
+        - checkedAt
+        - requestId
+      properties:
+        status:
+          $ref: "#/components/schemas/HealthStatus"
+        service:
+          type: string
+          const: juntly-api
+        version:
+          type: string
+          minLength: 1
+          examples:
+            - 0.1.0
+        checkedAt:
+          type: string
+          format: date-time
+        requestId:
+          $ref: "#/components/schemas/RequestId"
+    ErrorCode:
+      type: string
+      enum:
+        - SERVICE_UNAVAILABLE
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - message
+        - requestId
+      properties:
+        code:
+          $ref: "#/components/schemas/ErrorCode"
+        message:
+          type: string
+          const: Service unavailable
+        requestId:
+          $ref: "#/components/schemas/RequestId"
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          $ref: "#/components/schemas/ErrorDetail"

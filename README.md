@@ -13,20 +13,27 @@ This repository is at the foundation stage. The initial delivery contains:
 - Durable product, architecture, security, UI, workflow, and decision context.
 - A localized responsive Next.js frontend shell under `frontend/` after the scaffold commit.
 - pt-PT default, English support, and Spanish-ready routing/messages.
-- Frontend test, format, lint, type, build, audit, CI, and runtime-verification foundations.
+- Frontend test, format, lint, type, build, dependency-audit, CI, and runtime-verification foundations.
+- A versioned OpenAPI health contract, generated TypeScript client, same-origin BFF, and narrow Go health API under `backend/`.
+- A local Docker Compose proof for the frontend and API only; no database is included.
 
-It does **not** yet implement accounts, provider profiles, listings, search, chat, quotations, bookings, reviews, payments, Go/OpenAPI, Clerk, Supabase, Redis, object storage, Docker, or production deployment.
+It does **not** yet implement accounts, provider profiles, listings, search,
+chat, quotations, bookings, reviews, payments, Clerk, Supabase, Redis, object
+storage, or production deployment.
 
 ## Repository layout
 
 ```text
 juntly/
 ├── frontend/   Next.js frontend (created by the scaffold commit)
+├── backend/    Go API health-tracer foundation
+├── openapi/    versioned API contracts
 ├── context/    sanitized durable project reference
+├── compose.yaml local frontend/API development topology
 └── AGENTS.md   project operating rules
 ```
 
-`backend/` and `supabase/` will be created only when the approved API-foundation slice implements them.
+`supabase/` will be created only when its approved foundation slice implements it.
 
 ## Context
 

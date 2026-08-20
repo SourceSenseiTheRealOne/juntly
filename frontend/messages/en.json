@@ -9,6 +9,11 @@
     "heading": "Local services, closer to home.",
     "description": "A simple way to find people with real skills in your community — starting in rural Portugal.",
     "statusLabel": "The platform is taking shape.",
+    "healthStatus": {
+      "checking": "Checking the API.",
+      "available": "API available.",
+      "unavailable": "API temporarily unavailable."
+    },
     "visionLinkLabel": "Discover the vision",
     "visionTitle": "Built for genuine local connections",
     "visionDescription": "Discovery, contact and trust without taking choice away from people. Juntly connects those who need help with those who know how.",

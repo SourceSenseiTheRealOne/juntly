@@ -9,6 +9,11 @@
     "heading": "Serviços locais, mais perto de si.",
     "description": "Uma forma simples de encontrar pessoas com competências reais na sua comunidade — começando no Portugal rural.",
     "statusLabel": "A plataforma está a nascer.",
+    "healthStatus": {
+      "checking": "A verificar a API.",
+      "available": "API disponível.",
+      "unavailable": "API temporariamente indisponível."
+    },
     "visionLinkLabel": "Conhecer a visão",
     "visionTitle": "Criada para ligações locais reais",
     "visionDescription": "Descoberta, contacto e confiança sem retirar a escolha às pessoas. A Juntly liga quem precisa a quem sabe fazer.",

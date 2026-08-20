@@ -1,9 +1,13 @@
+import type { HealthStatusLabels } from "./health-status-indicator";
+import { HealthStatusIndicator } from "./health-status-indicator";
+
 type LandingShellProps = {
   eyebrow: string;
   tagline: string;
   heading: string;
   description: string;
   statusLabel: string;
+  healthStatusLabels: HealthStatusLabels;
   visionLinkLabel: string;
   visionTitle: string;
   visionDescription: string;
@@ -16,6 +20,7 @@ export function LandingShell({
   heading,
   description,
   statusLabel,
+  healthStatusLabels,
   visionLinkLabel,
   visionTitle,
   visionDescription,
@@ -73,6 +78,7 @@ export function LandingShell({
                   />
                   {statusLabel}
                 </span>
+                <HealthStatusIndicator labels={healthStatusLabels} />
               </div>
             </div>
 

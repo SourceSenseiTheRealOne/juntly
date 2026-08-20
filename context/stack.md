@@ -33,4 +33,8 @@
 
 ## Current implementation boundary
 
-The bootstrap implements context and the Next.js frontend shell only. Go, OpenAPI generation, BFF proxying, Clerk, Supabase, Redis, object storage, background workers, payments, and Docker runtime topology are not yet implemented and must not be represented as working.
+The foundation now implements the localized Next.js shell, a generated OpenAPI
+TypeScript client, same-origin health BFF, and a narrow Go health API with a
+two-container Docker proof. Clerk, Supabase, Redis, object storage, background
+workers, marketplace flows, payments, and production deployment are not yet
+implemented and must not be represented as working.

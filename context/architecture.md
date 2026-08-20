@@ -10,7 +10,10 @@ juntly/
 └── supabase/   project-owned PostgreSQL/PostGIS configuration (later slice)
 ```
 
-Only `frontend/` is created during the initial bootstrap. Empty future-runtime directories are prohibited.
+The initial bootstrap created only `frontend/`. The health-tracer foundation adds
+`backend/` and the versioned OpenAPI contract because both now contain working
+code; `supabase/` remains absent until its own implemented slice. Empty
+future-runtime directories remain prohibited.
 
 ## Approved request path
 
@@ -69,4 +72,9 @@ Local development uses a child-owned Supabase stack for PostgreSQL/PostGIS and m
 
 ## Vertical tracer for the next foundation slice
 
-The smallest full-stack proof will cross localized Next.js UI/shared generated client → same-origin BFF → Go `/api/v1/health` transport → framework-independent application service → response mapping. It must pass tests/builds, run in containers, and return matching correlation evidence. The current frontend-only bootstrap does not claim this tracer exists.
+The implemented smallest full-stack proof crosses a localized Next.js client
+island → same-origin BFF → generated OpenAPI client → Go `/api/v1/health`
+transport → framework-independent application service → response mapping. It
+returns one matching `X-Request-ID`/body correlation value, fails closed with a
+privacy-safe BFF error, and runs locally in frontend/API containers. It does
+not claim any Clerk, persistence, marketplace, or payment flow exists.
