@@ -1,8 +1,10 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { LandingShell } from "@/features/landing/components/landing-shell";
 
 export default async function HomePage() {
+  const locale = await getLocale();
+  const auth = await getTranslations("Auth");
   const t = await getTranslations("Landing");
 
   return (
@@ -17,6 +19,10 @@ export default async function HomePage() {
         available: t("healthStatus.available"),
         unavailable: t("healthStatus.unavailable"),
       }}
+      signInLabel={auth("signIn")}
+      signInUrl={`/${locale}/sign-in`}
+      signUpLabel={auth("signUp")}
+      signUpUrl={`/${locale}/sign-up`}
       visionLinkLabel={t("visionLinkLabel")}
       visionTitle={t("visionTitle")}
       visionDescription={t("visionDescription")}

@@ -10,10 +10,7 @@ juntly/
 └── supabase/   project-owned PostgreSQL/PostGIS configuration (later slice)
 ```
 
-The initial bootstrap created only `frontend/`. The health-tracer foundation adds
-`backend/` and the versioned OpenAPI contract because both now contain working
-code; `supabase/` remains absent until its own implemented slice. Empty
-future-runtime directories remain prohibited.
+The initial bootstrap created `frontend/`. The Clerk frontend identity foundation is implemented in that application, and the health-tracer foundation adds `backend/` plus the versioned OpenAPI contract because both now contain working code. `supabase/` remains absent until its approved persistence slice; empty future-runtime directories remain prohibited.
 
 ## Approved request path
 
@@ -44,7 +41,7 @@ Future modules use domain → application → ports → adapters dependency dire
 
 ## Authentication and authorization
 
-Clerk owns primary email/password identity and session lifecycle. The BFF verifies Clerk sessions. Go maps each verified Clerk subject uniquely to an opaque internal user and enforces platform role, provider/customer domain role, entitlement, ownership, resource membership, and administrative policy. UI visibility is presentation only.
+Clerk owns primary email/password identity and session lifecycle. The frontend provides localized Clerk entry routes and resource-local server session enforcement; UI visibility is presentation only. Local browser-facing Next.js routes use the canonical `localhost:4200` origin, because mixing loopback aliases can turn Clerk continuation rewrites into recursive external proxies. Once the API parent is integrated, Go will map each verified Clerk subject uniquely to an opaque internal user and enforce platform role, provider/customer domain role, entitlement, ownership, resource membership, and administrative policy. A real authenticated browser session remains a separate verification gate.
 
 ## Data and integration ownership
 
