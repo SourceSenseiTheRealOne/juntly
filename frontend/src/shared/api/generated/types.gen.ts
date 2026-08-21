@@ -16,16 +16,21 @@ export type HealthResponse = {
     requestId: RequestId;
 };
 
-export type ErrorCode = 'SERVICE_UNAVAILABLE';
+export type ErrorCode = 'UNAUTHORIZED' | 'SERVICE_UNAVAILABLE';
 
 export type ErrorDetail = {
     code: ErrorCode;
-    message: 'Service unavailable';
+    message: string;
     requestId: RequestId;
 };
 
 export type ErrorResponse = {
     error: ErrorDetail;
+};
+
+export type InternalUserResponse = {
+    id: string;
+    createdAt: string;
 };
 
 /**
@@ -63,3 +68,38 @@ export type GetHealthResponses = {
 };
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
+
+export type ReconcileInternalUserData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/reconcile';
+};
+
+export type ReconcileInternalUserErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * A required service dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ReconcileInternalUserError = ReconcileInternalUserErrors[keyof ReconcileInternalUserErrors];
+
+export type ReconcileInternalUserResponses = {
+    /**
+     * Internal user mapping is available.
+     */
+    200: InternalUserResponse;
+};
+
+export type ReconcileInternalUserResponse = ReconcileInternalUserResponses[keyof ReconcileInternalUserResponses];

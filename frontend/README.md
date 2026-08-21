@@ -10,11 +10,12 @@ This foundation currently provides:
 - Localized metadata and route boundaries.
 - A responsive, accessible product-introduction shell.
 - A same-origin `/api/v1/health` BFF route backed by the generated OpenAPI client.
+- A same-origin, Clerk-aware `POST /api/v1/auth/reconcile` BFF route that returns only an opaque internal mapping ID and creation time.
 - A localized client-side health indicator.
 - Clerk account entry, locale-aware in-app authentication forms, and a fail-closed session boundary at `/:locale/account`.
 - Test, format, lint, type, build, dependency-audit, and CI foundations.
 
-Provider/customer profiles, Go internal-user mapping, listings, search, chat, quotations, bookings, payments, and external infrastructure are not implemented yet. The only Go endpoint is the foundation health tracer.
+Provider/customer profiles, listings, search, chat, quotations, bookings, payments, and external infrastructure are not implemented yet. The Go API also has a protected internal-user reconciliation endpoint; authenticated browser proof requires an approved development test user and is recorded separately.
 
 ## Requirements
 
@@ -65,8 +66,13 @@ For local frontend/API proof, run from the repository root:
 docker compose up --build
 ```
 
-The compose topology supplies the server-only BFF origin. For a native frontend
-runtime, copy `.env.example` to an ignored `.env.local` and start the Go API on
-`127.0.0.1:8080`.
+The compose topology supplies the server-only BFF origin. The API requires
+server-only `DATABASE_URL`, Clerk verification material (`CLERK_SECRET_KEY` or
+`CLERK_JWT_KEY`), and exact `CLERK_AUTHORIZED_PARTIES`; copy
+`backend/.env.example` to ignored backend runtime configuration or set the same
+variables in the service environment. For a native frontend runtime, copy
+`.env.example` to an ignored `.env.local` and start the Go API on
+`127.0.0.1:8080`. Do not add a `NEXT_PUBLIC_` prefix to `JUNTLY_API_ORIGIN` or
+any backend/Clerk credential variable.
 
 Project-wide architecture and product rules live in `../context/`.

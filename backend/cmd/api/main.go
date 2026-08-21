@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"errors"
+	"io"
 	"log/slog"
 	"net/http"
 	"os"
@@ -10,8 +12,13 @@ import (
 	"syscall"
 	"time"
 
+	"entgo.io/ent/dialect"
+	entsql "entgo.io/ent/dialect/sql"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/health"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/httpapi"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/users"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 var version = "0.1.0"
@@ -24,15 +31,26 @@ func main() {
 }
 
 func run() error {
+	config, err := loadRuntimeConfig(os.Getenv)
+	if err != nil {
+		return err
+	}
+	handler, closer, err := newAPIHandler(config)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = closer.Close()
+	}()
+
 	addr := os.Getenv("JUNTLY_API_ADDR")
 	if addr == "" {
 		addr = ":8080"
 	}
 
-	service := health.NewService(version, time.Now)
 	server := &http.Server{
 		Addr:              addr,
-		Handler:           httpapi.NewRouter(service),
+		Handler:           handler,
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
@@ -63,4 +81,16 @@ func run() error {
 		}
 		return err
 	}
+}
+
+func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
+	database, err := sql.Open("pgx", config.databaseURL)
+	if err != nil {
+		return nil, nil, err
+	}
+	client := ent.NewClient(ent.Driver(entsql.OpenDB(dialect.Postgres, database)))
+
+	healthService := health.NewService(version, time.Now)
+	userService := users.NewService(users.NewEntRepository(client))
+	return httpapi.NewRouter(healthService, config.verifier, userService), client, nil
 }

@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetHealthData, GetHealthErrors, GetHealthResponses } from './types.gen';
+import type { GetHealthData, GetHealthErrors, GetHealthResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -24,3 +24,14 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  * Returns privacy-safe API health with correlation evidence.
  */
 export const getHealth = <ThrowOnError extends boolean = false>(options?: Options<GetHealthData, ThrowOnError>) => (options?.client ?? client).get<GetHealthResponses, GetHealthErrors, ThrowOnError>({ url: '/api/v1/health', ...options });
+
+/**
+ * Reconcile the current verified session to an internal user.
+ *
+ * Accepts no request body and returns only opaque internal mapping data.
+ */
+export const reconcileInternalUser = <ThrowOnError extends boolean = false>(options?: Options<ReconcileInternalUserData, ThrowOnError>) => (options?.client ?? client).post<ReconcileInternalUserResponses, ReconcileInternalUserErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/auth/reconcile',
+    ...options
+});

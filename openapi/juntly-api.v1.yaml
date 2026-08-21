@@ -33,7 +33,49 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/auth/reconcile:
+    post:
+      operationId: reconcileInternalUser
+      summary: Reconcile the current verified session to an internal user.
+      description: Accepts no request body and returns only opaque internal mapping data.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+      responses:
+        "200":
+          description: Internal user mapping is available.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalUserResponse"
+        "401":
+          description: Session authorization is missing or invalid.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: A required service dependency is unavailable.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
+  securitySchemes:
+    clerkSession:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   parameters:
     RequestIdHeader:
       name: X-Request-ID
@@ -87,6 +129,7 @@ components:
     ErrorCode:
       type: string
       enum:
+        - UNAUTHORIZED
         - SERVICE_UNAVAILABLE
     ErrorDetail:
       type: object
@@ -100,7 +143,7 @@ components:
           $ref: "#/components/schemas/ErrorCode"
         message:
           type: string
-          const: Service unavailable
+          minLength: 1
         requestId:
           $ref: "#/components/schemas/RequestId"
     ErrorResponse:
@@ -111,3 +154,16 @@ components:
       properties:
         error:
           $ref: "#/components/schemas/ErrorDetail"
+    InternalUserResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
