@@ -13,9 +13,10 @@ This repository is at the foundation stage. The initial delivery contains:
 - Durable product, architecture, security, UI, workflow, and decision context.
 - A localized responsive Next.js frontend shell under `frontend/` after the scaffold commit.
 - pt-PT default, English support, and Spanish-ready routing/messages.
+- A source-level Clerk frontend identity foundation: localized sign-in/sign-up routes, session-aware navigation, and a server-enforced account route.
 - Frontend test, format, lint, type, build, audit, CI, and runtime-verification foundations.
 
-It does **not** yet implement accounts, provider profiles, listings, search, chat, quotations, bookings, reviews, payments, Go/OpenAPI, Clerk, Supabase, Redis, object storage, Docker, or production deployment.
+The Clerk source, local quality gates, canonical-origin runtime routes, and signed-out account redirect are verified. An authenticated browser-session journey still requires a real test user. Durable Go internal-user mapping, provider profiles, listings, search, chat, quotations, bookings, reviews, payments, Go/OpenAPI, Supabase, Redis, object storage, Docker, and production deployment are not implemented yet.
 
 ## Repository layout
 

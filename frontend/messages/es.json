@@ -14,6 +14,14 @@
     "visionDescription": "Descubrimiento, contacto y confianza sin quitar elección a las personas. Juntly conecta a quien necesita ayuda con quien sabe hacerla.",
     "footerLabel": "Juntly — nacida en Portugal."
   },
+  "Auth": {
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear cuenta"
+  },
+  "Account": {
+    "title": "Cuenta Juntly",
+    "description": "Tu sesión está activa. Los perfiles y funciones del marketplace aparecerán aquí a medida que se implementen."
+  },
   "Errors": {
     "title": "Algo salió mal",
     "description": "No hemos podido cargar esta página. Inténtalo de nuevo.",

@@ -1,9 +1,15 @@
+import { AuthNavigation } from "@/features/auth/auth-navigation";
+
 type LandingShellProps = {
   eyebrow: string;
   tagline: string;
   heading: string;
   description: string;
   statusLabel: string;
+  signInLabel: string;
+  signInUrl: string;
+  signUpLabel: string;
+  signUpUrl: string;
   visionLinkLabel: string;
   visionTitle: string;
   visionDescription: string;
@@ -16,6 +22,10 @@ export function LandingShell({
   heading,
   description,
   statusLabel,
+  signInLabel,
+  signInUrl,
+  signUpLabel,
+  signUpUrl,
   visionLinkLabel,
   visionTitle,
   visionDescription,
@@ -32,9 +42,17 @@ export function LandingShell({
           >
             Juntly<span className="text-accent">.</span>
           </a>
-          <p className="hidden text-sm font-medium text-muted sm:block">
-            {eyebrow}
-          </p>
+          <div className="flex items-center gap-3 sm:gap-5">
+            <p className="hidden text-sm font-medium text-muted sm:block">
+              {eyebrow}
+            </p>
+            <AuthNavigation
+              signInLabel={signInLabel}
+              signInUrl={signInUrl}
+              signUpLabel={signUpLabel}
+              signUpUrl={signUpUrl}
+            />
+          </div>
         </div>
       </header>
 

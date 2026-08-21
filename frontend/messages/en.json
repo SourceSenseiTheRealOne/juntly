@@ -14,6 +14,14 @@
     "visionDescription": "Discovery, contact and trust without taking choice away from people. Juntly connects those who need help with those who know how.",
     "footerLabel": "Juntly — born in Portugal."
   },
+  "Auth": {
+    "signIn": "Sign in",
+    "signUp": "Create account"
+  },
+  "Account": {
+    "title": "Juntly account",
+    "description": "Your session is active. Marketplace profiles and features will appear here as they are implemented."
+  },
   "Errors": {
     "title": "Something went wrong",
     "description": "We could not load this page. Please try again.",

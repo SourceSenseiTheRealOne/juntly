@@ -14,6 +14,14 @@
     "visionDescription": "Descoberta, contacto e confiança sem retirar a escolha às pessoas. A Juntly liga quem precisa a quem sabe fazer.",
     "footerLabel": "Juntly — com origem em Portugal."
   },
+  "Auth": {
+    "signIn": "Entrar",
+    "signUp": "Criar conta"
+  },
+  "Account": {
+    "title": "Conta Juntly",
+    "description": "A sua sessão está ativa. Os perfis e funcionalidades do marketplace serão disponibilizados aqui à medida que forem implementados."
+  },
   "Errors": {
     "title": "Algo não correu bem",
     "description": "Não foi possível carregar esta página. Tente novamente.",
