@@ -1,0 +1,338 @@
+{
+  "administrativeAreas": [
+    {
+      "external_code": "PT",
+      "kind": "country",
+      "name": "Portugal",
+      "parent_code": null
+    },
+    {
+      "external_code": "05",
+      "kind": "district",
+      "name": "Castelo Branco",
+      "parent_code": "PT"
+    },
+    {
+      "external_code": "0502",
+      "kind": "municipality",
+      "name": "Castelo Branco",
+      "parent_code": "05"
+    },
+    {
+      "external_code": "0505",
+      "kind": "municipality",
+      "name": "Idanha-a-Nova",
+      "parent_code": "05"
+    },
+    {
+      "external_code": "050205",
+      "kind": "parish",
+      "name": "Castelo Branco",
+      "parent_code": "0502"
+    },
+    {
+      "external_code": "050510",
+      "kind": "parish",
+      "name": "Penha Garcia",
+      "parent_code": "0505"
+    },
+    {
+      "external_code": "050518",
+      "kind": "parish",
+      "name": "União das freguesias de Idanha-a-Nova e Alcafozes",
+      "parent_code": "0505"
+    },
+    {
+      "external_code": "050520",
+      "kind": "parish",
+      "name": "União das freguesias de Monsanto e Idanha-a-Velha",
+      "parent_code": "0505"
+    },
+    {
+      "external_code": "050521",
+      "kind": "parish",
+      "name": "União das freguesias de Zebreira e Segura",
+      "parent_code": "0505"
+    }
+  ],
+  "attribution": {
+    "text": "© OpenStreetMap contributors",
+    "url": "https://www.openstreetmap.org/copyright"
+  },
+  "categories": [
+    {
+      "parentSlug": null,
+      "slug": "home-repairs",
+      "sortOrder": 10,
+      "translations": {
+        "en": "Home repairs",
+        "es": "Reparaciones del hogar",
+        "pt-PT": "Reparações domésticas"
+      }
+    },
+    {
+      "parentSlug": "home-repairs",
+      "slug": "plumbing",
+      "sortOrder": 10,
+      "translations": {
+        "en": "Plumbing",
+        "es": "Fontanería",
+        "pt-PT": "Canalização"
+      }
+    },
+    {
+      "parentSlug": "home-repairs",
+      "slug": "electrical-work",
+      "sortOrder": 20,
+      "translations": {
+        "en": "Electrical work",
+        "es": "Electricidad",
+        "pt-PT": "Eletricidade"
+      }
+    },
+    {
+      "parentSlug": "home-repairs",
+      "slug": "construction",
+      "sortOrder": 30,
+      "translations": {
+        "en": "Construction",
+        "es": "Construcción",
+        "pt-PT": "Construção"
+      }
+    },
+    {
+      "parentSlug": "home-repairs",
+      "slug": "small-repairs",
+      "sortOrder": 40,
+      "translations": {
+        "en": "Small repairs",
+        "es": "Pequeñas reparaciones",
+        "pt-PT": "Pequenas reparações"
+      }
+    },
+    {
+      "parentSlug": null,
+      "slug": "home-and-garden",
+      "sortOrder": 20,
+      "translations": {
+        "en": "Home and garden",
+        "es": "Hogar y jardín",
+        "pt-PT": "Casa e jardim"
+      }
+    },
+    {
+      "parentSlug": "home-and-garden",
+      "slug": "cleaning",
+      "sortOrder": 10,
+      "translations": {
+        "en": "Cleaning",
+        "es": "Limpieza",
+        "pt-PT": "Limpeza"
+      }
+    },
+    {
+      "parentSlug": "home-and-garden",
+      "slug": "gardening",
+      "sortOrder": 20,
+      "translations": {
+        "en": "Gardening",
+        "es": "Jardinería",
+        "pt-PT": "Jardinagem"
+      }
+    },
+    {
+      "parentSlug": null,
+      "slug": "rural-and-transport",
+      "sortOrder": 30,
+      "translations": {
+        "en": "Rural services and transport",
+        "es": "Servicios rurales y transporte",
+        "pt-PT": "Serviços rurais e transporte"
+      }
+    },
+    {
+      "parentSlug": "rural-and-transport",
+      "slug": "agricultural-assistance",
+      "sortOrder": 10,
+      "translations": {
+        "en": "Agricultural assistance",
+        "es": "Ayuda agrícola",
+        "pt-PT": "Apoio agrícola"
+      }
+    },
+    {
+      "parentSlug": "rural-and-transport",
+      "slug": "transport",
+      "sortOrder": 20,
+      "translations": {
+        "en": "Transport",
+        "es": "Transporte",
+        "pt-PT": "Transporte"
+      }
+    },
+    {
+      "parentSlug": null,
+      "slug": "care-and-learning",
+      "sortOrder": 40,
+      "translations": {
+        "en": "Care and learning",
+        "es": "Cuidados y aprendizaje",
+        "pt-PT": "Cuidados e aprendizagem"
+      }
+    },
+    {
+      "parentSlug": "care-and-learning",
+      "slug": "elderly-assistance",
+      "sortOrder": 10,
+      "translations": {
+        "en": "Elderly assistance",
+        "es": "Ayuda a mayores",
+        "pt-PT": "Apoio a idosos"
+      }
+    },
+    {
+      "parentSlug": "care-and-learning",
+      "slug": "animal-care",
+      "sortOrder": 20,
+      "translations": {
+        "en": "Animal care",
+        "es": "Cuidado de animales",
+        "pt-PT": "Cuidados de animais"
+      }
+    },
+    {
+      "parentSlug": "care-and-learning",
+      "slug": "private-lessons",
+      "sortOrder": 30,
+      "translations": {
+        "en": "Private lessons",
+        "es": "Clases particulares",
+        "pt-PT": "Aulas particulares"
+      }
+    },
+    {
+      "parentSlug": null,
+      "slug": "food-and-technology",
+      "sortOrder": 50,
+      "translations": {
+        "en": "Food and technology",
+        "es": "Alimentación y tecnología",
+        "pt-PT": "Alimentação e tecnologia"
+      }
+    },
+    {
+      "parentSlug": "food-and-technology",
+      "slug": "meal-preparation",
+      "sortOrder": 10,
+      "translations": {
+        "en": "Meal preparation",
+        "es": "Preparación de comidas",
+        "pt-PT": "Preparação de refeições"
+      }
+    },
+    {
+      "parentSlug": "food-and-technology",
+      "slug": "computer-repair",
+      "sortOrder": 20,
+      "translations": {
+        "en": "Computer repair",
+        "es": "Reparación de ordenadores",
+        "pt-PT": "Reparação de computadores"
+      }
+    }
+  ],
+  "languages": [
+    {
+      "code": "pt-PT",
+      "sortOrder": 10,
+      "translations": {
+        "en": "Portuguese",
+        "es": "Portugués",
+        "pt-PT": "Português"
+      }
+    },
+    {
+      "code": "en",
+      "sortOrder": 20,
+      "translations": {
+        "en": "English",
+        "es": "Inglés",
+        "pt-PT": "Inglês"
+      }
+    },
+    {
+      "code": "es",
+      "sortOrder": 30,
+      "translations": {
+        "en": "Spanish",
+        "es": "Español",
+        "pt-PT": "Espanhol"
+      }
+    }
+  ],
+  "localities": [
+    {
+      "latitude": "39.8266322",
+      "longitude": "-7.4919318",
+      "name": "Castelo Branco",
+      "parent_code": "050205",
+      "slug": "castelo-branco",
+      "source_element_id": "R5396187"
+    },
+    {
+      "latitude": "39.9260883",
+      "longitude": "-7.2436356",
+      "name": "Idanha-a-Nova",
+      "parent_code": "050518",
+      "slug": "idanha-a-nova",
+      "source_element_id": "R5395738"
+    },
+    {
+      "latitude": "40.0387510",
+      "longitude": "-7.1151133",
+      "name": "Monsanto",
+      "parent_code": "050520",
+      "slug": "monsanto",
+      "source_element_id": "N371426674"
+    },
+    {
+      "latitude": "40.0422569",
+      "longitude": "-7.0163521",
+      "name": "Penha Garcia",
+      "parent_code": "050510",
+      "slug": "penha-garcia",
+      "source_element_id": "R5431477"
+    },
+    {
+      "latitude": "39.8455920",
+      "longitude": "-7.0703366",
+      "name": "Zebreira",
+      "parent_code": "050521",
+      "slug": "zebreira",
+      "source_element_id": "N440173641"
+    }
+  ],
+  "retrievalDate": "2026-08-23",
+  "source": {
+    "caop": {
+      "layers": [
+        "cont_distritos",
+        "cont_municipios",
+        "cont_freguesias"
+      ],
+      "sha256": "87cd67f4b1fbadf23d9324e6fb231ff05531e4db347af36ccc7c6cbabe3ecd1d",
+      "url": "https://geo2.dgterritorio.gov.pt/caop/CAOP_Continente_2025-gpkg.zip",
+      "version": "2025"
+    },
+    "openStreetMap": {
+      "license": "https://www.openstreetmap.org/copyright",
+      "nominatimPolicy": "https://operations.osmfoundation.org/policies/nominatim"
+    }
+  },
+  "supportedLocales": [
+    "pt-PT",
+    "en",
+    "es"
+  ],
+  "version": 1
+}
