@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// InternalUser is the client for interacting with the InternalUser builders.
 	InternalUser *InternalUserClient
+	// UserAccount is the client for interacting with the UserAccount builders.
+	UserAccount *UserAccountClient
 
 	// lazily loaded.
 	client     *Client
@@ -146,6 +148,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.InternalUser = NewInternalUserClient(tx.config)
+	tx.UserAccount = NewUserAccountClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

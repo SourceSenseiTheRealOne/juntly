@@ -7,6 +7,7 @@ import (
 
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/internaluser"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/schema"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/useraccount"
 	"github.com/google/uuid"
 )
 
@@ -48,4 +49,24 @@ func init() {
 	internaluserDescID := internaluserFields[0].Descriptor()
 	// internaluser.DefaultID holds the default value on creation for the id field.
 	internaluser.DefaultID = internaluserDescID.Default.(func() uuid.UUID)
+	useraccountFields := schema.UserAccount{}.Fields()
+	_ = useraccountFields
+	// useraccountDescProviderEnabled is the schema descriptor for provider_enabled field.
+	useraccountDescProviderEnabled := useraccountFields[1].Descriptor()
+	// useraccount.DefaultProviderEnabled holds the default value on creation for the provider_enabled field.
+	useraccount.DefaultProviderEnabled = useraccountDescProviderEnabled.Default.(bool)
+	// useraccountDescOnboardingCompletedAt is the schema descriptor for onboarding_completed_at field.
+	useraccountDescOnboardingCompletedAt := useraccountFields[2].Descriptor()
+	// useraccount.DefaultOnboardingCompletedAt holds the default value on creation for the onboarding_completed_at field.
+	useraccount.DefaultOnboardingCompletedAt = useraccountDescOnboardingCompletedAt.Default.(func() time.Time)
+	// useraccountDescCreatedAt is the schema descriptor for created_at field.
+	useraccountDescCreatedAt := useraccountFields[3].Descriptor()
+	// useraccount.DefaultCreatedAt holds the default value on creation for the created_at field.
+	useraccount.DefaultCreatedAt = useraccountDescCreatedAt.Default.(func() time.Time)
+	// useraccountDescUpdatedAt is the schema descriptor for updated_at field.
+	useraccountDescUpdatedAt := useraccountFields[4].Descriptor()
+	// useraccount.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	useraccount.DefaultUpdatedAt = useraccountDescUpdatedAt.Default.(func() time.Time)
+	// useraccount.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	useraccount.UpdateDefaultUpdatedAt = useraccountDescUpdatedAt.UpdateDefault.(func() time.Time)
 }

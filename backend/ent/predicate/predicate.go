@@ -8,3 +8,6 @@ import (
 
 // InternalUser is the predicate function for internaluser builders.
 type InternalUser func(*sql.Selector)
+
+// UserAccount is the predicate function for useraccount builders.
+type UserAccount func(*sql.Selector)

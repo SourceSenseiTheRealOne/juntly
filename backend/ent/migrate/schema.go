@@ -22,14 +22,32 @@ var (
 		Columns:    InternalUsersColumns,
 		PrimaryKey: []*schema.Column{InternalUsersColumns[0]},
 	}
+	// UserAccountsColumns holds the columns for the "user_accounts" table.
+	UserAccountsColumns = []*schema.Column{
+		{Name: "internal_user_id", Type: field.TypeUUID},
+		{Name: "provider_enabled", Type: field.TypeBool, Default: false},
+		{Name: "onboarding_completed_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// UserAccountsTable holds the schema information for the "user_accounts" table.
+	UserAccountsTable = &schema.Table{
+		Name:       "user_accounts",
+		Columns:    UserAccountsColumns,
+		PrimaryKey: []*schema.Column{UserAccountsColumns[0]},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		InternalUsersTable,
+		UserAccountsTable,
 	}
 )
 
 func init() {
 	InternalUsersTable.Annotation = &entsql.Annotation{
 		Table: "internal_users",
+	}
+	UserAccountsTable.Annotation = &entsql.Annotation{
+		Table: "user_accounts",
 	}
 }
