@@ -25,7 +25,21 @@
   },
   "Account": {
     "title": "Conta Juntly",
-    "description": "A sua sessão está ativa. Os perfis e funcionalidades do marketplace serão disponibilizados aqui à medida que forem implementados."
+    "description": "A sua sessão está ativa. Configure como pretende utilizar a Juntly.",
+    "capabilities": {
+      "title": "Como utiliza a Juntly",
+      "description": "A sua conta pode encontrar serviços e, se quiser, também disponibilizá-los.",
+      "customerLabel": "Encontrar serviços",
+      "customerDescription": "A sua conta está sempre pronta para procurar e contactar prestadores.",
+      "providerLabel": "Disponibilizar serviços",
+      "providerDescription": "Ative esta opção para preparar o seu perfil de prestador nos próximos passos.",
+      "enabled": "Ativo",
+      "disabled": "Inativo",
+      "loading": "A carregar as capacidades da conta…",
+      "saving": "A guardar…",
+      "loadError": "Não foi possível carregar as capacidades da conta.",
+      "retry": "Tentar novamente"
+    }
   },
   "Errors": {
     "title": "Algo não correu bem",

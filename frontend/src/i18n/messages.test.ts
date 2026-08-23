@@ -55,4 +55,28 @@ describe("locale messages", () => {
       }
     }
   });
+
+  it("defines the complete account capability copy in every locale", () => {
+    const capabilityKeys = [
+      "Account.capabilities.customerDescription",
+      "Account.capabilities.customerLabel",
+      "Account.capabilities.description",
+      "Account.capabilities.disabled",
+      "Account.capabilities.enabled",
+      "Account.capabilities.loadError",
+      "Account.capabilities.loading",
+      "Account.capabilities.providerDescription",
+      "Account.capabilities.providerLabel",
+      "Account.capabilities.retry",
+      "Account.capabilities.saving",
+      "Account.capabilities.title",
+    ];
+
+    for (const messages of Object.values(locales)) {
+      for (const key of capabilityKeys) {
+        expect(messages[key]).toBeTypeOf("string");
+        expect(messages[key].trim()).not.toBe("");
+      }
+    }
+  });
 });

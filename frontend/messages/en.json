@@ -25,7 +25,21 @@
   },
   "Account": {
     "title": "Juntly account",
-    "description": "Your session is active. Marketplace profiles and features will appear here as they are implemented."
+    "description": "Your session is active. Choose how you want to use Juntly.",
+    "capabilities": {
+      "title": "How you use Juntly",
+      "description": "Your account can find services and, if you choose, offer them too.",
+      "customerLabel": "Find services",
+      "customerDescription": "Your account is always ready to find and contact providers.",
+      "providerLabel": "Offer services",
+      "providerDescription": "Enable this option to prepare your provider profile in the next steps.",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "loading": "Loading account capabilities…",
+      "saving": "Saving…",
+      "loadError": "We could not load your account capabilities.",
+      "retry": "Try again"
+    }
   },
   "Errors": {
     "title": "Something went wrong",
