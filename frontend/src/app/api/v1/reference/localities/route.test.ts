@@ -16,7 +16,7 @@ describe("GET /api/v1/reference/localities", () => {
           {
             localities: [
               {
-                id: "11111111-1111-4111-8111-111111111111",
+                id: "aaaaaaaa-aaaa-daaa-0aaa-aaaaaaaaaaaa",
                 slug: "zebreira",
                 name: "Zebreira",
                 parishName: "Zebreira e Segura",
@@ -36,7 +36,7 @@ describe("GET /api/v1/reference/localities", () => {
     );
     const r = await GET(
       new Request(
-        "http://localhost/api/v1/reference/localities?locale=pt-PT&nearLocalityId=11111111-1111-4111-8111-111111111111&radiusKm=25",
+        "http://localhost/api/v1/reference/localities?locale=pt-PT&nearLocalityId=aaaaaaaa-aaaa-daaa-0aaa-aaaaaaaaaaaa&radiusKm=25",
         { headers: { "X-Request-ID": "req_localities_ok" } },
       ),
     );

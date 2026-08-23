@@ -22,7 +22,7 @@ describe("GET /api/v1/catalog/categories", () => {
           {
             categories: [
               {
-                id: "11111111-1111-4111-8111-111111111111",
+                id: "aaaaaaaa-aaaa-daaa-0aaa-aaaaaaaaaaaa",
                 parentId: null,
                 slug: "home-repairs",
                 name: "Reparações domésticas",

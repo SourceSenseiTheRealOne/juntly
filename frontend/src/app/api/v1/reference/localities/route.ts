@@ -96,9 +96,7 @@ function locale(v: string | undefined): v is "pt-PT" | "en" | "es" {
   return v === "pt-PT" || v === "en" || v === "es";
 }
 function uuid(v: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-    v,
-  );
+  return /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(v);
 }
 function requestID(h: Headers) {
   const v = h.get(header);

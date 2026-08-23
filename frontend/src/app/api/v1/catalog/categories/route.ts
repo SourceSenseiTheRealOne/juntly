@@ -71,9 +71,7 @@ function isLocale(value: string | undefined): value is "pt-PT" | "en" | "es" {
   return value === "pt-PT" || value === "en" || value === "es";
 }
 function isUUID(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-    value,
-  );
+  return /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(value);
 }
 function readRequestID(headers: Headers): string {
   const value = headers.get(requestIDHeader);
