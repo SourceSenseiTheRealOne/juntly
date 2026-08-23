@@ -17,6 +17,7 @@ const copy = {
   saving: "A guardar…",
   loadError: "Não foi possível carregar as capacidades da conta.",
   retry: "Tentar novamente",
+  manageProvider: "Gerir perfil de prestador",
 };
 
 afterEach(() => {
@@ -54,7 +55,12 @@ describe("AccountCapabilitiesCard", () => {
       .mockImplementationOnce(() => update.promise);
     vi.stubGlobal("fetch", fetchMock);
 
-    render(<AccountCapabilitiesCard copy={copy} />);
+    render(
+      <AccountCapabilitiesCard
+        copy={copy}
+        providerProfileUrl="/pt-PT/account/provider-profile"
+      />,
+    );
     const toggle = await screen.findByRole("switch", {
       name: copy.providerLabel,
     });
@@ -74,6 +80,9 @@ describe("AccountCapabilitiesCard", () => {
     update.resolve(accountResponse(true));
     await waitFor(() => expect(toggle).toHaveAttribute("aria-checked", "true"));
     expect(toggle).not.toBeDisabled();
+    expect(
+      screen.getByRole("link", { name: copy.manageProvider }),
+    ).toHaveAttribute("href", "/pt-PT/account/provider-profile");
   });
 
   it("shows a controlled error and retries without exposing upstream details", async () => {

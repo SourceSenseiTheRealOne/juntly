@@ -45,6 +45,7 @@ describe("AccountPage", () => {
           "capabilities.loadError":
             "Não foi possível carregar as capacidades da conta.",
           "capabilities.loading": "A carregar as capacidades da conta…",
+          "capabilities.manageProvider": "Gerir perfil de prestador",
           "capabilities.providerDescription":
             "Ative esta opção para preparar o seu perfil de prestador.",
           "capabilities.providerLabel": "Disponibilizar serviços",

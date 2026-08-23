@@ -38,8 +38,32 @@
       "loading": "Loading account capabilities…",
       "saving": "Saving…",
       "loadError": "We could not load your account capabilities.",
-      "retry": "Try again"
+      "retry": "Try again",
+      "manageProvider": "Manage provider profile"
     }
+  },
+  "ProviderProfile": {
+    "title": "Provider profile",
+    "description": "Prepare your private profile details before marketplace publication.",
+    "displayName": "Display name",
+    "providerType": "Provider type",
+    "individual": "Individual",
+    "professional": "Professional",
+    "business": "Business",
+    "bio": "Introduction",
+    "primaryLocality": "Primary locality",
+    "serviceLocalities": "Service areas",
+    "languages": "Languages",
+    "travelRadius": "Maximum travel distance in kilometres",
+    "travels": "Travels to the customer",
+    "receives": "Receives customers",
+    "remote": "Works remotely",
+    "save": "Save profile",
+    "saving": "Saving…",
+    "loading": "Loading profile…",
+    "error": "We could not load or save the profile.",
+    "retry": "Try again",
+    "saved": "Profile saved."
   },
   "Errors": {
     "title": "Something went wrong",

@@ -38,8 +38,32 @@
       "loading": "A carregar as capacidades da conta…",
       "saving": "A guardar…",
       "loadError": "Não foi possível carregar as capacidades da conta.",
-      "retry": "Tentar novamente"
+      "retry": "Tentar novamente",
+      "manageProvider": "Gerir perfil de prestador"
     }
+  },
+  "ProviderProfile": {
+    "title": "Perfil de prestador",
+    "description": "Prepare os dados privados do seu perfil antes da publicação no marketplace.",
+    "displayName": "Nome de apresentação",
+    "providerType": "Tipo de prestador",
+    "individual": "Particular",
+    "professional": "Profissional",
+    "business": "Empresa",
+    "bio": "Apresentação",
+    "primaryLocality": "Localidade principal",
+    "serviceLocalities": "Áreas de serviço",
+    "languages": "Idiomas",
+    "travelRadius": "Distância máxima em quilómetros",
+    "travels": "Desloca-se ao cliente",
+    "receives": "Recebe clientes",
+    "remote": "Trabalha à distância",
+    "save": "Guardar perfil",
+    "saving": "A guardar…",
+    "loading": "A carregar perfil…",
+    "error": "Não foi possível carregar ou guardar o perfil.",
+    "retry": "Tentar novamente",
+    "saved": "Perfil guardado."
   },
   "Errors": {
     "title": "Algo não correu bem",

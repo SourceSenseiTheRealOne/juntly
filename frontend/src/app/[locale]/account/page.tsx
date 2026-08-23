@@ -34,6 +34,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
     saving: t("capabilities.saving"),
     loadError: t("capabilities.loadError"),
     retry: t("capabilities.retry"),
+    manageProvider: t("capabilities.manageProvider"),
   };
 
   return (
@@ -46,7 +47,10 @@ export default async function AccountPage({ params }: AccountPageProps) {
           {t("title")}
         </h1>
         <p className="mt-4 text-lg leading-8 text-muted">{t("description")}</p>
-        <AccountCapabilitiesCard copy={capabilityCopy} />
+        <AccountCapabilitiesCard
+          copy={capabilityCopy}
+          providerProfileUrl={`/${locale}/account/provider-profile`}
+        />
       </section>
     </main>
   );
