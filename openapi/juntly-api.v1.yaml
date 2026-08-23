@@ -119,6 +119,137 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/catalog/categories:
+    get:
+      operationId: listServiceCategories
+      summary: List active service categories in one supported locale.
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+        - $ref: "#/components/parameters/LocaleQuery"
+      responses:
+        "200":
+          description: Active localized service categories.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoriesResponse"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /api/v1/reference/languages:
+    get:
+      operationId: listSpokenLanguages
+      summary: List active spoken languages in one supported locale.
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+        - $ref: "#/components/parameters/LocaleQuery"
+      responses:
+        "200":
+          description: Active localized spoken languages.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LanguagesResponse"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /api/v1/reference/localities:
+    get:
+      operationId: listLocalities
+      summary: List active launch localities, optionally within a radius.
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+        - $ref: "#/components/parameters/LocaleQuery"
+        - name: nearLocalityId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: radiusKm
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+      responses:
+        "200":
+          description: Active locality references with required attribution.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LocalitiesResponse"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /api/v1/me/provider-profile:
+    get:
+      operationId: getProviderProfile
+      summary: Read the current provider's owner-only profile.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+      responses:
+        "200":
+          description: Nullable owner-only provider profile.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderProfileEnvelope"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    put:
+      operationId: replaceProviderProfile
+      summary: Create or fully replace the current provider's owner-only profile.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplaceProviderProfileRequest"
+      responses:
+        "200":
+          description: Canonical owner-only provider profile.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderProfileEnvelope"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
   /api/v1/auth/reconcile:
     post:
       operationId: reconcileInternalUser
@@ -170,11 +301,55 @@ components:
       description: Optional client-supplied correlation identifier.
       schema:
         $ref: "#/components/schemas/RequestId"
+    LocaleQuery:
+      name: locale
+      in: query
+      required: true
+      schema:
+        type: string
+        enum: [pt-PT, en, es]
   headers:
     RequestIdHeader:
       description: Correlation identifier attached to this response.
       schema:
         $ref: "#/components/schemas/RequestId"
+  responses:
+    InvalidRequest:
+      description: The request is invalid.
+      headers:
+        X-Request-ID:
+          $ref: "#/components/headers/RequestIdHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Unauthorized:
+      description: Session authorization is missing or invalid.
+      headers:
+        X-Request-ID:
+          $ref: "#/components/headers/RequestIdHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Forbidden:
+      description: Provider capability is required.
+      headers:
+        X-Request-ID:
+          $ref: "#/components/headers/RequestIdHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ServiceUnavailable:
+      description: A required dependency is unavailable.
+      headers:
+        X-Request-ID:
+          $ref: "#/components/headers/RequestIdHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
   schemas:
     RequestId:
       type: string
@@ -217,6 +392,7 @@ components:
       enum:
         - INVALID_REQUEST
         - UNAUTHORIZED
+        - FORBIDDEN
         - SERVICE_UNAVAILABLE
     ErrorDetail:
       type: object
@@ -278,3 +454,132 @@ components:
       properties:
         providerEnabled:
           type: boolean
+    Category:
+      type: object
+      additionalProperties: false
+      required: [id, parentId, slug, name]
+      properties:
+        id: { type: string, format: uuid }
+        parentId: { type: [string, "null"], format: uuid }
+        slug: { type: string, minLength: 1, maxLength: 80 }
+        name: { type: string, minLength: 1, maxLength: 120 }
+    CategoriesResponse:
+      type: object
+      additionalProperties: false
+      required: [categories]
+      properties:
+        categories:
+          type: array
+          items: { $ref: "#/components/schemas/Category" }
+    SpokenLanguage:
+      type: object
+      additionalProperties: false
+      required: [code, name]
+      properties:
+        code: { type: string, minLength: 2, maxLength: 10 }
+        name: { type: string, minLength: 1, maxLength: 80 }
+    LanguagesResponse:
+      type: object
+      additionalProperties: false
+      required: [languages]
+      properties:
+        languages:
+          type: array
+          items: { $ref: "#/components/schemas/SpokenLanguage" }
+    Attribution:
+      type: object
+      additionalProperties: false
+      required: [text, url]
+      properties:
+        text:
+          type: string
+          const: © OpenStreetMap contributors
+        url:
+          type: string
+          format: uri
+          const: https://www.openstreetmap.org/copyright
+    Locality:
+      type: object
+      additionalProperties: false
+      required: [id, slug, name, parishName, municipalityName, districtName]
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string, minLength: 1, maxLength: 100 }
+        name: { type: string, minLength: 1, maxLength: 160 }
+        parishName: { type: string, minLength: 1 }
+        municipalityName: { type: string, minLength: 1 }
+        districtName: { type: string, minLength: 1 }
+        distanceMeters: { type: integer, minimum: 0 }
+    LocalitiesResponse:
+      type: object
+      additionalProperties: false
+      required: [localities, attribution]
+      properties:
+        localities:
+          type: array
+          items: { $ref: "#/components/schemas/Locality" }
+        attribution: { $ref: "#/components/schemas/Attribution" }
+    ProviderType:
+      type: string
+      enum: [individual, professional, business]
+    ReplaceProviderProfileRequest:
+      type: object
+      additionalProperties: false
+      required: [displayName, providerType, bio, primaryLocalityId, serviceLocalityIds, maxTravelDistanceKm, travelsToCustomer, receivesCustomer, remoteServices, languageCodes]
+      properties:
+        displayName: { type: string, minLength: 2, maxLength: 100 }
+        providerType: { $ref: "#/components/schemas/ProviderType" }
+        bio: { type: string, maxLength: 1000 }
+        primaryLocalityId: { type: string, format: uuid }
+        serviceLocalityIds:
+          type: array
+          minItems: 1
+          maxItems: 20
+          uniqueItems: true
+          items: { type: string, format: uuid }
+        maxTravelDistanceKm: { type: integer, minimum: 0, maximum: 200 }
+        travelsToCustomer: { type: boolean }
+        receivesCustomer: { type: boolean }
+        remoteServices: { type: boolean }
+        languageCodes:
+          type: array
+          minItems: 1
+          maxItems: 10
+          uniqueItems: true
+          items: { type: string, minLength: 2, maxLength: 10 }
+    ProviderProfileResponse:
+      type: object
+      additionalProperties: false
+      required: [displayName, providerType, bio, primaryLocalityId, serviceLocalityIds, maxTravelDistanceKm, travelsToCustomer, receivesCustomer, remoteServices, languageCodes, createdAt, updatedAt]
+      properties:
+        displayName: { type: string, minLength: 2, maxLength: 100 }
+        providerType: { $ref: "#/components/schemas/ProviderType" }
+        bio: { type: string, maxLength: 1000 }
+        primaryLocalityId: { type: string, format: uuid }
+        serviceLocalityIds:
+          type: array
+          minItems: 1
+          maxItems: 20
+          uniqueItems: true
+          items: { type: string, format: uuid }
+        maxTravelDistanceKm: { type: integer, minimum: 0, maximum: 200 }
+        travelsToCustomer: { type: boolean }
+        receivesCustomer: { type: boolean }
+        remoteServices: { type: boolean }
+        languageCodes:
+          type: array
+          minItems: 1
+          maxItems: 10
+          uniqueItems: true
+          items: { type: string, minLength: 2, maxLength: 10 }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    ProviderProfileEnvelope:
+      type: object
+      additionalProperties: false
+      required: [profile]
+      properties:
+        profile:
+          oneOf:
+            - { $ref: "#/components/schemas/ProviderProfileResponse" }
+            - { type: "null" }

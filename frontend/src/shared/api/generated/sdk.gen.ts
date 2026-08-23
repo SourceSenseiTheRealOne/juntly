@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetAccountCapabilitiesData, GetAccountCapabilitiesErrors, GetAccountCapabilitiesResponses, GetHealthData, GetHealthErrors, GetHealthResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses, UpdateAccountCapabilitiesData, UpdateAccountCapabilitiesErrors, UpdateAccountCapabilitiesResponses } from './types.gen';
+import type { GetAccountCapabilitiesData, GetAccountCapabilitiesErrors, GetAccountCapabilitiesResponses, GetHealthData, GetHealthErrors, GetHealthResponses, GetProviderProfileData, GetProviderProfileErrors, GetProviderProfileResponses, ListLocalitiesData, ListLocalitiesErrors, ListLocalitiesResponses, ListServiceCategoriesData, ListServiceCategoriesErrors, ListServiceCategoriesResponses, ListSpokenLanguagesData, ListSpokenLanguagesErrors, ListSpokenLanguagesResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses, ReplaceProviderProfileData, ReplaceProviderProfileErrors, ReplaceProviderProfileResponses, UpdateAccountCapabilitiesData, UpdateAccountCapabilitiesErrors, UpdateAccountCapabilitiesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -40,6 +40,43 @@ export const getAccountCapabilities = <ThrowOnError extends boolean = false>(opt
 export const updateAccountCapabilities = <ThrowOnError extends boolean = false>(options: Options<UpdateAccountCapabilitiesData, ThrowOnError>) => (options.client ?? client).put<UpdateAccountCapabilitiesResponses, UpdateAccountCapabilitiesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/me/account',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List active service categories in one supported locale.
+ */
+export const listServiceCategories = <ThrowOnError extends boolean = false>(options: Options<ListServiceCategoriesData, ThrowOnError>) => (options.client ?? client).get<ListServiceCategoriesResponses, ListServiceCategoriesErrors, ThrowOnError>({ url: '/api/v1/catalog/categories', ...options });
+
+/**
+ * List active spoken languages in one supported locale.
+ */
+export const listSpokenLanguages = <ThrowOnError extends boolean = false>(options: Options<ListSpokenLanguagesData, ThrowOnError>) => (options.client ?? client).get<ListSpokenLanguagesResponses, ListSpokenLanguagesErrors, ThrowOnError>({ url: '/api/v1/reference/languages', ...options });
+
+/**
+ * List active launch localities, optionally within a radius.
+ */
+export const listLocalities = <ThrowOnError extends boolean = false>(options: Options<ListLocalitiesData, ThrowOnError>) => (options.client ?? client).get<ListLocalitiesResponses, ListLocalitiesErrors, ThrowOnError>({ url: '/api/v1/reference/localities', ...options });
+
+/**
+ * Read the current provider's owner-only profile.
+ */
+export const getProviderProfile = <ThrowOnError extends boolean = false>(options?: Options<GetProviderProfileData, ThrowOnError>) => (options?.client ?? client).get<GetProviderProfileResponses, GetProviderProfileErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/provider-profile',
+    ...options
+});
+
+/**
+ * Create or fully replace the current provider's owner-only profile.
+ */
+export const replaceProviderProfile = <ThrowOnError extends boolean = false>(options: Options<ReplaceProviderProfileData, ThrowOnError>) => (options.client ?? client).put<ReplaceProviderProfileResponses, ReplaceProviderProfileErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/provider-profile',
     ...options,
     headers: {
         'Content-Type': 'application/json',

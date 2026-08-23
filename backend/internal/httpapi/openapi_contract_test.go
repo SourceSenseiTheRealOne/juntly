@@ -70,3 +70,41 @@ func TestAccountCapabilitiesOpenAPIContract(t *testing.T) {
 		t.Fatal("account contract must declare GET and PUT")
 	}
 }
+
+func TestTaxonomyLocationsProviderProfileOpenAPIContract(t *testing.T) {
+	t.Parallel()
+
+	contract, err := os.ReadFile("../../../openapi/juntly-api.v1.yaml")
+	if err != nil {
+		t.Fatalf("read OpenAPI contract: %v", err)
+	}
+	contents := string(contract)
+	for _, required := range []string{
+		"/api/v1/catalog/categories:",
+		"operationId: listServiceCategories",
+		"/api/v1/reference/languages:",
+		"operationId: listSpokenLanguages",
+		"/api/v1/reference/localities:",
+		"operationId: listLocalities",
+		"nearLocalityId",
+		"radiusKm",
+		"/api/v1/me/provider-profile:",
+		"operationId: getProviderProfile",
+		"operationId: replaceProviderProfile",
+		"ProviderProfileResponse:",
+		"ReplaceProviderProfileRequest:",
+		"serviceLocalityIds:",
+		"languageCodes:",
+		"FORBIDDEN",
+		"OpenStreetMap contributors",
+	} {
+		if !strings.Contains(contents, required) {
+			t.Fatalf("OpenAPI contract does not contain %q", required)
+		}
+	}
+	for _, prohibited := range []string{"phoneNumber:", "whatsapp:", "exactAddress:", "latitude:", "longitude:", "internalUserId:"} {
+		if strings.Contains(contents, prohibited) {
+			t.Fatalf("OpenAPI contract must not contain %q", prohibited)
+		}
+	}
+}

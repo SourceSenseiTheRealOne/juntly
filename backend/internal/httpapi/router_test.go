@@ -30,7 +30,9 @@ func TestRouterLeavesHealthPublicAndProtectsReconciliation(t *testing.T) {
 		ProviderEnabled:       false,
 		OnboardingCompletedAt: time.Date(2026, 8, 23, 12, 5, 0, 0, time.UTC),
 	}}
-	router := httpapi.NewRouter(healthService, verifier, reconcileService, accountService)
+	referenceService := &recordingReferenceService{}
+	providerProfileService := &recordingProviderProfileService{}
+	router := httpapi.NewRouter(healthService, verifier, reconcileService, accountService, referenceService, providerProfileService)
 
 	healthResponse := httptest.NewRecorder()
 	router.ServeHTTP(healthResponse, httptest.NewRequest(http.MethodGet, "/api/v1/health", nil))

@@ -16,7 +16,7 @@ export type HealthResponse = {
     requestId: RequestId;
 };
 
-export type ErrorCode = 'INVALID_REQUEST' | 'UNAUTHORIZED' | 'SERVICE_UNAVAILABLE';
+export type ErrorCode = 'INVALID_REQUEST' | 'UNAUTHORIZED' | 'FORBIDDEN' | 'SERVICE_UNAVAILABLE';
 
 export type ErrorDetail = {
     code: ErrorCode;
@@ -43,10 +43,86 @@ export type UpdateAccountCapabilitiesRequest = {
     providerEnabled: boolean;
 };
 
+export type Category = {
+    id: string;
+    parentId: string | null;
+    slug: string;
+    name: string;
+};
+
+export type CategoriesResponse = {
+    categories: Array<Category>;
+};
+
+export type SpokenLanguage = {
+    code: string;
+    name: string;
+};
+
+export type LanguagesResponse = {
+    languages: Array<SpokenLanguage>;
+};
+
+export type Attribution = {
+    text: '© OpenStreetMap contributors';
+    url: 'https://www.openstreetmap.org/copyright';
+};
+
+export type Locality = {
+    id: string;
+    slug: string;
+    name: string;
+    parishName: string;
+    municipalityName: string;
+    districtName: string;
+    distanceMeters?: number;
+};
+
+export type LocalitiesResponse = {
+    localities: Array<Locality>;
+    attribution: Attribution;
+};
+
+export type ProviderType = 'individual' | 'professional' | 'business';
+
+export type ReplaceProviderProfileRequest = {
+    displayName: string;
+    providerType: ProviderType;
+    bio: string;
+    primaryLocalityId: string;
+    serviceLocalityIds: Array<string>;
+    maxTravelDistanceKm: number;
+    travelsToCustomer: boolean;
+    receivesCustomer: boolean;
+    remoteServices: boolean;
+    languageCodes: Array<string>;
+};
+
+export type ProviderProfileResponse = {
+    displayName: string;
+    providerType: ProviderType;
+    bio: string;
+    primaryLocalityId: string;
+    serviceLocalityIds: Array<string>;
+    maxTravelDistanceKm: number;
+    travelsToCustomer: boolean;
+    receivesCustomer: boolean;
+    remoteServices: boolean;
+    languageCodes: Array<string>;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type ProviderProfileEnvelope = {
+    profile: ProviderProfileResponse | null;
+};
+
 /**
  * Optional client-supplied correlation identifier.
  */
 export type RequestIdHeader = RequestId;
+
+export type LocaleQuery = 'pt-PT' | 'en' | 'es';
 
 export type GetHealthData = {
     body?: never;
@@ -152,6 +228,201 @@ export type UpdateAccountCapabilitiesResponses = {
 };
 
 export type UpdateAccountCapabilitiesResponse = UpdateAccountCapabilitiesResponses[keyof UpdateAccountCapabilitiesResponses];
+
+export type ListServiceCategoriesData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path?: never;
+    query: {
+        locale: 'pt-PT' | 'en' | 'es';
+    };
+    url: '/api/v1/catalog/categories';
+};
+
+export type ListServiceCategoriesErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListServiceCategoriesError = ListServiceCategoriesErrors[keyof ListServiceCategoriesErrors];
+
+export type ListServiceCategoriesResponses = {
+    /**
+     * Active localized service categories.
+     */
+    200: CategoriesResponse;
+};
+
+export type ListServiceCategoriesResponse = ListServiceCategoriesResponses[keyof ListServiceCategoriesResponses];
+
+export type ListSpokenLanguagesData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path?: never;
+    query: {
+        locale: 'pt-PT' | 'en' | 'es';
+    };
+    url: '/api/v1/reference/languages';
+};
+
+export type ListSpokenLanguagesErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListSpokenLanguagesError = ListSpokenLanguagesErrors[keyof ListSpokenLanguagesErrors];
+
+export type ListSpokenLanguagesResponses = {
+    /**
+     * Active localized spoken languages.
+     */
+    200: LanguagesResponse;
+};
+
+export type ListSpokenLanguagesResponse = ListSpokenLanguagesResponses[keyof ListSpokenLanguagesResponses];
+
+export type ListLocalitiesData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path?: never;
+    query: {
+        locale: 'pt-PT' | 'en' | 'es';
+        nearLocalityId?: string;
+        radiusKm?: number;
+    };
+    url: '/api/v1/reference/localities';
+};
+
+export type ListLocalitiesErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListLocalitiesError = ListLocalitiesErrors[keyof ListLocalitiesErrors];
+
+export type ListLocalitiesResponses = {
+    /**
+     * Active locality references with required attribution.
+     */
+    200: LocalitiesResponse;
+};
+
+export type ListLocalitiesResponse = ListLocalitiesResponses[keyof ListLocalitiesResponses];
+
+export type GetProviderProfileData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/provider-profile';
+};
+
+export type GetProviderProfileErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetProviderProfileError = GetProviderProfileErrors[keyof GetProviderProfileErrors];
+
+export type GetProviderProfileResponses = {
+    /**
+     * Nullable owner-only provider profile.
+     */
+    200: ProviderProfileEnvelope;
+};
+
+export type GetProviderProfileResponse = GetProviderProfileResponses[keyof GetProviderProfileResponses];
+
+export type ReplaceProviderProfileData = {
+    body: ReplaceProviderProfileRequest;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/provider-profile';
+};
+
+export type ReplaceProviderProfileErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ReplaceProviderProfileError = ReplaceProviderProfileErrors[keyof ReplaceProviderProfileErrors];
+
+export type ReplaceProviderProfileResponses = {
+    /**
+     * Canonical owner-only provider profile.
+     */
+    200: ProviderProfileEnvelope;
+};
+
+export type ReplaceProviderProfileResponse = ReplaceProviderProfileResponses[keyof ReplaceProviderProfileResponses];
 
 export type ReconcileInternalUserData = {
     body?: never;

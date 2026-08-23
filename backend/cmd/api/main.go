@@ -18,6 +18,9 @@ import (
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/accounts"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/health"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/httpapi"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/provideraccess"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/providers"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/reference"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/users"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -94,5 +97,9 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	healthService := health.NewService(version, time.Now)
 	userService := users.NewService(users.NewEntRepository(client))
 	accountService := accounts.NewService(userService, accounts.NewEntRepository(client))
-	return httpapi.NewRouter(healthService, config.verifier, userService, accountService), client, nil
+	referenceRepository := reference.NewSQLRepository(database)
+	referenceService := reference.NewService(referenceRepository)
+	providerAuthorizer := provideraccess.NewService(userService, accountService)
+	providerService := providers.NewService(providerAuthorizer, providers.NewEntRepository(client), referenceRepository)
+	return httpapi.NewRouter(healthService, config.verifier, userService, accountService, referenceService, providerService), client, nil
 }
