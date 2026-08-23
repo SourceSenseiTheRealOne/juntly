@@ -9,6 +9,45 @@ import (
 )
 
 var (
+	// AdministrativeAreasColumns holds the columns for the "administrative_areas" table.
+	AdministrativeAreasColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "source", Type: field.TypeString, Size: 40},
+		{Name: "source_version", Type: field.TypeString, Size: 20},
+		{Name: "external_code", Type: field.TypeString, Size: 32},
+		{Name: "kind", Type: field.TypeString, Size: 20},
+		{Name: "name", Type: field.TypeString, Size: 160},
+		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "parent_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// AdministrativeAreasTable holds the schema information for the "administrative_areas" table.
+	AdministrativeAreasTable = &schema.Table{
+		Name:       "administrative_areas",
+		Columns:    AdministrativeAreasColumns,
+		PrimaryKey: []*schema.Column{AdministrativeAreasColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "administrative_areas_administrative_areas_children",
+				Columns:    []*schema.Column{AdministrativeAreasColumns[9]},
+				RefColumns: []*schema.Column{AdministrativeAreasColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "administrativearea_source_external_code",
+				Unique:  true,
+				Columns: []*schema.Column{AdministrativeAreasColumns[1], AdministrativeAreasColumns[3]},
+			},
+			{
+				Name:    "administrativearea_parent_id_kind",
+				Unique:  false,
+				Columns: []*schema.Column{AdministrativeAreasColumns[9], AdministrativeAreasColumns[4]},
+			},
+		},
+	}
 	// InternalUsersColumns holds the columns for the "internal_users" table.
 	InternalUsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -21,6 +60,214 @@ var (
 		Name:       "internal_users",
 		Columns:    InternalUsersColumns,
 		PrimaryKey: []*schema.Column{InternalUsersColumns[0]},
+	}
+	// LocalitiesColumns holds the columns for the "localities" table.
+	LocalitiesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "slug", Type: field.TypeString, Unique: true, Size: 100},
+		{Name: "name", Type: field.TypeString, Size: 160},
+		{Name: "source", Type: field.TypeString, Size: 40},
+		{Name: "source_element_id", Type: field.TypeString, Unique: true, Size: 32},
+		{Name: "source_version", Type: field.TypeString, Size: 20},
+		{Name: "source_retrieved_at", Type: field.TypeTime},
+		{Name: "latitude", Type: field.TypeFloat64},
+		{Name: "longitude", Type: field.TypeFloat64},
+		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "parent_parish_id", Type: field.TypeUUID},
+	}
+	// LocalitiesTable holds the schema information for the "localities" table.
+	LocalitiesTable = &schema.Table{
+		Name:       "localities",
+		Columns:    LocalitiesColumns,
+		PrimaryKey: []*schema.Column{LocalitiesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "localities_administrative_areas_localities",
+				Columns:    []*schema.Column{LocalitiesColumns[12]},
+				RefColumns: []*schema.Column{AdministrativeAreasColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// ProviderProfilesColumns holds the columns for the "provider_profiles" table.
+	ProviderProfilesColumns = []*schema.Column{
+		{Name: "internal_user_id", Type: field.TypeUUID},
+		{Name: "display_name", Type: field.TypeString, Size: 100},
+		{Name: "provider_type", Type: field.TypeString, Size: 20},
+		{Name: "bio", Type: field.TypeString, Size: 1000},
+		{Name: "primary_locality_id", Type: field.TypeUUID},
+		{Name: "max_travel_distance_km", Type: field.TypeInt},
+		{Name: "travels_to_customer", Type: field.TypeBool, Default: false},
+		{Name: "receives_customer", Type: field.TypeBool, Default: false},
+		{Name: "remote_services", Type: field.TypeBool, Default: false},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ProviderProfilesTable holds the schema information for the "provider_profiles" table.
+	ProviderProfilesTable = &schema.Table{
+		Name:       "provider_profiles",
+		Columns:    ProviderProfilesColumns,
+		PrimaryKey: []*schema.Column{ProviderProfilesColumns[0]},
+	}
+	// ProviderServiceLocalitiesColumns holds the columns for the "provider_service_localities" table.
+	ProviderServiceLocalitiesColumns = []*schema.Column{
+		{Name: "internal_user_id", Type: field.TypeUUID},
+		{Name: "locality_id", Type: field.TypeUUID},
+	}
+	// ProviderServiceLocalitiesTable holds the schema information for the "provider_service_localities" table.
+	ProviderServiceLocalitiesTable = &schema.Table{
+		Name:       "provider_service_localities",
+		Columns:    ProviderServiceLocalitiesColumns,
+		PrimaryKey: []*schema.Column{ProviderServiceLocalitiesColumns[0], ProviderServiceLocalitiesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "provider_service_localities_provider_profiles_profile",
+				Columns:    []*schema.Column{ProviderServiceLocalitiesColumns[0]},
+				RefColumns: []*schema.Column{ProviderProfilesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "provider_service_localities_localities_locality",
+				Columns:    []*schema.Column{ProviderServiceLocalitiesColumns[1]},
+				RefColumns: []*schema.Column{LocalitiesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// ProviderSpokenLanguagesColumns holds the columns for the "provider_spoken_languages" table.
+	ProviderSpokenLanguagesColumns = []*schema.Column{
+		{Name: "internal_user_id", Type: field.TypeUUID},
+		{Name: "language_code", Type: field.TypeString, Size: 10},
+	}
+	// ProviderSpokenLanguagesTable holds the schema information for the "provider_spoken_languages" table.
+	ProviderSpokenLanguagesTable = &schema.Table{
+		Name:       "provider_spoken_languages",
+		Columns:    ProviderSpokenLanguagesColumns,
+		PrimaryKey: []*schema.Column{ProviderSpokenLanguagesColumns[0], ProviderSpokenLanguagesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "provider_spoken_languages_provider_profiles_profile",
+				Columns:    []*schema.Column{ProviderSpokenLanguagesColumns[0]},
+				RefColumns: []*schema.Column{ProviderProfilesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "provider_spoken_languages_spoken_languages_language",
+				Columns:    []*schema.Column{ProviderSpokenLanguagesColumns[1]},
+				RefColumns: []*schema.Column{SpokenLanguagesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// ServiceCategoriesColumns holds the columns for the "service_categories" table.
+	ServiceCategoriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "slug", Type: field.TypeString, Unique: true, Size: 80},
+		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "sort_order", Type: field.TypeInt},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "parent_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// ServiceCategoriesTable holds the schema information for the "service_categories" table.
+	ServiceCategoriesTable = &schema.Table{
+		Name:       "service_categories",
+		Columns:    ServiceCategoriesColumns,
+		PrimaryKey: []*schema.Column{ServiceCategoriesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "service_categories_service_categories_children",
+				Columns:    []*schema.Column{ServiceCategoriesColumns[6]},
+				RefColumns: []*schema.Column{ServiceCategoriesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "servicecategory_parent_id_sort_order",
+				Unique:  false,
+				Columns: []*schema.Column{ServiceCategoriesColumns[6], ServiceCategoriesColumns[3]},
+			},
+		},
+	}
+	// ServiceCategoryTranslationsColumns holds the columns for the "service_category_translations" table.
+	ServiceCategoryTranslationsColumns = []*schema.Column{
+		{Name: "name", Type: field.TypeString, Size: 120},
+		{Name: "description", Type: field.TypeString, Nullable: true, Size: 500},
+		{Name: "category_id", Type: field.TypeUUID},
+		{Name: "locale", Type: field.TypeString, Size: 10},
+	}
+	// ServiceCategoryTranslationsTable holds the schema information for the "service_category_translations" table.
+	ServiceCategoryTranslationsTable = &schema.Table{
+		Name:       "service_category_translations",
+		Columns:    ServiceCategoryTranslationsColumns,
+		PrimaryKey: []*schema.Column{ServiceCategoryTranslationsColumns[2], ServiceCategoryTranslationsColumns[3]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "service_category_translations_service_categories_category",
+				Columns:    []*schema.Column{ServiceCategoryTranslationsColumns[2]},
+				RefColumns: []*schema.Column{ServiceCategoriesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "service_category_translations_supported_locales_locale_record",
+				Columns:    []*schema.Column{ServiceCategoryTranslationsColumns[3]},
+				RefColumns: []*schema.Column{SupportedLocalesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// SpokenLanguagesColumns holds the columns for the "spoken_languages" table.
+	SpokenLanguagesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 10},
+		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "sort_order", Type: field.TypeInt},
+	}
+	// SpokenLanguagesTable holds the schema information for the "spoken_languages" table.
+	SpokenLanguagesTable = &schema.Table{
+		Name:       "spoken_languages",
+		Columns:    SpokenLanguagesColumns,
+		PrimaryKey: []*schema.Column{SpokenLanguagesColumns[0]},
+	}
+	// SpokenLanguageTranslationsColumns holds the columns for the "spoken_language_translations" table.
+	SpokenLanguageTranslationsColumns = []*schema.Column{
+		{Name: "name", Type: field.TypeString, Size: 80},
+		{Name: "language_code", Type: field.TypeString, Size: 10},
+		{Name: "locale", Type: field.TypeString, Size: 10},
+	}
+	// SpokenLanguageTranslationsTable holds the schema information for the "spoken_language_translations" table.
+	SpokenLanguageTranslationsTable = &schema.Table{
+		Name:       "spoken_language_translations",
+		Columns:    SpokenLanguageTranslationsColumns,
+		PrimaryKey: []*schema.Column{SpokenLanguageTranslationsColumns[1], SpokenLanguageTranslationsColumns[2]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "spoken_language_translations_spoken_languages_language",
+				Columns:    []*schema.Column{SpokenLanguageTranslationsColumns[1]},
+				RefColumns: []*schema.Column{SpokenLanguagesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "spoken_language_translations_supported_locales_locale_record",
+				Columns:    []*schema.Column{SpokenLanguageTranslationsColumns[2]},
+				RefColumns: []*schema.Column{SupportedLocalesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// SupportedLocalesColumns holds the columns for the "supported_locales" table.
+	SupportedLocalesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 10},
+		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "sort_order", Type: field.TypeInt},
+	}
+	// SupportedLocalesTable holds the schema information for the "supported_locales" table.
+	SupportedLocalesTable = &schema.Table{
+		Name:       "supported_locales",
+		Columns:    SupportedLocalesColumns,
+		PrimaryKey: []*schema.Column{SupportedLocalesColumns[0]},
 	}
 	// UserAccountsColumns holds the columns for the "user_accounts" table.
 	UserAccountsColumns = []*schema.Column{
@@ -38,14 +285,65 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AdministrativeAreasTable,
 		InternalUsersTable,
+		LocalitiesTable,
+		ProviderProfilesTable,
+		ProviderServiceLocalitiesTable,
+		ProviderSpokenLanguagesTable,
+		ServiceCategoriesTable,
+		ServiceCategoryTranslationsTable,
+		SpokenLanguagesTable,
+		SpokenLanguageTranslationsTable,
+		SupportedLocalesTable,
 		UserAccountsTable,
 	}
 )
 
 func init() {
+	AdministrativeAreasTable.ForeignKeys[0].RefTable = AdministrativeAreasTable
+	AdministrativeAreasTable.Annotation = &entsql.Annotation{
+		Table: "administrative_areas",
+	}
 	InternalUsersTable.Annotation = &entsql.Annotation{
 		Table: "internal_users",
+	}
+	LocalitiesTable.ForeignKeys[0].RefTable = AdministrativeAreasTable
+	LocalitiesTable.Annotation = &entsql.Annotation{
+		Table: "localities",
+	}
+	ProviderProfilesTable.Annotation = &entsql.Annotation{
+		Table: "provider_profiles",
+	}
+	ProviderServiceLocalitiesTable.ForeignKeys[0].RefTable = ProviderProfilesTable
+	ProviderServiceLocalitiesTable.ForeignKeys[1].RefTable = LocalitiesTable
+	ProviderServiceLocalitiesTable.Annotation = &entsql.Annotation{
+		Table: "provider_service_localities",
+	}
+	ProviderSpokenLanguagesTable.ForeignKeys[0].RefTable = ProviderProfilesTable
+	ProviderSpokenLanguagesTable.ForeignKeys[1].RefTable = SpokenLanguagesTable
+	ProviderSpokenLanguagesTable.Annotation = &entsql.Annotation{
+		Table: "provider_spoken_languages",
+	}
+	ServiceCategoriesTable.ForeignKeys[0].RefTable = ServiceCategoriesTable
+	ServiceCategoriesTable.Annotation = &entsql.Annotation{
+		Table: "service_categories",
+	}
+	ServiceCategoryTranslationsTable.ForeignKeys[0].RefTable = ServiceCategoriesTable
+	ServiceCategoryTranslationsTable.ForeignKeys[1].RefTable = SupportedLocalesTable
+	ServiceCategoryTranslationsTable.Annotation = &entsql.Annotation{
+		Table: "service_category_translations",
+	}
+	SpokenLanguagesTable.Annotation = &entsql.Annotation{
+		Table: "spoken_languages",
+	}
+	SpokenLanguageTranslationsTable.ForeignKeys[0].RefTable = SpokenLanguagesTable
+	SpokenLanguageTranslationsTable.ForeignKeys[1].RefTable = SupportedLocalesTable
+	SpokenLanguageTranslationsTable.Annotation = &entsql.Annotation{
+		Table: "spoken_language_translations",
+	}
+	SupportedLocalesTable.Annotation = &entsql.Annotation{
+		Table: "supported_locales",
 	}
 	UserAccountsTable.Annotation = &entsql.Annotation{
 		Table: "user_accounts",

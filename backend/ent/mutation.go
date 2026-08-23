@@ -11,8 +11,18 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/administrativearea"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/internaluser"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/locality"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/predicate"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerprofile"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerservicelocality"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerspokenlanguage"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/servicecategory"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/servicecategorytranslation"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/spokenlanguage"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/spokenlanguagetranslation"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/supportedlocale"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/useraccount"
 	"github.com/google/uuid"
 )
@@ -26,9 +36,1027 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeInternalUser = "InternalUser"
-	TypeUserAccount  = "UserAccount"
+	TypeAdministrativeArea         = "AdministrativeArea"
+	TypeInternalUser               = "InternalUser"
+	TypeLocality                   = "Locality"
+	TypeProviderProfile            = "ProviderProfile"
+	TypeProviderServiceLocality    = "ProviderServiceLocality"
+	TypeProviderSpokenLanguage     = "ProviderSpokenLanguage"
+	TypeServiceCategory            = "ServiceCategory"
+	TypeServiceCategoryTranslation = "ServiceCategoryTranslation"
+	TypeSpokenLanguage             = "SpokenLanguage"
+	TypeSpokenLanguageTranslation  = "SpokenLanguageTranslation"
+	TypeSupportedLocale            = "SupportedLocale"
+	TypeUserAccount                = "UserAccount"
 )
+
+// AdministrativeAreaMutation represents an operation that mutates the AdministrativeArea nodes in the graph.
+type AdministrativeAreaMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *uuid.UUID
+	source            *string
+	source_version    *string
+	external_code     *string
+	kind              *string
+	name              *string
+	active            *bool
+	created_at        *time.Time
+	updated_at        *time.Time
+	clearedFields     map[string]struct{}
+	children          map[uuid.UUID]struct{}
+	removedchildren   map[uuid.UUID]struct{}
+	clearedchildren   bool
+	parent            *uuid.UUID
+	clearedparent     bool
+	localities        map[uuid.UUID]struct{}
+	removedlocalities map[uuid.UUID]struct{}
+	clearedlocalities bool
+	done              bool
+	oldValue          func(context.Context) (*AdministrativeArea, error)
+	predicates        []predicate.AdministrativeArea
+}
+
+var _ ent.Mutation = (*AdministrativeAreaMutation)(nil)
+
+// administrativeareaOption allows management of the mutation configuration using functional options.
+type administrativeareaOption func(*AdministrativeAreaMutation)
+
+// newAdministrativeAreaMutation creates new mutation for the AdministrativeArea entity.
+func newAdministrativeAreaMutation(c config, op Op, opts ...administrativeareaOption) *AdministrativeAreaMutation {
+	m := &AdministrativeAreaMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAdministrativeArea,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAdministrativeAreaID sets the ID field of the mutation.
+func withAdministrativeAreaID(id uuid.UUID) administrativeareaOption {
+	return func(m *AdministrativeAreaMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *AdministrativeArea
+		)
+		m.oldValue = func(ctx context.Context) (*AdministrativeArea, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().AdministrativeArea.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAdministrativeArea sets the old AdministrativeArea of the mutation.
+func withAdministrativeArea(node *AdministrativeArea) administrativeareaOption {
+	return func(m *AdministrativeAreaMutation) {
+		m.oldValue = func(context.Context) (*AdministrativeArea, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AdministrativeAreaMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AdministrativeAreaMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of AdministrativeArea entities.
+func (m *AdministrativeAreaMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AdministrativeAreaMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AdministrativeAreaMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().AdministrativeArea.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetSource sets the "source" field.
+func (m *AdministrativeAreaMutation) SetSource(s string) {
+	m.source = &s
+}
+
+// Source returns the value of the "source" field in the mutation.
+func (m *AdministrativeAreaMutation) Source() (r string, exists bool) {
+	v := m.source
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSource returns the old "source" field's value of the AdministrativeArea entity.
+// If the AdministrativeArea object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AdministrativeAreaMutation) OldSource(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSource is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSource requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSource: %w", err)
+	}
+	return oldValue.Source, nil
+}
+
+// ResetSource resets all changes to the "source" field.
+func (m *AdministrativeAreaMutation) ResetSource() {
+	m.source = nil
+}
+
+// SetSourceVersion sets the "source_version" field.
+func (m *AdministrativeAreaMutation) SetSourceVersion(s string) {
+	m.source_version = &s
+}
+
+// SourceVersion returns the value of the "source_version" field in the mutation.
+func (m *AdministrativeAreaMutation) SourceVersion() (r string, exists bool) {
+	v := m.source_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSourceVersion returns the old "source_version" field's value of the AdministrativeArea entity.
+// If the AdministrativeArea object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AdministrativeAreaMutation) OldSourceVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSourceVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSourceVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSourceVersion: %w", err)
+	}
+	return oldValue.SourceVersion, nil
+}
+
+// ResetSourceVersion resets all changes to the "source_version" field.
+func (m *AdministrativeAreaMutation) ResetSourceVersion() {
+	m.source_version = nil
+}
+
+// SetExternalCode sets the "external_code" field.
+func (m *AdministrativeAreaMutation) SetExternalCode(s string) {
+	m.external_code = &s
+}
+
+// ExternalCode returns the value of the "external_code" field in the mutation.
+func (m *AdministrativeAreaMutation) ExternalCode() (r string, exists bool) {
+	v := m.external_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExternalCode returns the old "external_code" field's value of the AdministrativeArea entity.
+// If the AdministrativeArea object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AdministrativeAreaMutation) OldExternalCode(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExternalCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExternalCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExternalCode: %w", err)
+	}
+	return oldValue.ExternalCode, nil
+}
+
+// ResetExternalCode resets all changes to the "external_code" field.
+func (m *AdministrativeAreaMutation) ResetExternalCode() {
+	m.external_code = nil
+}
+
+// SetKind sets the "kind" field.
+func (m *AdministrativeAreaMutation) SetKind(s string) {
+	m.kind = &s
+}
+
+// Kind returns the value of the "kind" field in the mutation.
+func (m *AdministrativeAreaMutation) Kind() (r string, exists bool) {
+	v := m.kind
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKind returns the old "kind" field's value of the AdministrativeArea entity.
+// If the AdministrativeArea object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AdministrativeAreaMutation) OldKind(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKind is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKind requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKind: %w", err)
+	}
+	return oldValue.Kind, nil
+}
+
+// ResetKind resets all changes to the "kind" field.
+func (m *AdministrativeAreaMutation) ResetKind() {
+	m.kind = nil
+}
+
+// SetName sets the "name" field.
+func (m *AdministrativeAreaMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *AdministrativeAreaMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the AdministrativeArea entity.
+// If the AdministrativeArea object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AdministrativeAreaMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *AdministrativeAreaMutation) ResetName() {
+	m.name = nil
+}
+
+// SetParentID sets the "parent_id" field.
+func (m *AdministrativeAreaMutation) SetParentID(u uuid.UUID) {
+	m.parent = &u
+}
+
+// ParentID returns the value of the "parent_id" field in the mutation.
+func (m *AdministrativeAreaMutation) ParentID() (r uuid.UUID, exists bool) {
+	v := m.parent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentID returns the old "parent_id" field's value of the AdministrativeArea entity.
+// If the AdministrativeArea object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AdministrativeAreaMutation) OldParentID(ctx context.Context) (v *uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentID: %w", err)
+	}
+	return oldValue.ParentID, nil
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (m *AdministrativeAreaMutation) ClearParentID() {
+	m.parent = nil
+	m.clearedFields[administrativearea.FieldParentID] = struct{}{}
+}
+
+// ParentIDCleared returns if the "parent_id" field was cleared in this mutation.
+func (m *AdministrativeAreaMutation) ParentIDCleared() bool {
+	_, ok := m.clearedFields[administrativearea.FieldParentID]
+	return ok
+}
+
+// ResetParentID resets all changes to the "parent_id" field.
+func (m *AdministrativeAreaMutation) ResetParentID() {
+	m.parent = nil
+	delete(m.clearedFields, administrativearea.FieldParentID)
+}
+
+// SetActive sets the "active" field.
+func (m *AdministrativeAreaMutation) SetActive(b bool) {
+	m.active = &b
+}
+
+// Active returns the value of the "active" field in the mutation.
+func (m *AdministrativeAreaMutation) Active() (r bool, exists bool) {
+	v := m.active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActive returns the old "active" field's value of the AdministrativeArea entity.
+// If the AdministrativeArea object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AdministrativeAreaMutation) OldActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActive: %w", err)
+	}
+	return oldValue.Active, nil
+}
+
+// ResetActive resets all changes to the "active" field.
+func (m *AdministrativeAreaMutation) ResetActive() {
+	m.active = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *AdministrativeAreaMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *AdministrativeAreaMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the AdministrativeArea entity.
+// If the AdministrativeArea object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AdministrativeAreaMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *AdministrativeAreaMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *AdministrativeAreaMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *AdministrativeAreaMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the AdministrativeArea entity.
+// If the AdministrativeArea object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AdministrativeAreaMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *AdministrativeAreaMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// AddChildIDs adds the "children" edge to the AdministrativeArea entity by ids.
+func (m *AdministrativeAreaMutation) AddChildIDs(ids ...uuid.UUID) {
+	if m.children == nil {
+		m.children = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.children[ids[i]] = struct{}{}
+	}
+}
+
+// ClearChildren clears the "children" edge to the AdministrativeArea entity.
+func (m *AdministrativeAreaMutation) ClearChildren() {
+	m.clearedchildren = true
+}
+
+// ChildrenCleared reports if the "children" edge to the AdministrativeArea entity was cleared.
+func (m *AdministrativeAreaMutation) ChildrenCleared() bool {
+	return m.clearedchildren
+}
+
+// RemoveChildIDs removes the "children" edge to the AdministrativeArea entity by IDs.
+func (m *AdministrativeAreaMutation) RemoveChildIDs(ids ...uuid.UUID) {
+	if m.removedchildren == nil {
+		m.removedchildren = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.children, ids[i])
+		m.removedchildren[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedChildren returns the removed IDs of the "children" edge to the AdministrativeArea entity.
+func (m *AdministrativeAreaMutation) RemovedChildrenIDs() (ids []uuid.UUID) {
+	for id := range m.removedchildren {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ChildrenIDs returns the "children" edge IDs in the mutation.
+func (m *AdministrativeAreaMutation) ChildrenIDs() (ids []uuid.UUID) {
+	for id := range m.children {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetChildren resets all changes to the "children" edge.
+func (m *AdministrativeAreaMutation) ResetChildren() {
+	m.children = nil
+	m.clearedchildren = false
+	m.removedchildren = nil
+}
+
+// ClearParent clears the "parent" edge to the AdministrativeArea entity.
+func (m *AdministrativeAreaMutation) ClearParent() {
+	m.clearedparent = true
+	m.clearedFields[administrativearea.FieldParentID] = struct{}{}
+}
+
+// ParentCleared reports if the "parent" edge to the AdministrativeArea entity was cleared.
+func (m *AdministrativeAreaMutation) ParentCleared() bool {
+	return m.ParentIDCleared() || m.clearedparent
+}
+
+// ParentIDs returns the "parent" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ParentID instead. It exists only for internal usage by the builders.
+func (m *AdministrativeAreaMutation) ParentIDs() (ids []uuid.UUID) {
+	if id := m.parent; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetParent resets all changes to the "parent" edge.
+func (m *AdministrativeAreaMutation) ResetParent() {
+	m.parent = nil
+	m.clearedparent = false
+}
+
+// AddLocalityIDs adds the "localities" edge to the Locality entity by ids.
+func (m *AdministrativeAreaMutation) AddLocalityIDs(ids ...uuid.UUID) {
+	if m.localities == nil {
+		m.localities = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.localities[ids[i]] = struct{}{}
+	}
+}
+
+// ClearLocalities clears the "localities" edge to the Locality entity.
+func (m *AdministrativeAreaMutation) ClearLocalities() {
+	m.clearedlocalities = true
+}
+
+// LocalitiesCleared reports if the "localities" edge to the Locality entity was cleared.
+func (m *AdministrativeAreaMutation) LocalitiesCleared() bool {
+	return m.clearedlocalities
+}
+
+// RemoveLocalityIDs removes the "localities" edge to the Locality entity by IDs.
+func (m *AdministrativeAreaMutation) RemoveLocalityIDs(ids ...uuid.UUID) {
+	if m.removedlocalities == nil {
+		m.removedlocalities = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.localities, ids[i])
+		m.removedlocalities[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedLocalities returns the removed IDs of the "localities" edge to the Locality entity.
+func (m *AdministrativeAreaMutation) RemovedLocalitiesIDs() (ids []uuid.UUID) {
+	for id := range m.removedlocalities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// LocalitiesIDs returns the "localities" edge IDs in the mutation.
+func (m *AdministrativeAreaMutation) LocalitiesIDs() (ids []uuid.UUID) {
+	for id := range m.localities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetLocalities resets all changes to the "localities" edge.
+func (m *AdministrativeAreaMutation) ResetLocalities() {
+	m.localities = nil
+	m.clearedlocalities = false
+	m.removedlocalities = nil
+}
+
+// Where appends a list predicates to the AdministrativeAreaMutation builder.
+func (m *AdministrativeAreaMutation) Where(ps ...predicate.AdministrativeArea) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the AdministrativeAreaMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *AdministrativeAreaMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.AdministrativeArea, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *AdministrativeAreaMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *AdministrativeAreaMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (AdministrativeArea).
+func (m *AdministrativeAreaMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AdministrativeAreaMutation) Fields() []string {
+	fields := make([]string, 0, 9)
+	if m.source != nil {
+		fields = append(fields, administrativearea.FieldSource)
+	}
+	if m.source_version != nil {
+		fields = append(fields, administrativearea.FieldSourceVersion)
+	}
+	if m.external_code != nil {
+		fields = append(fields, administrativearea.FieldExternalCode)
+	}
+	if m.kind != nil {
+		fields = append(fields, administrativearea.FieldKind)
+	}
+	if m.name != nil {
+		fields = append(fields, administrativearea.FieldName)
+	}
+	if m.parent != nil {
+		fields = append(fields, administrativearea.FieldParentID)
+	}
+	if m.active != nil {
+		fields = append(fields, administrativearea.FieldActive)
+	}
+	if m.created_at != nil {
+		fields = append(fields, administrativearea.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, administrativearea.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AdministrativeAreaMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case administrativearea.FieldSource:
+		return m.Source()
+	case administrativearea.FieldSourceVersion:
+		return m.SourceVersion()
+	case administrativearea.FieldExternalCode:
+		return m.ExternalCode()
+	case administrativearea.FieldKind:
+		return m.Kind()
+	case administrativearea.FieldName:
+		return m.Name()
+	case administrativearea.FieldParentID:
+		return m.ParentID()
+	case administrativearea.FieldActive:
+		return m.Active()
+	case administrativearea.FieldCreatedAt:
+		return m.CreatedAt()
+	case administrativearea.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AdministrativeAreaMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case administrativearea.FieldSource:
+		return m.OldSource(ctx)
+	case administrativearea.FieldSourceVersion:
+		return m.OldSourceVersion(ctx)
+	case administrativearea.FieldExternalCode:
+		return m.OldExternalCode(ctx)
+	case administrativearea.FieldKind:
+		return m.OldKind(ctx)
+	case administrativearea.FieldName:
+		return m.OldName(ctx)
+	case administrativearea.FieldParentID:
+		return m.OldParentID(ctx)
+	case administrativearea.FieldActive:
+		return m.OldActive(ctx)
+	case administrativearea.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case administrativearea.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown AdministrativeArea field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AdministrativeAreaMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case administrativearea.FieldSource:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSource(v)
+		return nil
+	case administrativearea.FieldSourceVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSourceVersion(v)
+		return nil
+	case administrativearea.FieldExternalCode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExternalCode(v)
+		return nil
+	case administrativearea.FieldKind:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKind(v)
+		return nil
+	case administrativearea.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case administrativearea.FieldParentID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentID(v)
+		return nil
+	case administrativearea.FieldActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActive(v)
+		return nil
+	case administrativearea.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case administrativearea.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AdministrativeArea field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AdministrativeAreaMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AdministrativeAreaMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AdministrativeAreaMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown AdministrativeArea numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AdministrativeAreaMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(administrativearea.FieldParentID) {
+		fields = append(fields, administrativearea.FieldParentID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AdministrativeAreaMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AdministrativeAreaMutation) ClearField(name string) error {
+	switch name {
+	case administrativearea.FieldParentID:
+		m.ClearParentID()
+		return nil
+	}
+	return fmt.Errorf("unknown AdministrativeArea nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AdministrativeAreaMutation) ResetField(name string) error {
+	switch name {
+	case administrativearea.FieldSource:
+		m.ResetSource()
+		return nil
+	case administrativearea.FieldSourceVersion:
+		m.ResetSourceVersion()
+		return nil
+	case administrativearea.FieldExternalCode:
+		m.ResetExternalCode()
+		return nil
+	case administrativearea.FieldKind:
+		m.ResetKind()
+		return nil
+	case administrativearea.FieldName:
+		m.ResetName()
+		return nil
+	case administrativearea.FieldParentID:
+		m.ResetParentID()
+		return nil
+	case administrativearea.FieldActive:
+		m.ResetActive()
+		return nil
+	case administrativearea.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case administrativearea.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown AdministrativeArea field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AdministrativeAreaMutation) AddedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.children != nil {
+		edges = append(edges, administrativearea.EdgeChildren)
+	}
+	if m.parent != nil {
+		edges = append(edges, administrativearea.EdgeParent)
+	}
+	if m.localities != nil {
+		edges = append(edges, administrativearea.EdgeLocalities)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AdministrativeAreaMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case administrativearea.EdgeChildren:
+		ids := make([]ent.Value, 0, len(m.children))
+		for id := range m.children {
+			ids = append(ids, id)
+		}
+		return ids
+	case administrativearea.EdgeParent:
+		if id := m.parent; id != nil {
+			return []ent.Value{*id}
+		}
+	case administrativearea.EdgeLocalities:
+		ids := make([]ent.Value, 0, len(m.localities))
+		for id := range m.localities {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AdministrativeAreaMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.removedchildren != nil {
+		edges = append(edges, administrativearea.EdgeChildren)
+	}
+	if m.removedlocalities != nil {
+		edges = append(edges, administrativearea.EdgeLocalities)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AdministrativeAreaMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case administrativearea.EdgeChildren:
+		ids := make([]ent.Value, 0, len(m.removedchildren))
+		for id := range m.removedchildren {
+			ids = append(ids, id)
+		}
+		return ids
+	case administrativearea.EdgeLocalities:
+		ids := make([]ent.Value, 0, len(m.removedlocalities))
+		for id := range m.removedlocalities {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AdministrativeAreaMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.clearedchildren {
+		edges = append(edges, administrativearea.EdgeChildren)
+	}
+	if m.clearedparent {
+		edges = append(edges, administrativearea.EdgeParent)
+	}
+	if m.clearedlocalities {
+		edges = append(edges, administrativearea.EdgeLocalities)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AdministrativeAreaMutation) EdgeCleared(name string) bool {
+	switch name {
+	case administrativearea.EdgeChildren:
+		return m.clearedchildren
+	case administrativearea.EdgeParent:
+		return m.clearedparent
+	case administrativearea.EdgeLocalities:
+		return m.clearedlocalities
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AdministrativeAreaMutation) ClearEdge(name string) error {
+	switch name {
+	case administrativearea.EdgeParent:
+		m.ClearParent()
+		return nil
+	}
+	return fmt.Errorf("unknown AdministrativeArea unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AdministrativeAreaMutation) ResetEdge(name string) error {
+	switch name {
+	case administrativearea.EdgeChildren:
+		m.ResetChildren()
+		return nil
+	case administrativearea.EdgeParent:
+		m.ResetParent()
+		return nil
+	case administrativearea.EdgeLocalities:
+		m.ResetLocalities()
+		return nil
+	}
+	return fmt.Errorf("unknown AdministrativeArea edge %s", name)
+}
 
 // InternalUserMutation represents an operation that mutates the InternalUser nodes in the graph.
 type InternalUserMutation struct {
@@ -468,6 +1496,5969 @@ func (m *InternalUserMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *InternalUserMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown InternalUser edge %s", name)
+}
+
+// LocalityMutation represents an operation that mutates the Locality nodes in the graph.
+type LocalityMutation struct {
+	config
+	op                       Op
+	typ                      string
+	id                       *uuid.UUID
+	slug                     *string
+	name                     *string
+	source                   *string
+	source_element_id        *string
+	source_version           *string
+	source_retrieved_at      *time.Time
+	latitude                 *float64
+	addlatitude              *float64
+	longitude                *float64
+	addlongitude             *float64
+	active                   *bool
+	created_at               *time.Time
+	updated_at               *time.Time
+	clearedFields            map[string]struct{}
+	parent_parish            *uuid.UUID
+	clearedparent_parish     bool
+	provider_profiles        map[uuid.UUID]struct{}
+	removedprovider_profiles map[uuid.UUID]struct{}
+	clearedprovider_profiles bool
+	done                     bool
+	oldValue                 func(context.Context) (*Locality, error)
+	predicates               []predicate.Locality
+}
+
+var _ ent.Mutation = (*LocalityMutation)(nil)
+
+// localityOption allows management of the mutation configuration using functional options.
+type localityOption func(*LocalityMutation)
+
+// newLocalityMutation creates new mutation for the Locality entity.
+func newLocalityMutation(c config, op Op, opts ...localityOption) *LocalityMutation {
+	m := &LocalityMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeLocality,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withLocalityID sets the ID field of the mutation.
+func withLocalityID(id uuid.UUID) localityOption {
+	return func(m *LocalityMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Locality
+		)
+		m.oldValue = func(ctx context.Context) (*Locality, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Locality.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withLocality sets the old Locality of the mutation.
+func withLocality(node *Locality) localityOption {
+	return func(m *LocalityMutation) {
+		m.oldValue = func(context.Context) (*Locality, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m LocalityMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m LocalityMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Locality entities.
+func (m *LocalityMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *LocalityMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *LocalityMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Locality.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetSlug sets the "slug" field.
+func (m *LocalityMutation) SetSlug(s string) {
+	m.slug = &s
+}
+
+// Slug returns the value of the "slug" field in the mutation.
+func (m *LocalityMutation) Slug() (r string, exists bool) {
+	v := m.slug
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSlug returns the old "slug" field's value of the Locality entity.
+// If the Locality object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LocalityMutation) OldSlug(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSlug is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSlug requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSlug: %w", err)
+	}
+	return oldValue.Slug, nil
+}
+
+// ResetSlug resets all changes to the "slug" field.
+func (m *LocalityMutation) ResetSlug() {
+	m.slug = nil
+}
+
+// SetName sets the "name" field.
+func (m *LocalityMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *LocalityMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Locality entity.
+// If the Locality object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LocalityMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *LocalityMutation) ResetName() {
+	m.name = nil
+}
+
+// SetParentParishID sets the "parent_parish_id" field.
+func (m *LocalityMutation) SetParentParishID(u uuid.UUID) {
+	m.parent_parish = &u
+}
+
+// ParentParishID returns the value of the "parent_parish_id" field in the mutation.
+func (m *LocalityMutation) ParentParishID() (r uuid.UUID, exists bool) {
+	v := m.parent_parish
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentParishID returns the old "parent_parish_id" field's value of the Locality entity.
+// If the Locality object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LocalityMutation) OldParentParishID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentParishID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentParishID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentParishID: %w", err)
+	}
+	return oldValue.ParentParishID, nil
+}
+
+// ResetParentParishID resets all changes to the "parent_parish_id" field.
+func (m *LocalityMutation) ResetParentParishID() {
+	m.parent_parish = nil
+}
+
+// SetSource sets the "source" field.
+func (m *LocalityMutation) SetSource(s string) {
+	m.source = &s
+}
+
+// Source returns the value of the "source" field in the mutation.
+func (m *LocalityMutation) Source() (r string, exists bool) {
+	v := m.source
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSource returns the old "source" field's value of the Locality entity.
+// If the Locality object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LocalityMutation) OldSource(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSource is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSource requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSource: %w", err)
+	}
+	return oldValue.Source, nil
+}
+
+// ResetSource resets all changes to the "source" field.
+func (m *LocalityMutation) ResetSource() {
+	m.source = nil
+}
+
+// SetSourceElementID sets the "source_element_id" field.
+func (m *LocalityMutation) SetSourceElementID(s string) {
+	m.source_element_id = &s
+}
+
+// SourceElementID returns the value of the "source_element_id" field in the mutation.
+func (m *LocalityMutation) SourceElementID() (r string, exists bool) {
+	v := m.source_element_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSourceElementID returns the old "source_element_id" field's value of the Locality entity.
+// If the Locality object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LocalityMutation) OldSourceElementID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSourceElementID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSourceElementID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSourceElementID: %w", err)
+	}
+	return oldValue.SourceElementID, nil
+}
+
+// ResetSourceElementID resets all changes to the "source_element_id" field.
+func (m *LocalityMutation) ResetSourceElementID() {
+	m.source_element_id = nil
+}
+
+// SetSourceVersion sets the "source_version" field.
+func (m *LocalityMutation) SetSourceVersion(s string) {
+	m.source_version = &s
+}
+
+// SourceVersion returns the value of the "source_version" field in the mutation.
+func (m *LocalityMutation) SourceVersion() (r string, exists bool) {
+	v := m.source_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSourceVersion returns the old "source_version" field's value of the Locality entity.
+// If the Locality object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LocalityMutation) OldSourceVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSourceVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSourceVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSourceVersion: %w", err)
+	}
+	return oldValue.SourceVersion, nil
+}
+
+// ResetSourceVersion resets all changes to the "source_version" field.
+func (m *LocalityMutation) ResetSourceVersion() {
+	m.source_version = nil
+}
+
+// SetSourceRetrievedAt sets the "source_retrieved_at" field.
+func (m *LocalityMutation) SetSourceRetrievedAt(t time.Time) {
+	m.source_retrieved_at = &t
+}
+
+// SourceRetrievedAt returns the value of the "source_retrieved_at" field in the mutation.
+func (m *LocalityMutation) SourceRetrievedAt() (r time.Time, exists bool) {
+	v := m.source_retrieved_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSourceRetrievedAt returns the old "source_retrieved_at" field's value of the Locality entity.
+// If the Locality object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LocalityMutation) OldSourceRetrievedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSourceRetrievedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSourceRetrievedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSourceRetrievedAt: %w", err)
+	}
+	return oldValue.SourceRetrievedAt, nil
+}
+
+// ResetSourceRetrievedAt resets all changes to the "source_retrieved_at" field.
+func (m *LocalityMutation) ResetSourceRetrievedAt() {
+	m.source_retrieved_at = nil
+}
+
+// SetLatitude sets the "latitude" field.
+func (m *LocalityMutation) SetLatitude(f float64) {
+	m.latitude = &f
+	m.addlatitude = nil
+}
+
+// Latitude returns the value of the "latitude" field in the mutation.
+func (m *LocalityMutation) Latitude() (r float64, exists bool) {
+	v := m.latitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLatitude returns the old "latitude" field's value of the Locality entity.
+// If the Locality object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LocalityMutation) OldLatitude(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLatitude is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLatitude requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLatitude: %w", err)
+	}
+	return oldValue.Latitude, nil
+}
+
+// AddLatitude adds f to the "latitude" field.
+func (m *LocalityMutation) AddLatitude(f float64) {
+	if m.addlatitude != nil {
+		*m.addlatitude += f
+	} else {
+		m.addlatitude = &f
+	}
+}
+
+// AddedLatitude returns the value that was added to the "latitude" field in this mutation.
+func (m *LocalityMutation) AddedLatitude() (r float64, exists bool) {
+	v := m.addlatitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLatitude resets all changes to the "latitude" field.
+func (m *LocalityMutation) ResetLatitude() {
+	m.latitude = nil
+	m.addlatitude = nil
+}
+
+// SetLongitude sets the "longitude" field.
+func (m *LocalityMutation) SetLongitude(f float64) {
+	m.longitude = &f
+	m.addlongitude = nil
+}
+
+// Longitude returns the value of the "longitude" field in the mutation.
+func (m *LocalityMutation) Longitude() (r float64, exists bool) {
+	v := m.longitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLongitude returns the old "longitude" field's value of the Locality entity.
+// If the Locality object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LocalityMutation) OldLongitude(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLongitude is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLongitude requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLongitude: %w", err)
+	}
+	return oldValue.Longitude, nil
+}
+
+// AddLongitude adds f to the "longitude" field.
+func (m *LocalityMutation) AddLongitude(f float64) {
+	if m.addlongitude != nil {
+		*m.addlongitude += f
+	} else {
+		m.addlongitude = &f
+	}
+}
+
+// AddedLongitude returns the value that was added to the "longitude" field in this mutation.
+func (m *LocalityMutation) AddedLongitude() (r float64, exists bool) {
+	v := m.addlongitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLongitude resets all changes to the "longitude" field.
+func (m *LocalityMutation) ResetLongitude() {
+	m.longitude = nil
+	m.addlongitude = nil
+}
+
+// SetActive sets the "active" field.
+func (m *LocalityMutation) SetActive(b bool) {
+	m.active = &b
+}
+
+// Active returns the value of the "active" field in the mutation.
+func (m *LocalityMutation) Active() (r bool, exists bool) {
+	v := m.active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActive returns the old "active" field's value of the Locality entity.
+// If the Locality object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LocalityMutation) OldActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActive: %w", err)
+	}
+	return oldValue.Active, nil
+}
+
+// ResetActive resets all changes to the "active" field.
+func (m *LocalityMutation) ResetActive() {
+	m.active = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *LocalityMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *LocalityMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Locality entity.
+// If the Locality object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LocalityMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *LocalityMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *LocalityMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *LocalityMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Locality entity.
+// If the Locality object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LocalityMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *LocalityMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearParentParish clears the "parent_parish" edge to the AdministrativeArea entity.
+func (m *LocalityMutation) ClearParentParish() {
+	m.clearedparent_parish = true
+	m.clearedFields[locality.FieldParentParishID] = struct{}{}
+}
+
+// ParentParishCleared reports if the "parent_parish" edge to the AdministrativeArea entity was cleared.
+func (m *LocalityMutation) ParentParishCleared() bool {
+	return m.clearedparent_parish
+}
+
+// ParentParishIDs returns the "parent_parish" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ParentParishID instead. It exists only for internal usage by the builders.
+func (m *LocalityMutation) ParentParishIDs() (ids []uuid.UUID) {
+	if id := m.parent_parish; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetParentParish resets all changes to the "parent_parish" edge.
+func (m *LocalityMutation) ResetParentParish() {
+	m.parent_parish = nil
+	m.clearedparent_parish = false
+}
+
+// AddProviderProfileIDs adds the "provider_profiles" edge to the ProviderProfile entity by ids.
+func (m *LocalityMutation) AddProviderProfileIDs(ids ...uuid.UUID) {
+	if m.provider_profiles == nil {
+		m.provider_profiles = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.provider_profiles[ids[i]] = struct{}{}
+	}
+}
+
+// ClearProviderProfiles clears the "provider_profiles" edge to the ProviderProfile entity.
+func (m *LocalityMutation) ClearProviderProfiles() {
+	m.clearedprovider_profiles = true
+}
+
+// ProviderProfilesCleared reports if the "provider_profiles" edge to the ProviderProfile entity was cleared.
+func (m *LocalityMutation) ProviderProfilesCleared() bool {
+	return m.clearedprovider_profiles
+}
+
+// RemoveProviderProfileIDs removes the "provider_profiles" edge to the ProviderProfile entity by IDs.
+func (m *LocalityMutation) RemoveProviderProfileIDs(ids ...uuid.UUID) {
+	if m.removedprovider_profiles == nil {
+		m.removedprovider_profiles = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.provider_profiles, ids[i])
+		m.removedprovider_profiles[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedProviderProfiles returns the removed IDs of the "provider_profiles" edge to the ProviderProfile entity.
+func (m *LocalityMutation) RemovedProviderProfilesIDs() (ids []uuid.UUID) {
+	for id := range m.removedprovider_profiles {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ProviderProfilesIDs returns the "provider_profiles" edge IDs in the mutation.
+func (m *LocalityMutation) ProviderProfilesIDs() (ids []uuid.UUID) {
+	for id := range m.provider_profiles {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetProviderProfiles resets all changes to the "provider_profiles" edge.
+func (m *LocalityMutation) ResetProviderProfiles() {
+	m.provider_profiles = nil
+	m.clearedprovider_profiles = false
+	m.removedprovider_profiles = nil
+}
+
+// Where appends a list predicates to the LocalityMutation builder.
+func (m *LocalityMutation) Where(ps ...predicate.Locality) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the LocalityMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *LocalityMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Locality, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *LocalityMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *LocalityMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Locality).
+func (m *LocalityMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *LocalityMutation) Fields() []string {
+	fields := make([]string, 0, 12)
+	if m.slug != nil {
+		fields = append(fields, locality.FieldSlug)
+	}
+	if m.name != nil {
+		fields = append(fields, locality.FieldName)
+	}
+	if m.parent_parish != nil {
+		fields = append(fields, locality.FieldParentParishID)
+	}
+	if m.source != nil {
+		fields = append(fields, locality.FieldSource)
+	}
+	if m.source_element_id != nil {
+		fields = append(fields, locality.FieldSourceElementID)
+	}
+	if m.source_version != nil {
+		fields = append(fields, locality.FieldSourceVersion)
+	}
+	if m.source_retrieved_at != nil {
+		fields = append(fields, locality.FieldSourceRetrievedAt)
+	}
+	if m.latitude != nil {
+		fields = append(fields, locality.FieldLatitude)
+	}
+	if m.longitude != nil {
+		fields = append(fields, locality.FieldLongitude)
+	}
+	if m.active != nil {
+		fields = append(fields, locality.FieldActive)
+	}
+	if m.created_at != nil {
+		fields = append(fields, locality.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, locality.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *LocalityMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case locality.FieldSlug:
+		return m.Slug()
+	case locality.FieldName:
+		return m.Name()
+	case locality.FieldParentParishID:
+		return m.ParentParishID()
+	case locality.FieldSource:
+		return m.Source()
+	case locality.FieldSourceElementID:
+		return m.SourceElementID()
+	case locality.FieldSourceVersion:
+		return m.SourceVersion()
+	case locality.FieldSourceRetrievedAt:
+		return m.SourceRetrievedAt()
+	case locality.FieldLatitude:
+		return m.Latitude()
+	case locality.FieldLongitude:
+		return m.Longitude()
+	case locality.FieldActive:
+		return m.Active()
+	case locality.FieldCreatedAt:
+		return m.CreatedAt()
+	case locality.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *LocalityMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case locality.FieldSlug:
+		return m.OldSlug(ctx)
+	case locality.FieldName:
+		return m.OldName(ctx)
+	case locality.FieldParentParishID:
+		return m.OldParentParishID(ctx)
+	case locality.FieldSource:
+		return m.OldSource(ctx)
+	case locality.FieldSourceElementID:
+		return m.OldSourceElementID(ctx)
+	case locality.FieldSourceVersion:
+		return m.OldSourceVersion(ctx)
+	case locality.FieldSourceRetrievedAt:
+		return m.OldSourceRetrievedAt(ctx)
+	case locality.FieldLatitude:
+		return m.OldLatitude(ctx)
+	case locality.FieldLongitude:
+		return m.OldLongitude(ctx)
+	case locality.FieldActive:
+		return m.OldActive(ctx)
+	case locality.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case locality.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown Locality field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *LocalityMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case locality.FieldSlug:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSlug(v)
+		return nil
+	case locality.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case locality.FieldParentParishID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentParishID(v)
+		return nil
+	case locality.FieldSource:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSource(v)
+		return nil
+	case locality.FieldSourceElementID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSourceElementID(v)
+		return nil
+	case locality.FieldSourceVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSourceVersion(v)
+		return nil
+	case locality.FieldSourceRetrievedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSourceRetrievedAt(v)
+		return nil
+	case locality.FieldLatitude:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLatitude(v)
+		return nil
+	case locality.FieldLongitude:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLongitude(v)
+		return nil
+	case locality.FieldActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActive(v)
+		return nil
+	case locality.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case locality.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Locality field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *LocalityMutation) AddedFields() []string {
+	var fields []string
+	if m.addlatitude != nil {
+		fields = append(fields, locality.FieldLatitude)
+	}
+	if m.addlongitude != nil {
+		fields = append(fields, locality.FieldLongitude)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *LocalityMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case locality.FieldLatitude:
+		return m.AddedLatitude()
+	case locality.FieldLongitude:
+		return m.AddedLongitude()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *LocalityMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case locality.FieldLatitude:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLatitude(v)
+		return nil
+	case locality.FieldLongitude:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLongitude(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Locality numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *LocalityMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *LocalityMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *LocalityMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Locality nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *LocalityMutation) ResetField(name string) error {
+	switch name {
+	case locality.FieldSlug:
+		m.ResetSlug()
+		return nil
+	case locality.FieldName:
+		m.ResetName()
+		return nil
+	case locality.FieldParentParishID:
+		m.ResetParentParishID()
+		return nil
+	case locality.FieldSource:
+		m.ResetSource()
+		return nil
+	case locality.FieldSourceElementID:
+		m.ResetSourceElementID()
+		return nil
+	case locality.FieldSourceVersion:
+		m.ResetSourceVersion()
+		return nil
+	case locality.FieldSourceRetrievedAt:
+		m.ResetSourceRetrievedAt()
+		return nil
+	case locality.FieldLatitude:
+		m.ResetLatitude()
+		return nil
+	case locality.FieldLongitude:
+		m.ResetLongitude()
+		return nil
+	case locality.FieldActive:
+		m.ResetActive()
+		return nil
+	case locality.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case locality.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown Locality field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *LocalityMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.parent_parish != nil {
+		edges = append(edges, locality.EdgeParentParish)
+	}
+	if m.provider_profiles != nil {
+		edges = append(edges, locality.EdgeProviderProfiles)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *LocalityMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case locality.EdgeParentParish:
+		if id := m.parent_parish; id != nil {
+			return []ent.Value{*id}
+		}
+	case locality.EdgeProviderProfiles:
+		ids := make([]ent.Value, 0, len(m.provider_profiles))
+		for id := range m.provider_profiles {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *LocalityMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedprovider_profiles != nil {
+		edges = append(edges, locality.EdgeProviderProfiles)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *LocalityMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case locality.EdgeProviderProfiles:
+		ids := make([]ent.Value, 0, len(m.removedprovider_profiles))
+		for id := range m.removedprovider_profiles {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *LocalityMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedparent_parish {
+		edges = append(edges, locality.EdgeParentParish)
+	}
+	if m.clearedprovider_profiles {
+		edges = append(edges, locality.EdgeProviderProfiles)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *LocalityMutation) EdgeCleared(name string) bool {
+	switch name {
+	case locality.EdgeParentParish:
+		return m.clearedparent_parish
+	case locality.EdgeProviderProfiles:
+		return m.clearedprovider_profiles
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *LocalityMutation) ClearEdge(name string) error {
+	switch name {
+	case locality.EdgeParentParish:
+		m.ClearParentParish()
+		return nil
+	}
+	return fmt.Errorf("unknown Locality unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *LocalityMutation) ResetEdge(name string) error {
+	switch name {
+	case locality.EdgeParentParish:
+		m.ResetParentParish()
+		return nil
+	case locality.EdgeProviderProfiles:
+		m.ResetProviderProfiles()
+		return nil
+	}
+	return fmt.Errorf("unknown Locality edge %s", name)
+}
+
+// ProviderProfileMutation represents an operation that mutates the ProviderProfile nodes in the graph.
+type ProviderProfileMutation struct {
+	config
+	op                        Op
+	typ                       string
+	id                        *uuid.UUID
+	display_name              *string
+	provider_type             *string
+	bio                       *string
+	primary_locality_id       *uuid.UUID
+	max_travel_distance_km    *int
+	addmax_travel_distance_km *int
+	travels_to_customer       *bool
+	receives_customer         *bool
+	remote_services           *bool
+	created_at                *time.Time
+	updated_at                *time.Time
+	clearedFields             map[string]struct{}
+	service_localities        map[uuid.UUID]struct{}
+	removedservice_localities map[uuid.UUID]struct{}
+	clearedservice_localities bool
+	spoken_languages          map[string]struct{}
+	removedspoken_languages   map[string]struct{}
+	clearedspoken_languages   bool
+	done                      bool
+	oldValue                  func(context.Context) (*ProviderProfile, error)
+	predicates                []predicate.ProviderProfile
+}
+
+var _ ent.Mutation = (*ProviderProfileMutation)(nil)
+
+// providerprofileOption allows management of the mutation configuration using functional options.
+type providerprofileOption func(*ProviderProfileMutation)
+
+// newProviderProfileMutation creates new mutation for the ProviderProfile entity.
+func newProviderProfileMutation(c config, op Op, opts ...providerprofileOption) *ProviderProfileMutation {
+	m := &ProviderProfileMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeProviderProfile,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withProviderProfileID sets the ID field of the mutation.
+func withProviderProfileID(id uuid.UUID) providerprofileOption {
+	return func(m *ProviderProfileMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ProviderProfile
+		)
+		m.oldValue = func(ctx context.Context) (*ProviderProfile, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ProviderProfile.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withProviderProfile sets the old ProviderProfile of the mutation.
+func withProviderProfile(node *ProviderProfile) providerprofileOption {
+	return func(m *ProviderProfileMutation) {
+		m.oldValue = func(context.Context) (*ProviderProfile, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ProviderProfileMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ProviderProfileMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ProviderProfile entities.
+func (m *ProviderProfileMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ProviderProfileMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ProviderProfileMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ProviderProfile.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetDisplayName sets the "display_name" field.
+func (m *ProviderProfileMutation) SetDisplayName(s string) {
+	m.display_name = &s
+}
+
+// DisplayName returns the value of the "display_name" field in the mutation.
+func (m *ProviderProfileMutation) DisplayName() (r string, exists bool) {
+	v := m.display_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDisplayName returns the old "display_name" field's value of the ProviderProfile entity.
+// If the ProviderProfile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderProfileMutation) OldDisplayName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDisplayName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDisplayName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDisplayName: %w", err)
+	}
+	return oldValue.DisplayName, nil
+}
+
+// ResetDisplayName resets all changes to the "display_name" field.
+func (m *ProviderProfileMutation) ResetDisplayName() {
+	m.display_name = nil
+}
+
+// SetProviderType sets the "provider_type" field.
+func (m *ProviderProfileMutation) SetProviderType(s string) {
+	m.provider_type = &s
+}
+
+// ProviderType returns the value of the "provider_type" field in the mutation.
+func (m *ProviderProfileMutation) ProviderType() (r string, exists bool) {
+	v := m.provider_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProviderType returns the old "provider_type" field's value of the ProviderProfile entity.
+// If the ProviderProfile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderProfileMutation) OldProviderType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProviderType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProviderType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProviderType: %w", err)
+	}
+	return oldValue.ProviderType, nil
+}
+
+// ResetProviderType resets all changes to the "provider_type" field.
+func (m *ProviderProfileMutation) ResetProviderType() {
+	m.provider_type = nil
+}
+
+// SetBio sets the "bio" field.
+func (m *ProviderProfileMutation) SetBio(s string) {
+	m.bio = &s
+}
+
+// Bio returns the value of the "bio" field in the mutation.
+func (m *ProviderProfileMutation) Bio() (r string, exists bool) {
+	v := m.bio
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBio returns the old "bio" field's value of the ProviderProfile entity.
+// If the ProviderProfile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderProfileMutation) OldBio(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBio is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBio requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBio: %w", err)
+	}
+	return oldValue.Bio, nil
+}
+
+// ResetBio resets all changes to the "bio" field.
+func (m *ProviderProfileMutation) ResetBio() {
+	m.bio = nil
+}
+
+// SetPrimaryLocalityID sets the "primary_locality_id" field.
+func (m *ProviderProfileMutation) SetPrimaryLocalityID(u uuid.UUID) {
+	m.primary_locality_id = &u
+}
+
+// PrimaryLocalityID returns the value of the "primary_locality_id" field in the mutation.
+func (m *ProviderProfileMutation) PrimaryLocalityID() (r uuid.UUID, exists bool) {
+	v := m.primary_locality_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPrimaryLocalityID returns the old "primary_locality_id" field's value of the ProviderProfile entity.
+// If the ProviderProfile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderProfileMutation) OldPrimaryLocalityID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPrimaryLocalityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPrimaryLocalityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPrimaryLocalityID: %w", err)
+	}
+	return oldValue.PrimaryLocalityID, nil
+}
+
+// ResetPrimaryLocalityID resets all changes to the "primary_locality_id" field.
+func (m *ProviderProfileMutation) ResetPrimaryLocalityID() {
+	m.primary_locality_id = nil
+}
+
+// SetMaxTravelDistanceKm sets the "max_travel_distance_km" field.
+func (m *ProviderProfileMutation) SetMaxTravelDistanceKm(i int) {
+	m.max_travel_distance_km = &i
+	m.addmax_travel_distance_km = nil
+}
+
+// MaxTravelDistanceKm returns the value of the "max_travel_distance_km" field in the mutation.
+func (m *ProviderProfileMutation) MaxTravelDistanceKm() (r int, exists bool) {
+	v := m.max_travel_distance_km
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMaxTravelDistanceKm returns the old "max_travel_distance_km" field's value of the ProviderProfile entity.
+// If the ProviderProfile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderProfileMutation) OldMaxTravelDistanceKm(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMaxTravelDistanceKm is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMaxTravelDistanceKm requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMaxTravelDistanceKm: %w", err)
+	}
+	return oldValue.MaxTravelDistanceKm, nil
+}
+
+// AddMaxTravelDistanceKm adds i to the "max_travel_distance_km" field.
+func (m *ProviderProfileMutation) AddMaxTravelDistanceKm(i int) {
+	if m.addmax_travel_distance_km != nil {
+		*m.addmax_travel_distance_km += i
+	} else {
+		m.addmax_travel_distance_km = &i
+	}
+}
+
+// AddedMaxTravelDistanceKm returns the value that was added to the "max_travel_distance_km" field in this mutation.
+func (m *ProviderProfileMutation) AddedMaxTravelDistanceKm() (r int, exists bool) {
+	v := m.addmax_travel_distance_km
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMaxTravelDistanceKm resets all changes to the "max_travel_distance_km" field.
+func (m *ProviderProfileMutation) ResetMaxTravelDistanceKm() {
+	m.max_travel_distance_km = nil
+	m.addmax_travel_distance_km = nil
+}
+
+// SetTravelsToCustomer sets the "travels_to_customer" field.
+func (m *ProviderProfileMutation) SetTravelsToCustomer(b bool) {
+	m.travels_to_customer = &b
+}
+
+// TravelsToCustomer returns the value of the "travels_to_customer" field in the mutation.
+func (m *ProviderProfileMutation) TravelsToCustomer() (r bool, exists bool) {
+	v := m.travels_to_customer
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTravelsToCustomer returns the old "travels_to_customer" field's value of the ProviderProfile entity.
+// If the ProviderProfile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderProfileMutation) OldTravelsToCustomer(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTravelsToCustomer is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTravelsToCustomer requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTravelsToCustomer: %w", err)
+	}
+	return oldValue.TravelsToCustomer, nil
+}
+
+// ResetTravelsToCustomer resets all changes to the "travels_to_customer" field.
+func (m *ProviderProfileMutation) ResetTravelsToCustomer() {
+	m.travels_to_customer = nil
+}
+
+// SetReceivesCustomer sets the "receives_customer" field.
+func (m *ProviderProfileMutation) SetReceivesCustomer(b bool) {
+	m.receives_customer = &b
+}
+
+// ReceivesCustomer returns the value of the "receives_customer" field in the mutation.
+func (m *ProviderProfileMutation) ReceivesCustomer() (r bool, exists bool) {
+	v := m.receives_customer
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReceivesCustomer returns the old "receives_customer" field's value of the ProviderProfile entity.
+// If the ProviderProfile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderProfileMutation) OldReceivesCustomer(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReceivesCustomer is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReceivesCustomer requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReceivesCustomer: %w", err)
+	}
+	return oldValue.ReceivesCustomer, nil
+}
+
+// ResetReceivesCustomer resets all changes to the "receives_customer" field.
+func (m *ProviderProfileMutation) ResetReceivesCustomer() {
+	m.receives_customer = nil
+}
+
+// SetRemoteServices sets the "remote_services" field.
+func (m *ProviderProfileMutation) SetRemoteServices(b bool) {
+	m.remote_services = &b
+}
+
+// RemoteServices returns the value of the "remote_services" field in the mutation.
+func (m *ProviderProfileMutation) RemoteServices() (r bool, exists bool) {
+	v := m.remote_services
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoteServices returns the old "remote_services" field's value of the ProviderProfile entity.
+// If the ProviderProfile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderProfileMutation) OldRemoteServices(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoteServices is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoteServices requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoteServices: %w", err)
+	}
+	return oldValue.RemoteServices, nil
+}
+
+// ResetRemoteServices resets all changes to the "remote_services" field.
+func (m *ProviderProfileMutation) ResetRemoteServices() {
+	m.remote_services = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ProviderProfileMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ProviderProfileMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ProviderProfile entity.
+// If the ProviderProfile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderProfileMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ProviderProfileMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ProviderProfileMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ProviderProfileMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ProviderProfile entity.
+// If the ProviderProfile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderProfileMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ProviderProfileMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// AddServiceLocalityIDs adds the "service_localities" edge to the Locality entity by ids.
+func (m *ProviderProfileMutation) AddServiceLocalityIDs(ids ...uuid.UUID) {
+	if m.service_localities == nil {
+		m.service_localities = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.service_localities[ids[i]] = struct{}{}
+	}
+}
+
+// ClearServiceLocalities clears the "service_localities" edge to the Locality entity.
+func (m *ProviderProfileMutation) ClearServiceLocalities() {
+	m.clearedservice_localities = true
+}
+
+// ServiceLocalitiesCleared reports if the "service_localities" edge to the Locality entity was cleared.
+func (m *ProviderProfileMutation) ServiceLocalitiesCleared() bool {
+	return m.clearedservice_localities
+}
+
+// RemoveServiceLocalityIDs removes the "service_localities" edge to the Locality entity by IDs.
+func (m *ProviderProfileMutation) RemoveServiceLocalityIDs(ids ...uuid.UUID) {
+	if m.removedservice_localities == nil {
+		m.removedservice_localities = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.service_localities, ids[i])
+		m.removedservice_localities[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedServiceLocalities returns the removed IDs of the "service_localities" edge to the Locality entity.
+func (m *ProviderProfileMutation) RemovedServiceLocalitiesIDs() (ids []uuid.UUID) {
+	for id := range m.removedservice_localities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ServiceLocalitiesIDs returns the "service_localities" edge IDs in the mutation.
+func (m *ProviderProfileMutation) ServiceLocalitiesIDs() (ids []uuid.UUID) {
+	for id := range m.service_localities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetServiceLocalities resets all changes to the "service_localities" edge.
+func (m *ProviderProfileMutation) ResetServiceLocalities() {
+	m.service_localities = nil
+	m.clearedservice_localities = false
+	m.removedservice_localities = nil
+}
+
+// AddSpokenLanguageIDs adds the "spoken_languages" edge to the SpokenLanguage entity by ids.
+func (m *ProviderProfileMutation) AddSpokenLanguageIDs(ids ...string) {
+	if m.spoken_languages == nil {
+		m.spoken_languages = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.spoken_languages[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSpokenLanguages clears the "spoken_languages" edge to the SpokenLanguage entity.
+func (m *ProviderProfileMutation) ClearSpokenLanguages() {
+	m.clearedspoken_languages = true
+}
+
+// SpokenLanguagesCleared reports if the "spoken_languages" edge to the SpokenLanguage entity was cleared.
+func (m *ProviderProfileMutation) SpokenLanguagesCleared() bool {
+	return m.clearedspoken_languages
+}
+
+// RemoveSpokenLanguageIDs removes the "spoken_languages" edge to the SpokenLanguage entity by IDs.
+func (m *ProviderProfileMutation) RemoveSpokenLanguageIDs(ids ...string) {
+	if m.removedspoken_languages == nil {
+		m.removedspoken_languages = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.spoken_languages, ids[i])
+		m.removedspoken_languages[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSpokenLanguages returns the removed IDs of the "spoken_languages" edge to the SpokenLanguage entity.
+func (m *ProviderProfileMutation) RemovedSpokenLanguagesIDs() (ids []string) {
+	for id := range m.removedspoken_languages {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SpokenLanguagesIDs returns the "spoken_languages" edge IDs in the mutation.
+func (m *ProviderProfileMutation) SpokenLanguagesIDs() (ids []string) {
+	for id := range m.spoken_languages {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSpokenLanguages resets all changes to the "spoken_languages" edge.
+func (m *ProviderProfileMutation) ResetSpokenLanguages() {
+	m.spoken_languages = nil
+	m.clearedspoken_languages = false
+	m.removedspoken_languages = nil
+}
+
+// Where appends a list predicates to the ProviderProfileMutation builder.
+func (m *ProviderProfileMutation) Where(ps ...predicate.ProviderProfile) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ProviderProfileMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ProviderProfileMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ProviderProfile, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ProviderProfileMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ProviderProfileMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ProviderProfile).
+func (m *ProviderProfileMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ProviderProfileMutation) Fields() []string {
+	fields := make([]string, 0, 10)
+	if m.display_name != nil {
+		fields = append(fields, providerprofile.FieldDisplayName)
+	}
+	if m.provider_type != nil {
+		fields = append(fields, providerprofile.FieldProviderType)
+	}
+	if m.bio != nil {
+		fields = append(fields, providerprofile.FieldBio)
+	}
+	if m.primary_locality_id != nil {
+		fields = append(fields, providerprofile.FieldPrimaryLocalityID)
+	}
+	if m.max_travel_distance_km != nil {
+		fields = append(fields, providerprofile.FieldMaxTravelDistanceKm)
+	}
+	if m.travels_to_customer != nil {
+		fields = append(fields, providerprofile.FieldTravelsToCustomer)
+	}
+	if m.receives_customer != nil {
+		fields = append(fields, providerprofile.FieldReceivesCustomer)
+	}
+	if m.remote_services != nil {
+		fields = append(fields, providerprofile.FieldRemoteServices)
+	}
+	if m.created_at != nil {
+		fields = append(fields, providerprofile.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, providerprofile.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ProviderProfileMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case providerprofile.FieldDisplayName:
+		return m.DisplayName()
+	case providerprofile.FieldProviderType:
+		return m.ProviderType()
+	case providerprofile.FieldBio:
+		return m.Bio()
+	case providerprofile.FieldPrimaryLocalityID:
+		return m.PrimaryLocalityID()
+	case providerprofile.FieldMaxTravelDistanceKm:
+		return m.MaxTravelDistanceKm()
+	case providerprofile.FieldTravelsToCustomer:
+		return m.TravelsToCustomer()
+	case providerprofile.FieldReceivesCustomer:
+		return m.ReceivesCustomer()
+	case providerprofile.FieldRemoteServices:
+		return m.RemoteServices()
+	case providerprofile.FieldCreatedAt:
+		return m.CreatedAt()
+	case providerprofile.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ProviderProfileMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case providerprofile.FieldDisplayName:
+		return m.OldDisplayName(ctx)
+	case providerprofile.FieldProviderType:
+		return m.OldProviderType(ctx)
+	case providerprofile.FieldBio:
+		return m.OldBio(ctx)
+	case providerprofile.FieldPrimaryLocalityID:
+		return m.OldPrimaryLocalityID(ctx)
+	case providerprofile.FieldMaxTravelDistanceKm:
+		return m.OldMaxTravelDistanceKm(ctx)
+	case providerprofile.FieldTravelsToCustomer:
+		return m.OldTravelsToCustomer(ctx)
+	case providerprofile.FieldReceivesCustomer:
+		return m.OldReceivesCustomer(ctx)
+	case providerprofile.FieldRemoteServices:
+		return m.OldRemoteServices(ctx)
+	case providerprofile.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case providerprofile.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ProviderProfile field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProviderProfileMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case providerprofile.FieldDisplayName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDisplayName(v)
+		return nil
+	case providerprofile.FieldProviderType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProviderType(v)
+		return nil
+	case providerprofile.FieldBio:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBio(v)
+		return nil
+	case providerprofile.FieldPrimaryLocalityID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPrimaryLocalityID(v)
+		return nil
+	case providerprofile.FieldMaxTravelDistanceKm:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMaxTravelDistanceKm(v)
+		return nil
+	case providerprofile.FieldTravelsToCustomer:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTravelsToCustomer(v)
+		return nil
+	case providerprofile.FieldReceivesCustomer:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReceivesCustomer(v)
+		return nil
+	case providerprofile.FieldRemoteServices:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoteServices(v)
+		return nil
+	case providerprofile.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case providerprofile.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProviderProfile field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ProviderProfileMutation) AddedFields() []string {
+	var fields []string
+	if m.addmax_travel_distance_km != nil {
+		fields = append(fields, providerprofile.FieldMaxTravelDistanceKm)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ProviderProfileMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case providerprofile.FieldMaxTravelDistanceKm:
+		return m.AddedMaxTravelDistanceKm()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProviderProfileMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case providerprofile.FieldMaxTravelDistanceKm:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMaxTravelDistanceKm(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProviderProfile numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ProviderProfileMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ProviderProfileMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ProviderProfileMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ProviderProfile nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ProviderProfileMutation) ResetField(name string) error {
+	switch name {
+	case providerprofile.FieldDisplayName:
+		m.ResetDisplayName()
+		return nil
+	case providerprofile.FieldProviderType:
+		m.ResetProviderType()
+		return nil
+	case providerprofile.FieldBio:
+		m.ResetBio()
+		return nil
+	case providerprofile.FieldPrimaryLocalityID:
+		m.ResetPrimaryLocalityID()
+		return nil
+	case providerprofile.FieldMaxTravelDistanceKm:
+		m.ResetMaxTravelDistanceKm()
+		return nil
+	case providerprofile.FieldTravelsToCustomer:
+		m.ResetTravelsToCustomer()
+		return nil
+	case providerprofile.FieldReceivesCustomer:
+		m.ResetReceivesCustomer()
+		return nil
+	case providerprofile.FieldRemoteServices:
+		m.ResetRemoteServices()
+		return nil
+	case providerprofile.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case providerprofile.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ProviderProfile field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ProviderProfileMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.service_localities != nil {
+		edges = append(edges, providerprofile.EdgeServiceLocalities)
+	}
+	if m.spoken_languages != nil {
+		edges = append(edges, providerprofile.EdgeSpokenLanguages)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ProviderProfileMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case providerprofile.EdgeServiceLocalities:
+		ids := make([]ent.Value, 0, len(m.service_localities))
+		for id := range m.service_localities {
+			ids = append(ids, id)
+		}
+		return ids
+	case providerprofile.EdgeSpokenLanguages:
+		ids := make([]ent.Value, 0, len(m.spoken_languages))
+		for id := range m.spoken_languages {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ProviderProfileMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedservice_localities != nil {
+		edges = append(edges, providerprofile.EdgeServiceLocalities)
+	}
+	if m.removedspoken_languages != nil {
+		edges = append(edges, providerprofile.EdgeSpokenLanguages)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ProviderProfileMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case providerprofile.EdgeServiceLocalities:
+		ids := make([]ent.Value, 0, len(m.removedservice_localities))
+		for id := range m.removedservice_localities {
+			ids = append(ids, id)
+		}
+		return ids
+	case providerprofile.EdgeSpokenLanguages:
+		ids := make([]ent.Value, 0, len(m.removedspoken_languages))
+		for id := range m.removedspoken_languages {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ProviderProfileMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedservice_localities {
+		edges = append(edges, providerprofile.EdgeServiceLocalities)
+	}
+	if m.clearedspoken_languages {
+		edges = append(edges, providerprofile.EdgeSpokenLanguages)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ProviderProfileMutation) EdgeCleared(name string) bool {
+	switch name {
+	case providerprofile.EdgeServiceLocalities:
+		return m.clearedservice_localities
+	case providerprofile.EdgeSpokenLanguages:
+		return m.clearedspoken_languages
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ProviderProfileMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ProviderProfile unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ProviderProfileMutation) ResetEdge(name string) error {
+	switch name {
+	case providerprofile.EdgeServiceLocalities:
+		m.ResetServiceLocalities()
+		return nil
+	case providerprofile.EdgeSpokenLanguages:
+		m.ResetSpokenLanguages()
+		return nil
+	}
+	return fmt.Errorf("unknown ProviderProfile edge %s", name)
+}
+
+// ProviderServiceLocalityMutation represents an operation that mutates the ProviderServiceLocality nodes in the graph.
+type ProviderServiceLocalityMutation struct {
+	config
+	op              Op
+	typ             string
+	clearedFields   map[string]struct{}
+	profile         *uuid.UUID
+	clearedprofile  bool
+	locality        *uuid.UUID
+	clearedlocality bool
+	done            bool
+	oldValue        func(context.Context) (*ProviderServiceLocality, error)
+	predicates      []predicate.ProviderServiceLocality
+}
+
+var _ ent.Mutation = (*ProviderServiceLocalityMutation)(nil)
+
+// providerservicelocalityOption allows management of the mutation configuration using functional options.
+type providerservicelocalityOption func(*ProviderServiceLocalityMutation)
+
+// newProviderServiceLocalityMutation creates new mutation for the ProviderServiceLocality entity.
+func newProviderServiceLocalityMutation(c config, op Op, opts ...providerservicelocalityOption) *ProviderServiceLocalityMutation {
+	m := &ProviderServiceLocalityMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeProviderServiceLocality,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ProviderServiceLocalityMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ProviderServiceLocalityMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetInternalUserID sets the "internal_user_id" field.
+func (m *ProviderServiceLocalityMutation) SetInternalUserID(u uuid.UUID) {
+	m.profile = &u
+}
+
+// InternalUserID returns the value of the "internal_user_id" field in the mutation.
+func (m *ProviderServiceLocalityMutation) InternalUserID() (r uuid.UUID, exists bool) {
+	v := m.profile
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetInternalUserID resets all changes to the "internal_user_id" field.
+func (m *ProviderServiceLocalityMutation) ResetInternalUserID() {
+	m.profile = nil
+}
+
+// SetLocalityID sets the "locality_id" field.
+func (m *ProviderServiceLocalityMutation) SetLocalityID(u uuid.UUID) {
+	m.locality = &u
+}
+
+// LocalityID returns the value of the "locality_id" field in the mutation.
+func (m *ProviderServiceLocalityMutation) LocalityID() (r uuid.UUID, exists bool) {
+	v := m.locality
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLocalityID resets all changes to the "locality_id" field.
+func (m *ProviderServiceLocalityMutation) ResetLocalityID() {
+	m.locality = nil
+}
+
+// SetProfileID sets the "profile" edge to the ProviderProfile entity by id.
+func (m *ProviderServiceLocalityMutation) SetProfileID(id uuid.UUID) {
+	m.profile = &id
+}
+
+// ClearProfile clears the "profile" edge to the ProviderProfile entity.
+func (m *ProviderServiceLocalityMutation) ClearProfile() {
+	m.clearedprofile = true
+	m.clearedFields[providerservicelocality.FieldInternalUserID] = struct{}{}
+}
+
+// ProfileCleared reports if the "profile" edge to the ProviderProfile entity was cleared.
+func (m *ProviderServiceLocalityMutation) ProfileCleared() bool {
+	return m.clearedprofile
+}
+
+// ProfileID returns the "profile" edge ID in the mutation.
+func (m *ProviderServiceLocalityMutation) ProfileID() (id uuid.UUID, exists bool) {
+	if m.profile != nil {
+		return *m.profile, true
+	}
+	return
+}
+
+// ProfileIDs returns the "profile" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ProfileID instead. It exists only for internal usage by the builders.
+func (m *ProviderServiceLocalityMutation) ProfileIDs() (ids []uuid.UUID) {
+	if id := m.profile; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetProfile resets all changes to the "profile" edge.
+func (m *ProviderServiceLocalityMutation) ResetProfile() {
+	m.profile = nil
+	m.clearedprofile = false
+}
+
+// ClearLocality clears the "locality" edge to the Locality entity.
+func (m *ProviderServiceLocalityMutation) ClearLocality() {
+	m.clearedlocality = true
+	m.clearedFields[providerservicelocality.FieldLocalityID] = struct{}{}
+}
+
+// LocalityCleared reports if the "locality" edge to the Locality entity was cleared.
+func (m *ProviderServiceLocalityMutation) LocalityCleared() bool {
+	return m.clearedlocality
+}
+
+// LocalityIDs returns the "locality" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// LocalityID instead. It exists only for internal usage by the builders.
+func (m *ProviderServiceLocalityMutation) LocalityIDs() (ids []uuid.UUID) {
+	if id := m.locality; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetLocality resets all changes to the "locality" edge.
+func (m *ProviderServiceLocalityMutation) ResetLocality() {
+	m.locality = nil
+	m.clearedlocality = false
+}
+
+// Where appends a list predicates to the ProviderServiceLocalityMutation builder.
+func (m *ProviderServiceLocalityMutation) Where(ps ...predicate.ProviderServiceLocality) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ProviderServiceLocalityMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ProviderServiceLocalityMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ProviderServiceLocality, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ProviderServiceLocalityMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ProviderServiceLocalityMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ProviderServiceLocality).
+func (m *ProviderServiceLocalityMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ProviderServiceLocalityMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.profile != nil {
+		fields = append(fields, providerservicelocality.FieldInternalUserID)
+	}
+	if m.locality != nil {
+		fields = append(fields, providerservicelocality.FieldLocalityID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ProviderServiceLocalityMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case providerservicelocality.FieldInternalUserID:
+		return m.InternalUserID()
+	case providerservicelocality.FieldLocalityID:
+		return m.LocalityID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ProviderServiceLocalityMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	return nil, errors.New("edge schema ProviderServiceLocality does not support getting old values")
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProviderServiceLocalityMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case providerservicelocality.FieldInternalUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInternalUserID(v)
+		return nil
+	case providerservicelocality.FieldLocalityID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocalityID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProviderServiceLocality field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ProviderServiceLocalityMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ProviderServiceLocalityMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProviderServiceLocalityMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ProviderServiceLocality numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ProviderServiceLocalityMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ProviderServiceLocalityMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ProviderServiceLocalityMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ProviderServiceLocality nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ProviderServiceLocalityMutation) ResetField(name string) error {
+	switch name {
+	case providerservicelocality.FieldInternalUserID:
+		m.ResetInternalUserID()
+		return nil
+	case providerservicelocality.FieldLocalityID:
+		m.ResetLocalityID()
+		return nil
+	}
+	return fmt.Errorf("unknown ProviderServiceLocality field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ProviderServiceLocalityMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.profile != nil {
+		edges = append(edges, providerservicelocality.EdgeProfile)
+	}
+	if m.locality != nil {
+		edges = append(edges, providerservicelocality.EdgeLocality)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ProviderServiceLocalityMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case providerservicelocality.EdgeProfile:
+		if id := m.profile; id != nil {
+			return []ent.Value{*id}
+		}
+	case providerservicelocality.EdgeLocality:
+		if id := m.locality; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ProviderServiceLocalityMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ProviderServiceLocalityMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ProviderServiceLocalityMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedprofile {
+		edges = append(edges, providerservicelocality.EdgeProfile)
+	}
+	if m.clearedlocality {
+		edges = append(edges, providerservicelocality.EdgeLocality)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ProviderServiceLocalityMutation) EdgeCleared(name string) bool {
+	switch name {
+	case providerservicelocality.EdgeProfile:
+		return m.clearedprofile
+	case providerservicelocality.EdgeLocality:
+		return m.clearedlocality
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ProviderServiceLocalityMutation) ClearEdge(name string) error {
+	switch name {
+	case providerservicelocality.EdgeProfile:
+		m.ClearProfile()
+		return nil
+	case providerservicelocality.EdgeLocality:
+		m.ClearLocality()
+		return nil
+	}
+	return fmt.Errorf("unknown ProviderServiceLocality unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ProviderServiceLocalityMutation) ResetEdge(name string) error {
+	switch name {
+	case providerservicelocality.EdgeProfile:
+		m.ResetProfile()
+		return nil
+	case providerservicelocality.EdgeLocality:
+		m.ResetLocality()
+		return nil
+	}
+	return fmt.Errorf("unknown ProviderServiceLocality edge %s", name)
+}
+
+// ProviderSpokenLanguageMutation represents an operation that mutates the ProviderSpokenLanguage nodes in the graph.
+type ProviderSpokenLanguageMutation struct {
+	config
+	op              Op
+	typ             string
+	clearedFields   map[string]struct{}
+	profile         *uuid.UUID
+	clearedprofile  bool
+	language        *string
+	clearedlanguage bool
+	done            bool
+	oldValue        func(context.Context) (*ProviderSpokenLanguage, error)
+	predicates      []predicate.ProviderSpokenLanguage
+}
+
+var _ ent.Mutation = (*ProviderSpokenLanguageMutation)(nil)
+
+// providerspokenlanguageOption allows management of the mutation configuration using functional options.
+type providerspokenlanguageOption func(*ProviderSpokenLanguageMutation)
+
+// newProviderSpokenLanguageMutation creates new mutation for the ProviderSpokenLanguage entity.
+func newProviderSpokenLanguageMutation(c config, op Op, opts ...providerspokenlanguageOption) *ProviderSpokenLanguageMutation {
+	m := &ProviderSpokenLanguageMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeProviderSpokenLanguage,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ProviderSpokenLanguageMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ProviderSpokenLanguageMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetInternalUserID sets the "internal_user_id" field.
+func (m *ProviderSpokenLanguageMutation) SetInternalUserID(u uuid.UUID) {
+	m.profile = &u
+}
+
+// InternalUserID returns the value of the "internal_user_id" field in the mutation.
+func (m *ProviderSpokenLanguageMutation) InternalUserID() (r uuid.UUID, exists bool) {
+	v := m.profile
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetInternalUserID resets all changes to the "internal_user_id" field.
+func (m *ProviderSpokenLanguageMutation) ResetInternalUserID() {
+	m.profile = nil
+}
+
+// SetLanguageCode sets the "language_code" field.
+func (m *ProviderSpokenLanguageMutation) SetLanguageCode(s string) {
+	m.language = &s
+}
+
+// LanguageCode returns the value of the "language_code" field in the mutation.
+func (m *ProviderSpokenLanguageMutation) LanguageCode() (r string, exists bool) {
+	v := m.language
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLanguageCode resets all changes to the "language_code" field.
+func (m *ProviderSpokenLanguageMutation) ResetLanguageCode() {
+	m.language = nil
+}
+
+// SetProfileID sets the "profile" edge to the ProviderProfile entity by id.
+func (m *ProviderSpokenLanguageMutation) SetProfileID(id uuid.UUID) {
+	m.profile = &id
+}
+
+// ClearProfile clears the "profile" edge to the ProviderProfile entity.
+func (m *ProviderSpokenLanguageMutation) ClearProfile() {
+	m.clearedprofile = true
+	m.clearedFields[providerspokenlanguage.FieldInternalUserID] = struct{}{}
+}
+
+// ProfileCleared reports if the "profile" edge to the ProviderProfile entity was cleared.
+func (m *ProviderSpokenLanguageMutation) ProfileCleared() bool {
+	return m.clearedprofile
+}
+
+// ProfileID returns the "profile" edge ID in the mutation.
+func (m *ProviderSpokenLanguageMutation) ProfileID() (id uuid.UUID, exists bool) {
+	if m.profile != nil {
+		return *m.profile, true
+	}
+	return
+}
+
+// ProfileIDs returns the "profile" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ProfileID instead. It exists only for internal usage by the builders.
+func (m *ProviderSpokenLanguageMutation) ProfileIDs() (ids []uuid.UUID) {
+	if id := m.profile; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetProfile resets all changes to the "profile" edge.
+func (m *ProviderSpokenLanguageMutation) ResetProfile() {
+	m.profile = nil
+	m.clearedprofile = false
+}
+
+// SetLanguageID sets the "language" edge to the SpokenLanguage entity by id.
+func (m *ProviderSpokenLanguageMutation) SetLanguageID(id string) {
+	m.language = &id
+}
+
+// ClearLanguage clears the "language" edge to the SpokenLanguage entity.
+func (m *ProviderSpokenLanguageMutation) ClearLanguage() {
+	m.clearedlanguage = true
+	m.clearedFields[providerspokenlanguage.FieldLanguageCode] = struct{}{}
+}
+
+// LanguageCleared reports if the "language" edge to the SpokenLanguage entity was cleared.
+func (m *ProviderSpokenLanguageMutation) LanguageCleared() bool {
+	return m.clearedlanguage
+}
+
+// LanguageID returns the "language" edge ID in the mutation.
+func (m *ProviderSpokenLanguageMutation) LanguageID() (id string, exists bool) {
+	if m.language != nil {
+		return *m.language, true
+	}
+	return
+}
+
+// LanguageIDs returns the "language" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// LanguageID instead. It exists only for internal usage by the builders.
+func (m *ProviderSpokenLanguageMutation) LanguageIDs() (ids []string) {
+	if id := m.language; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetLanguage resets all changes to the "language" edge.
+func (m *ProviderSpokenLanguageMutation) ResetLanguage() {
+	m.language = nil
+	m.clearedlanguage = false
+}
+
+// Where appends a list predicates to the ProviderSpokenLanguageMutation builder.
+func (m *ProviderSpokenLanguageMutation) Where(ps ...predicate.ProviderSpokenLanguage) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ProviderSpokenLanguageMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ProviderSpokenLanguageMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ProviderSpokenLanguage, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ProviderSpokenLanguageMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ProviderSpokenLanguageMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ProviderSpokenLanguage).
+func (m *ProviderSpokenLanguageMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ProviderSpokenLanguageMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.profile != nil {
+		fields = append(fields, providerspokenlanguage.FieldInternalUserID)
+	}
+	if m.language != nil {
+		fields = append(fields, providerspokenlanguage.FieldLanguageCode)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ProviderSpokenLanguageMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case providerspokenlanguage.FieldInternalUserID:
+		return m.InternalUserID()
+	case providerspokenlanguage.FieldLanguageCode:
+		return m.LanguageCode()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ProviderSpokenLanguageMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	return nil, errors.New("edge schema ProviderSpokenLanguage does not support getting old values")
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProviderSpokenLanguageMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case providerspokenlanguage.FieldInternalUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInternalUserID(v)
+		return nil
+	case providerspokenlanguage.FieldLanguageCode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLanguageCode(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProviderSpokenLanguage field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ProviderSpokenLanguageMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ProviderSpokenLanguageMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProviderSpokenLanguageMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ProviderSpokenLanguage numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ProviderSpokenLanguageMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ProviderSpokenLanguageMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ProviderSpokenLanguageMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ProviderSpokenLanguage nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ProviderSpokenLanguageMutation) ResetField(name string) error {
+	switch name {
+	case providerspokenlanguage.FieldInternalUserID:
+		m.ResetInternalUserID()
+		return nil
+	case providerspokenlanguage.FieldLanguageCode:
+		m.ResetLanguageCode()
+		return nil
+	}
+	return fmt.Errorf("unknown ProviderSpokenLanguage field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ProviderSpokenLanguageMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.profile != nil {
+		edges = append(edges, providerspokenlanguage.EdgeProfile)
+	}
+	if m.language != nil {
+		edges = append(edges, providerspokenlanguage.EdgeLanguage)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ProviderSpokenLanguageMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case providerspokenlanguage.EdgeProfile:
+		if id := m.profile; id != nil {
+			return []ent.Value{*id}
+		}
+	case providerspokenlanguage.EdgeLanguage:
+		if id := m.language; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ProviderSpokenLanguageMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ProviderSpokenLanguageMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ProviderSpokenLanguageMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedprofile {
+		edges = append(edges, providerspokenlanguage.EdgeProfile)
+	}
+	if m.clearedlanguage {
+		edges = append(edges, providerspokenlanguage.EdgeLanguage)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ProviderSpokenLanguageMutation) EdgeCleared(name string) bool {
+	switch name {
+	case providerspokenlanguage.EdgeProfile:
+		return m.clearedprofile
+	case providerspokenlanguage.EdgeLanguage:
+		return m.clearedlanguage
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ProviderSpokenLanguageMutation) ClearEdge(name string) error {
+	switch name {
+	case providerspokenlanguage.EdgeProfile:
+		m.ClearProfile()
+		return nil
+	case providerspokenlanguage.EdgeLanguage:
+		m.ClearLanguage()
+		return nil
+	}
+	return fmt.Errorf("unknown ProviderSpokenLanguage unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ProviderSpokenLanguageMutation) ResetEdge(name string) error {
+	switch name {
+	case providerspokenlanguage.EdgeProfile:
+		m.ResetProfile()
+		return nil
+	case providerspokenlanguage.EdgeLanguage:
+		m.ResetLanguage()
+		return nil
+	}
+	return fmt.Errorf("unknown ProviderSpokenLanguage edge %s", name)
+}
+
+// ServiceCategoryMutation represents an operation that mutates the ServiceCategory nodes in the graph.
+type ServiceCategoryMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *uuid.UUID
+	slug                *string
+	active              *bool
+	sort_order          *int
+	addsort_order       *int
+	created_at          *time.Time
+	updated_at          *time.Time
+	clearedFields       map[string]struct{}
+	children            map[uuid.UUID]struct{}
+	removedchildren     map[uuid.UUID]struct{}
+	clearedchildren     bool
+	parent              *uuid.UUID
+	clearedparent       bool
+	localized_in        map[string]struct{}
+	removedlocalized_in map[string]struct{}
+	clearedlocalized_in bool
+	done                bool
+	oldValue            func(context.Context) (*ServiceCategory, error)
+	predicates          []predicate.ServiceCategory
+}
+
+var _ ent.Mutation = (*ServiceCategoryMutation)(nil)
+
+// servicecategoryOption allows management of the mutation configuration using functional options.
+type servicecategoryOption func(*ServiceCategoryMutation)
+
+// newServiceCategoryMutation creates new mutation for the ServiceCategory entity.
+func newServiceCategoryMutation(c config, op Op, opts ...servicecategoryOption) *ServiceCategoryMutation {
+	m := &ServiceCategoryMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeServiceCategory,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withServiceCategoryID sets the ID field of the mutation.
+func withServiceCategoryID(id uuid.UUID) servicecategoryOption {
+	return func(m *ServiceCategoryMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ServiceCategory
+		)
+		m.oldValue = func(ctx context.Context) (*ServiceCategory, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ServiceCategory.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withServiceCategory sets the old ServiceCategory of the mutation.
+func withServiceCategory(node *ServiceCategory) servicecategoryOption {
+	return func(m *ServiceCategoryMutation) {
+		m.oldValue = func(context.Context) (*ServiceCategory, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ServiceCategoryMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ServiceCategoryMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ServiceCategory entities.
+func (m *ServiceCategoryMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ServiceCategoryMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ServiceCategoryMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ServiceCategory.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetParentID sets the "parent_id" field.
+func (m *ServiceCategoryMutation) SetParentID(u uuid.UUID) {
+	m.parent = &u
+}
+
+// ParentID returns the value of the "parent_id" field in the mutation.
+func (m *ServiceCategoryMutation) ParentID() (r uuid.UUID, exists bool) {
+	v := m.parent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentID returns the old "parent_id" field's value of the ServiceCategory entity.
+// If the ServiceCategory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCategoryMutation) OldParentID(ctx context.Context) (v *uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentID: %w", err)
+	}
+	return oldValue.ParentID, nil
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (m *ServiceCategoryMutation) ClearParentID() {
+	m.parent = nil
+	m.clearedFields[servicecategory.FieldParentID] = struct{}{}
+}
+
+// ParentIDCleared returns if the "parent_id" field was cleared in this mutation.
+func (m *ServiceCategoryMutation) ParentIDCleared() bool {
+	_, ok := m.clearedFields[servicecategory.FieldParentID]
+	return ok
+}
+
+// ResetParentID resets all changes to the "parent_id" field.
+func (m *ServiceCategoryMutation) ResetParentID() {
+	m.parent = nil
+	delete(m.clearedFields, servicecategory.FieldParentID)
+}
+
+// SetSlug sets the "slug" field.
+func (m *ServiceCategoryMutation) SetSlug(s string) {
+	m.slug = &s
+}
+
+// Slug returns the value of the "slug" field in the mutation.
+func (m *ServiceCategoryMutation) Slug() (r string, exists bool) {
+	v := m.slug
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSlug returns the old "slug" field's value of the ServiceCategory entity.
+// If the ServiceCategory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCategoryMutation) OldSlug(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSlug is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSlug requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSlug: %w", err)
+	}
+	return oldValue.Slug, nil
+}
+
+// ResetSlug resets all changes to the "slug" field.
+func (m *ServiceCategoryMutation) ResetSlug() {
+	m.slug = nil
+}
+
+// SetActive sets the "active" field.
+func (m *ServiceCategoryMutation) SetActive(b bool) {
+	m.active = &b
+}
+
+// Active returns the value of the "active" field in the mutation.
+func (m *ServiceCategoryMutation) Active() (r bool, exists bool) {
+	v := m.active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActive returns the old "active" field's value of the ServiceCategory entity.
+// If the ServiceCategory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCategoryMutation) OldActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActive: %w", err)
+	}
+	return oldValue.Active, nil
+}
+
+// ResetActive resets all changes to the "active" field.
+func (m *ServiceCategoryMutation) ResetActive() {
+	m.active = nil
+}
+
+// SetSortOrder sets the "sort_order" field.
+func (m *ServiceCategoryMutation) SetSortOrder(i int) {
+	m.sort_order = &i
+	m.addsort_order = nil
+}
+
+// SortOrder returns the value of the "sort_order" field in the mutation.
+func (m *ServiceCategoryMutation) SortOrder() (r int, exists bool) {
+	v := m.sort_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSortOrder returns the old "sort_order" field's value of the ServiceCategory entity.
+// If the ServiceCategory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCategoryMutation) OldSortOrder(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSortOrder is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSortOrder requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSortOrder: %w", err)
+	}
+	return oldValue.SortOrder, nil
+}
+
+// AddSortOrder adds i to the "sort_order" field.
+func (m *ServiceCategoryMutation) AddSortOrder(i int) {
+	if m.addsort_order != nil {
+		*m.addsort_order += i
+	} else {
+		m.addsort_order = &i
+	}
+}
+
+// AddedSortOrder returns the value that was added to the "sort_order" field in this mutation.
+func (m *ServiceCategoryMutation) AddedSortOrder() (r int, exists bool) {
+	v := m.addsort_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSortOrder resets all changes to the "sort_order" field.
+func (m *ServiceCategoryMutation) ResetSortOrder() {
+	m.sort_order = nil
+	m.addsort_order = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ServiceCategoryMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ServiceCategoryMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ServiceCategory entity.
+// If the ServiceCategory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCategoryMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ServiceCategoryMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ServiceCategoryMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ServiceCategoryMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ServiceCategory entity.
+// If the ServiceCategory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCategoryMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ServiceCategoryMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// AddChildIDs adds the "children" edge to the ServiceCategory entity by ids.
+func (m *ServiceCategoryMutation) AddChildIDs(ids ...uuid.UUID) {
+	if m.children == nil {
+		m.children = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.children[ids[i]] = struct{}{}
+	}
+}
+
+// ClearChildren clears the "children" edge to the ServiceCategory entity.
+func (m *ServiceCategoryMutation) ClearChildren() {
+	m.clearedchildren = true
+}
+
+// ChildrenCleared reports if the "children" edge to the ServiceCategory entity was cleared.
+func (m *ServiceCategoryMutation) ChildrenCleared() bool {
+	return m.clearedchildren
+}
+
+// RemoveChildIDs removes the "children" edge to the ServiceCategory entity by IDs.
+func (m *ServiceCategoryMutation) RemoveChildIDs(ids ...uuid.UUID) {
+	if m.removedchildren == nil {
+		m.removedchildren = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.children, ids[i])
+		m.removedchildren[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedChildren returns the removed IDs of the "children" edge to the ServiceCategory entity.
+func (m *ServiceCategoryMutation) RemovedChildrenIDs() (ids []uuid.UUID) {
+	for id := range m.removedchildren {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ChildrenIDs returns the "children" edge IDs in the mutation.
+func (m *ServiceCategoryMutation) ChildrenIDs() (ids []uuid.UUID) {
+	for id := range m.children {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetChildren resets all changes to the "children" edge.
+func (m *ServiceCategoryMutation) ResetChildren() {
+	m.children = nil
+	m.clearedchildren = false
+	m.removedchildren = nil
+}
+
+// ClearParent clears the "parent" edge to the ServiceCategory entity.
+func (m *ServiceCategoryMutation) ClearParent() {
+	m.clearedparent = true
+	m.clearedFields[servicecategory.FieldParentID] = struct{}{}
+}
+
+// ParentCleared reports if the "parent" edge to the ServiceCategory entity was cleared.
+func (m *ServiceCategoryMutation) ParentCleared() bool {
+	return m.ParentIDCleared() || m.clearedparent
+}
+
+// ParentIDs returns the "parent" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ParentID instead. It exists only for internal usage by the builders.
+func (m *ServiceCategoryMutation) ParentIDs() (ids []uuid.UUID) {
+	if id := m.parent; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetParent resets all changes to the "parent" edge.
+func (m *ServiceCategoryMutation) ResetParent() {
+	m.parent = nil
+	m.clearedparent = false
+}
+
+// AddLocalizedInIDs adds the "localized_in" edge to the SupportedLocale entity by ids.
+func (m *ServiceCategoryMutation) AddLocalizedInIDs(ids ...string) {
+	if m.localized_in == nil {
+		m.localized_in = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.localized_in[ids[i]] = struct{}{}
+	}
+}
+
+// ClearLocalizedIn clears the "localized_in" edge to the SupportedLocale entity.
+func (m *ServiceCategoryMutation) ClearLocalizedIn() {
+	m.clearedlocalized_in = true
+}
+
+// LocalizedInCleared reports if the "localized_in" edge to the SupportedLocale entity was cleared.
+func (m *ServiceCategoryMutation) LocalizedInCleared() bool {
+	return m.clearedlocalized_in
+}
+
+// RemoveLocalizedInIDs removes the "localized_in" edge to the SupportedLocale entity by IDs.
+func (m *ServiceCategoryMutation) RemoveLocalizedInIDs(ids ...string) {
+	if m.removedlocalized_in == nil {
+		m.removedlocalized_in = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.localized_in, ids[i])
+		m.removedlocalized_in[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedLocalizedIn returns the removed IDs of the "localized_in" edge to the SupportedLocale entity.
+func (m *ServiceCategoryMutation) RemovedLocalizedInIDs() (ids []string) {
+	for id := range m.removedlocalized_in {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// LocalizedInIDs returns the "localized_in" edge IDs in the mutation.
+func (m *ServiceCategoryMutation) LocalizedInIDs() (ids []string) {
+	for id := range m.localized_in {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetLocalizedIn resets all changes to the "localized_in" edge.
+func (m *ServiceCategoryMutation) ResetLocalizedIn() {
+	m.localized_in = nil
+	m.clearedlocalized_in = false
+	m.removedlocalized_in = nil
+}
+
+// Where appends a list predicates to the ServiceCategoryMutation builder.
+func (m *ServiceCategoryMutation) Where(ps ...predicate.ServiceCategory) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ServiceCategoryMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ServiceCategoryMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ServiceCategory, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ServiceCategoryMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ServiceCategoryMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ServiceCategory).
+func (m *ServiceCategoryMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ServiceCategoryMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.parent != nil {
+		fields = append(fields, servicecategory.FieldParentID)
+	}
+	if m.slug != nil {
+		fields = append(fields, servicecategory.FieldSlug)
+	}
+	if m.active != nil {
+		fields = append(fields, servicecategory.FieldActive)
+	}
+	if m.sort_order != nil {
+		fields = append(fields, servicecategory.FieldSortOrder)
+	}
+	if m.created_at != nil {
+		fields = append(fields, servicecategory.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, servicecategory.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ServiceCategoryMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case servicecategory.FieldParentID:
+		return m.ParentID()
+	case servicecategory.FieldSlug:
+		return m.Slug()
+	case servicecategory.FieldActive:
+		return m.Active()
+	case servicecategory.FieldSortOrder:
+		return m.SortOrder()
+	case servicecategory.FieldCreatedAt:
+		return m.CreatedAt()
+	case servicecategory.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ServiceCategoryMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case servicecategory.FieldParentID:
+		return m.OldParentID(ctx)
+	case servicecategory.FieldSlug:
+		return m.OldSlug(ctx)
+	case servicecategory.FieldActive:
+		return m.OldActive(ctx)
+	case servicecategory.FieldSortOrder:
+		return m.OldSortOrder(ctx)
+	case servicecategory.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case servicecategory.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ServiceCategory field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ServiceCategoryMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case servicecategory.FieldParentID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentID(v)
+		return nil
+	case servicecategory.FieldSlug:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSlug(v)
+		return nil
+	case servicecategory.FieldActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActive(v)
+		return nil
+	case servicecategory.FieldSortOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSortOrder(v)
+		return nil
+	case servicecategory.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case servicecategory.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCategory field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ServiceCategoryMutation) AddedFields() []string {
+	var fields []string
+	if m.addsort_order != nil {
+		fields = append(fields, servicecategory.FieldSortOrder)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ServiceCategoryMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case servicecategory.FieldSortOrder:
+		return m.AddedSortOrder()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ServiceCategoryMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case servicecategory.FieldSortOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSortOrder(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCategory numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ServiceCategoryMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(servicecategory.FieldParentID) {
+		fields = append(fields, servicecategory.FieldParentID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ServiceCategoryMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ServiceCategoryMutation) ClearField(name string) error {
+	switch name {
+	case servicecategory.FieldParentID:
+		m.ClearParentID()
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCategory nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ServiceCategoryMutation) ResetField(name string) error {
+	switch name {
+	case servicecategory.FieldParentID:
+		m.ResetParentID()
+		return nil
+	case servicecategory.FieldSlug:
+		m.ResetSlug()
+		return nil
+	case servicecategory.FieldActive:
+		m.ResetActive()
+		return nil
+	case servicecategory.FieldSortOrder:
+		m.ResetSortOrder()
+		return nil
+	case servicecategory.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case servicecategory.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCategory field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ServiceCategoryMutation) AddedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.children != nil {
+		edges = append(edges, servicecategory.EdgeChildren)
+	}
+	if m.parent != nil {
+		edges = append(edges, servicecategory.EdgeParent)
+	}
+	if m.localized_in != nil {
+		edges = append(edges, servicecategory.EdgeLocalizedIn)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ServiceCategoryMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case servicecategory.EdgeChildren:
+		ids := make([]ent.Value, 0, len(m.children))
+		for id := range m.children {
+			ids = append(ids, id)
+		}
+		return ids
+	case servicecategory.EdgeParent:
+		if id := m.parent; id != nil {
+			return []ent.Value{*id}
+		}
+	case servicecategory.EdgeLocalizedIn:
+		ids := make([]ent.Value, 0, len(m.localized_in))
+		for id := range m.localized_in {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ServiceCategoryMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.removedchildren != nil {
+		edges = append(edges, servicecategory.EdgeChildren)
+	}
+	if m.removedlocalized_in != nil {
+		edges = append(edges, servicecategory.EdgeLocalizedIn)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ServiceCategoryMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case servicecategory.EdgeChildren:
+		ids := make([]ent.Value, 0, len(m.removedchildren))
+		for id := range m.removedchildren {
+			ids = append(ids, id)
+		}
+		return ids
+	case servicecategory.EdgeLocalizedIn:
+		ids := make([]ent.Value, 0, len(m.removedlocalized_in))
+		for id := range m.removedlocalized_in {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ServiceCategoryMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.clearedchildren {
+		edges = append(edges, servicecategory.EdgeChildren)
+	}
+	if m.clearedparent {
+		edges = append(edges, servicecategory.EdgeParent)
+	}
+	if m.clearedlocalized_in {
+		edges = append(edges, servicecategory.EdgeLocalizedIn)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ServiceCategoryMutation) EdgeCleared(name string) bool {
+	switch name {
+	case servicecategory.EdgeChildren:
+		return m.clearedchildren
+	case servicecategory.EdgeParent:
+		return m.clearedparent
+	case servicecategory.EdgeLocalizedIn:
+		return m.clearedlocalized_in
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ServiceCategoryMutation) ClearEdge(name string) error {
+	switch name {
+	case servicecategory.EdgeParent:
+		m.ClearParent()
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCategory unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ServiceCategoryMutation) ResetEdge(name string) error {
+	switch name {
+	case servicecategory.EdgeChildren:
+		m.ResetChildren()
+		return nil
+	case servicecategory.EdgeParent:
+		m.ResetParent()
+		return nil
+	case servicecategory.EdgeLocalizedIn:
+		m.ResetLocalizedIn()
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCategory edge %s", name)
+}
+
+// ServiceCategoryTranslationMutation represents an operation that mutates the ServiceCategoryTranslation nodes in the graph.
+type ServiceCategoryTranslationMutation struct {
+	config
+	op                   Op
+	typ                  string
+	name                 *string
+	description          *string
+	clearedFields        map[string]struct{}
+	category             *uuid.UUID
+	clearedcategory      bool
+	locale_record        *string
+	clearedlocale_record bool
+	done                 bool
+	oldValue             func(context.Context) (*ServiceCategoryTranslation, error)
+	predicates           []predicate.ServiceCategoryTranslation
+}
+
+var _ ent.Mutation = (*ServiceCategoryTranslationMutation)(nil)
+
+// servicecategorytranslationOption allows management of the mutation configuration using functional options.
+type servicecategorytranslationOption func(*ServiceCategoryTranslationMutation)
+
+// newServiceCategoryTranslationMutation creates new mutation for the ServiceCategoryTranslation entity.
+func newServiceCategoryTranslationMutation(c config, op Op, opts ...servicecategorytranslationOption) *ServiceCategoryTranslationMutation {
+	m := &ServiceCategoryTranslationMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeServiceCategoryTranslation,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ServiceCategoryTranslationMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ServiceCategoryTranslationMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetCategoryID sets the "category_id" field.
+func (m *ServiceCategoryTranslationMutation) SetCategoryID(u uuid.UUID) {
+	m.category = &u
+}
+
+// CategoryID returns the value of the "category_id" field in the mutation.
+func (m *ServiceCategoryTranslationMutation) CategoryID() (r uuid.UUID, exists bool) {
+	v := m.category
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCategoryID resets all changes to the "category_id" field.
+func (m *ServiceCategoryTranslationMutation) ResetCategoryID() {
+	m.category = nil
+}
+
+// SetLocale sets the "locale" field.
+func (m *ServiceCategoryTranslationMutation) SetLocale(s string) {
+	m.locale_record = &s
+}
+
+// Locale returns the value of the "locale" field in the mutation.
+func (m *ServiceCategoryTranslationMutation) Locale() (r string, exists bool) {
+	v := m.locale_record
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLocale resets all changes to the "locale" field.
+func (m *ServiceCategoryTranslationMutation) ResetLocale() {
+	m.locale_record = nil
+}
+
+// SetName sets the "name" field.
+func (m *ServiceCategoryTranslationMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *ServiceCategoryTranslationMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *ServiceCategoryTranslationMutation) ResetName() {
+	m.name = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *ServiceCategoryTranslationMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *ServiceCategoryTranslationMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *ServiceCategoryTranslationMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[servicecategorytranslation.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *ServiceCategoryTranslationMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[servicecategorytranslation.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *ServiceCategoryTranslationMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, servicecategorytranslation.FieldDescription)
+}
+
+// ClearCategory clears the "category" edge to the ServiceCategory entity.
+func (m *ServiceCategoryTranslationMutation) ClearCategory() {
+	m.clearedcategory = true
+	m.clearedFields[servicecategorytranslation.FieldCategoryID] = struct{}{}
+}
+
+// CategoryCleared reports if the "category" edge to the ServiceCategory entity was cleared.
+func (m *ServiceCategoryTranslationMutation) CategoryCleared() bool {
+	return m.clearedcategory
+}
+
+// CategoryIDs returns the "category" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CategoryID instead. It exists only for internal usage by the builders.
+func (m *ServiceCategoryTranslationMutation) CategoryIDs() (ids []uuid.UUID) {
+	if id := m.category; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCategory resets all changes to the "category" edge.
+func (m *ServiceCategoryTranslationMutation) ResetCategory() {
+	m.category = nil
+	m.clearedcategory = false
+}
+
+// SetLocaleRecordID sets the "locale_record" edge to the SupportedLocale entity by id.
+func (m *ServiceCategoryTranslationMutation) SetLocaleRecordID(id string) {
+	m.locale_record = &id
+}
+
+// ClearLocaleRecord clears the "locale_record" edge to the SupportedLocale entity.
+func (m *ServiceCategoryTranslationMutation) ClearLocaleRecord() {
+	m.clearedlocale_record = true
+	m.clearedFields[servicecategorytranslation.FieldLocale] = struct{}{}
+}
+
+// LocaleRecordCleared reports if the "locale_record" edge to the SupportedLocale entity was cleared.
+func (m *ServiceCategoryTranslationMutation) LocaleRecordCleared() bool {
+	return m.clearedlocale_record
+}
+
+// LocaleRecordID returns the "locale_record" edge ID in the mutation.
+func (m *ServiceCategoryTranslationMutation) LocaleRecordID() (id string, exists bool) {
+	if m.locale_record != nil {
+		return *m.locale_record, true
+	}
+	return
+}
+
+// LocaleRecordIDs returns the "locale_record" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// LocaleRecordID instead. It exists only for internal usage by the builders.
+func (m *ServiceCategoryTranslationMutation) LocaleRecordIDs() (ids []string) {
+	if id := m.locale_record; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetLocaleRecord resets all changes to the "locale_record" edge.
+func (m *ServiceCategoryTranslationMutation) ResetLocaleRecord() {
+	m.locale_record = nil
+	m.clearedlocale_record = false
+}
+
+// Where appends a list predicates to the ServiceCategoryTranslationMutation builder.
+func (m *ServiceCategoryTranslationMutation) Where(ps ...predicate.ServiceCategoryTranslation) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ServiceCategoryTranslationMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ServiceCategoryTranslationMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ServiceCategoryTranslation, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ServiceCategoryTranslationMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ServiceCategoryTranslationMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ServiceCategoryTranslation).
+func (m *ServiceCategoryTranslationMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ServiceCategoryTranslationMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.category != nil {
+		fields = append(fields, servicecategorytranslation.FieldCategoryID)
+	}
+	if m.locale_record != nil {
+		fields = append(fields, servicecategorytranslation.FieldLocale)
+	}
+	if m.name != nil {
+		fields = append(fields, servicecategorytranslation.FieldName)
+	}
+	if m.description != nil {
+		fields = append(fields, servicecategorytranslation.FieldDescription)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ServiceCategoryTranslationMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case servicecategorytranslation.FieldCategoryID:
+		return m.CategoryID()
+	case servicecategorytranslation.FieldLocale:
+		return m.Locale()
+	case servicecategorytranslation.FieldName:
+		return m.Name()
+	case servicecategorytranslation.FieldDescription:
+		return m.Description()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ServiceCategoryTranslationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	return nil, errors.New("edge schema ServiceCategoryTranslation does not support getting old values")
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ServiceCategoryTranslationMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case servicecategorytranslation.FieldCategoryID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCategoryID(v)
+		return nil
+	case servicecategorytranslation.FieldLocale:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocale(v)
+		return nil
+	case servicecategorytranslation.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case servicecategorytranslation.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCategoryTranslation field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ServiceCategoryTranslationMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ServiceCategoryTranslationMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ServiceCategoryTranslationMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ServiceCategoryTranslation numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ServiceCategoryTranslationMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(servicecategorytranslation.FieldDescription) {
+		fields = append(fields, servicecategorytranslation.FieldDescription)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ServiceCategoryTranslationMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ServiceCategoryTranslationMutation) ClearField(name string) error {
+	switch name {
+	case servicecategorytranslation.FieldDescription:
+		m.ClearDescription()
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCategoryTranslation nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ServiceCategoryTranslationMutation) ResetField(name string) error {
+	switch name {
+	case servicecategorytranslation.FieldCategoryID:
+		m.ResetCategoryID()
+		return nil
+	case servicecategorytranslation.FieldLocale:
+		m.ResetLocale()
+		return nil
+	case servicecategorytranslation.FieldName:
+		m.ResetName()
+		return nil
+	case servicecategorytranslation.FieldDescription:
+		m.ResetDescription()
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCategoryTranslation field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ServiceCategoryTranslationMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.category != nil {
+		edges = append(edges, servicecategorytranslation.EdgeCategory)
+	}
+	if m.locale_record != nil {
+		edges = append(edges, servicecategorytranslation.EdgeLocaleRecord)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ServiceCategoryTranslationMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case servicecategorytranslation.EdgeCategory:
+		if id := m.category; id != nil {
+			return []ent.Value{*id}
+		}
+	case servicecategorytranslation.EdgeLocaleRecord:
+		if id := m.locale_record; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ServiceCategoryTranslationMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ServiceCategoryTranslationMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ServiceCategoryTranslationMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedcategory {
+		edges = append(edges, servicecategorytranslation.EdgeCategory)
+	}
+	if m.clearedlocale_record {
+		edges = append(edges, servicecategorytranslation.EdgeLocaleRecord)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ServiceCategoryTranslationMutation) EdgeCleared(name string) bool {
+	switch name {
+	case servicecategorytranslation.EdgeCategory:
+		return m.clearedcategory
+	case servicecategorytranslation.EdgeLocaleRecord:
+		return m.clearedlocale_record
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ServiceCategoryTranslationMutation) ClearEdge(name string) error {
+	switch name {
+	case servicecategorytranslation.EdgeCategory:
+		m.ClearCategory()
+		return nil
+	case servicecategorytranslation.EdgeLocaleRecord:
+		m.ClearLocaleRecord()
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCategoryTranslation unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ServiceCategoryTranslationMutation) ResetEdge(name string) error {
+	switch name {
+	case servicecategorytranslation.EdgeCategory:
+		m.ResetCategory()
+		return nil
+	case servicecategorytranslation.EdgeLocaleRecord:
+		m.ResetLocaleRecord()
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCategoryTranslation edge %s", name)
+}
+
+// SpokenLanguageMutation represents an operation that mutates the SpokenLanguage nodes in the graph.
+type SpokenLanguageMutation struct {
+	config
+	op                       Op
+	typ                      string
+	id                       *string
+	active                   *bool
+	sort_order               *int
+	addsort_order            *int
+	clearedFields            map[string]struct{}
+	localized_in             map[string]struct{}
+	removedlocalized_in      map[string]struct{}
+	clearedlocalized_in      bool
+	provider_profiles        map[uuid.UUID]struct{}
+	removedprovider_profiles map[uuid.UUID]struct{}
+	clearedprovider_profiles bool
+	done                     bool
+	oldValue                 func(context.Context) (*SpokenLanguage, error)
+	predicates               []predicate.SpokenLanguage
+}
+
+var _ ent.Mutation = (*SpokenLanguageMutation)(nil)
+
+// spokenlanguageOption allows management of the mutation configuration using functional options.
+type spokenlanguageOption func(*SpokenLanguageMutation)
+
+// newSpokenLanguageMutation creates new mutation for the SpokenLanguage entity.
+func newSpokenLanguageMutation(c config, op Op, opts ...spokenlanguageOption) *SpokenLanguageMutation {
+	m := &SpokenLanguageMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSpokenLanguage,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withSpokenLanguageID sets the ID field of the mutation.
+func withSpokenLanguageID(id string) spokenlanguageOption {
+	return func(m *SpokenLanguageMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *SpokenLanguage
+		)
+		m.oldValue = func(ctx context.Context) (*SpokenLanguage, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().SpokenLanguage.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withSpokenLanguage sets the old SpokenLanguage of the mutation.
+func withSpokenLanguage(node *SpokenLanguage) spokenlanguageOption {
+	return func(m *SpokenLanguageMutation) {
+		m.oldValue = func(context.Context) (*SpokenLanguage, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SpokenLanguageMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SpokenLanguageMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of SpokenLanguage entities.
+func (m *SpokenLanguageMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *SpokenLanguageMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *SpokenLanguageMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().SpokenLanguage.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetActive sets the "active" field.
+func (m *SpokenLanguageMutation) SetActive(b bool) {
+	m.active = &b
+}
+
+// Active returns the value of the "active" field in the mutation.
+func (m *SpokenLanguageMutation) Active() (r bool, exists bool) {
+	v := m.active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActive returns the old "active" field's value of the SpokenLanguage entity.
+// If the SpokenLanguage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SpokenLanguageMutation) OldActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActive: %w", err)
+	}
+	return oldValue.Active, nil
+}
+
+// ResetActive resets all changes to the "active" field.
+func (m *SpokenLanguageMutation) ResetActive() {
+	m.active = nil
+}
+
+// SetSortOrder sets the "sort_order" field.
+func (m *SpokenLanguageMutation) SetSortOrder(i int) {
+	m.sort_order = &i
+	m.addsort_order = nil
+}
+
+// SortOrder returns the value of the "sort_order" field in the mutation.
+func (m *SpokenLanguageMutation) SortOrder() (r int, exists bool) {
+	v := m.sort_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSortOrder returns the old "sort_order" field's value of the SpokenLanguage entity.
+// If the SpokenLanguage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SpokenLanguageMutation) OldSortOrder(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSortOrder is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSortOrder requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSortOrder: %w", err)
+	}
+	return oldValue.SortOrder, nil
+}
+
+// AddSortOrder adds i to the "sort_order" field.
+func (m *SpokenLanguageMutation) AddSortOrder(i int) {
+	if m.addsort_order != nil {
+		*m.addsort_order += i
+	} else {
+		m.addsort_order = &i
+	}
+}
+
+// AddedSortOrder returns the value that was added to the "sort_order" field in this mutation.
+func (m *SpokenLanguageMutation) AddedSortOrder() (r int, exists bool) {
+	v := m.addsort_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSortOrder resets all changes to the "sort_order" field.
+func (m *SpokenLanguageMutation) ResetSortOrder() {
+	m.sort_order = nil
+	m.addsort_order = nil
+}
+
+// AddLocalizedInIDs adds the "localized_in" edge to the SupportedLocale entity by ids.
+func (m *SpokenLanguageMutation) AddLocalizedInIDs(ids ...string) {
+	if m.localized_in == nil {
+		m.localized_in = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.localized_in[ids[i]] = struct{}{}
+	}
+}
+
+// ClearLocalizedIn clears the "localized_in" edge to the SupportedLocale entity.
+func (m *SpokenLanguageMutation) ClearLocalizedIn() {
+	m.clearedlocalized_in = true
+}
+
+// LocalizedInCleared reports if the "localized_in" edge to the SupportedLocale entity was cleared.
+func (m *SpokenLanguageMutation) LocalizedInCleared() bool {
+	return m.clearedlocalized_in
+}
+
+// RemoveLocalizedInIDs removes the "localized_in" edge to the SupportedLocale entity by IDs.
+func (m *SpokenLanguageMutation) RemoveLocalizedInIDs(ids ...string) {
+	if m.removedlocalized_in == nil {
+		m.removedlocalized_in = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.localized_in, ids[i])
+		m.removedlocalized_in[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedLocalizedIn returns the removed IDs of the "localized_in" edge to the SupportedLocale entity.
+func (m *SpokenLanguageMutation) RemovedLocalizedInIDs() (ids []string) {
+	for id := range m.removedlocalized_in {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// LocalizedInIDs returns the "localized_in" edge IDs in the mutation.
+func (m *SpokenLanguageMutation) LocalizedInIDs() (ids []string) {
+	for id := range m.localized_in {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetLocalizedIn resets all changes to the "localized_in" edge.
+func (m *SpokenLanguageMutation) ResetLocalizedIn() {
+	m.localized_in = nil
+	m.clearedlocalized_in = false
+	m.removedlocalized_in = nil
+}
+
+// AddProviderProfileIDs adds the "provider_profiles" edge to the ProviderProfile entity by ids.
+func (m *SpokenLanguageMutation) AddProviderProfileIDs(ids ...uuid.UUID) {
+	if m.provider_profiles == nil {
+		m.provider_profiles = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.provider_profiles[ids[i]] = struct{}{}
+	}
+}
+
+// ClearProviderProfiles clears the "provider_profiles" edge to the ProviderProfile entity.
+func (m *SpokenLanguageMutation) ClearProviderProfiles() {
+	m.clearedprovider_profiles = true
+}
+
+// ProviderProfilesCleared reports if the "provider_profiles" edge to the ProviderProfile entity was cleared.
+func (m *SpokenLanguageMutation) ProviderProfilesCleared() bool {
+	return m.clearedprovider_profiles
+}
+
+// RemoveProviderProfileIDs removes the "provider_profiles" edge to the ProviderProfile entity by IDs.
+func (m *SpokenLanguageMutation) RemoveProviderProfileIDs(ids ...uuid.UUID) {
+	if m.removedprovider_profiles == nil {
+		m.removedprovider_profiles = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.provider_profiles, ids[i])
+		m.removedprovider_profiles[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedProviderProfiles returns the removed IDs of the "provider_profiles" edge to the ProviderProfile entity.
+func (m *SpokenLanguageMutation) RemovedProviderProfilesIDs() (ids []uuid.UUID) {
+	for id := range m.removedprovider_profiles {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ProviderProfilesIDs returns the "provider_profiles" edge IDs in the mutation.
+func (m *SpokenLanguageMutation) ProviderProfilesIDs() (ids []uuid.UUID) {
+	for id := range m.provider_profiles {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetProviderProfiles resets all changes to the "provider_profiles" edge.
+func (m *SpokenLanguageMutation) ResetProviderProfiles() {
+	m.provider_profiles = nil
+	m.clearedprovider_profiles = false
+	m.removedprovider_profiles = nil
+}
+
+// Where appends a list predicates to the SpokenLanguageMutation builder.
+func (m *SpokenLanguageMutation) Where(ps ...predicate.SpokenLanguage) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the SpokenLanguageMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *SpokenLanguageMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SpokenLanguage, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *SpokenLanguageMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *SpokenLanguageMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (SpokenLanguage).
+func (m *SpokenLanguageMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SpokenLanguageMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.active != nil {
+		fields = append(fields, spokenlanguage.FieldActive)
+	}
+	if m.sort_order != nil {
+		fields = append(fields, spokenlanguage.FieldSortOrder)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SpokenLanguageMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case spokenlanguage.FieldActive:
+		return m.Active()
+	case spokenlanguage.FieldSortOrder:
+		return m.SortOrder()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SpokenLanguageMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case spokenlanguage.FieldActive:
+		return m.OldActive(ctx)
+	case spokenlanguage.FieldSortOrder:
+		return m.OldSortOrder(ctx)
+	}
+	return nil, fmt.Errorf("unknown SpokenLanguage field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SpokenLanguageMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case spokenlanguage.FieldActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActive(v)
+		return nil
+	case spokenlanguage.FieldSortOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSortOrder(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SpokenLanguage field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SpokenLanguageMutation) AddedFields() []string {
+	var fields []string
+	if m.addsort_order != nil {
+		fields = append(fields, spokenlanguage.FieldSortOrder)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SpokenLanguageMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case spokenlanguage.FieldSortOrder:
+		return m.AddedSortOrder()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SpokenLanguageMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case spokenlanguage.FieldSortOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSortOrder(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SpokenLanguage numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SpokenLanguageMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SpokenLanguageMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SpokenLanguageMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown SpokenLanguage nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SpokenLanguageMutation) ResetField(name string) error {
+	switch name {
+	case spokenlanguage.FieldActive:
+		m.ResetActive()
+		return nil
+	case spokenlanguage.FieldSortOrder:
+		m.ResetSortOrder()
+		return nil
+	}
+	return fmt.Errorf("unknown SpokenLanguage field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SpokenLanguageMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.localized_in != nil {
+		edges = append(edges, spokenlanguage.EdgeLocalizedIn)
+	}
+	if m.provider_profiles != nil {
+		edges = append(edges, spokenlanguage.EdgeProviderProfiles)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SpokenLanguageMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case spokenlanguage.EdgeLocalizedIn:
+		ids := make([]ent.Value, 0, len(m.localized_in))
+		for id := range m.localized_in {
+			ids = append(ids, id)
+		}
+		return ids
+	case spokenlanguage.EdgeProviderProfiles:
+		ids := make([]ent.Value, 0, len(m.provider_profiles))
+		for id := range m.provider_profiles {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SpokenLanguageMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedlocalized_in != nil {
+		edges = append(edges, spokenlanguage.EdgeLocalizedIn)
+	}
+	if m.removedprovider_profiles != nil {
+		edges = append(edges, spokenlanguage.EdgeProviderProfiles)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SpokenLanguageMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case spokenlanguage.EdgeLocalizedIn:
+		ids := make([]ent.Value, 0, len(m.removedlocalized_in))
+		for id := range m.removedlocalized_in {
+			ids = append(ids, id)
+		}
+		return ids
+	case spokenlanguage.EdgeProviderProfiles:
+		ids := make([]ent.Value, 0, len(m.removedprovider_profiles))
+		for id := range m.removedprovider_profiles {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SpokenLanguageMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedlocalized_in {
+		edges = append(edges, spokenlanguage.EdgeLocalizedIn)
+	}
+	if m.clearedprovider_profiles {
+		edges = append(edges, spokenlanguage.EdgeProviderProfiles)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SpokenLanguageMutation) EdgeCleared(name string) bool {
+	switch name {
+	case spokenlanguage.EdgeLocalizedIn:
+		return m.clearedlocalized_in
+	case spokenlanguage.EdgeProviderProfiles:
+		return m.clearedprovider_profiles
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SpokenLanguageMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown SpokenLanguage unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SpokenLanguageMutation) ResetEdge(name string) error {
+	switch name {
+	case spokenlanguage.EdgeLocalizedIn:
+		m.ResetLocalizedIn()
+		return nil
+	case spokenlanguage.EdgeProviderProfiles:
+		m.ResetProviderProfiles()
+		return nil
+	}
+	return fmt.Errorf("unknown SpokenLanguage edge %s", name)
+}
+
+// SpokenLanguageTranslationMutation represents an operation that mutates the SpokenLanguageTranslation nodes in the graph.
+type SpokenLanguageTranslationMutation struct {
+	config
+	op                   Op
+	typ                  string
+	name                 *string
+	clearedFields        map[string]struct{}
+	language             *string
+	clearedlanguage      bool
+	locale_record        *string
+	clearedlocale_record bool
+	done                 bool
+	oldValue             func(context.Context) (*SpokenLanguageTranslation, error)
+	predicates           []predicate.SpokenLanguageTranslation
+}
+
+var _ ent.Mutation = (*SpokenLanguageTranslationMutation)(nil)
+
+// spokenlanguagetranslationOption allows management of the mutation configuration using functional options.
+type spokenlanguagetranslationOption func(*SpokenLanguageTranslationMutation)
+
+// newSpokenLanguageTranslationMutation creates new mutation for the SpokenLanguageTranslation entity.
+func newSpokenLanguageTranslationMutation(c config, op Op, opts ...spokenlanguagetranslationOption) *SpokenLanguageTranslationMutation {
+	m := &SpokenLanguageTranslationMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSpokenLanguageTranslation,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SpokenLanguageTranslationMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SpokenLanguageTranslationMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetLanguageCode sets the "language_code" field.
+func (m *SpokenLanguageTranslationMutation) SetLanguageCode(s string) {
+	m.language = &s
+}
+
+// LanguageCode returns the value of the "language_code" field in the mutation.
+func (m *SpokenLanguageTranslationMutation) LanguageCode() (r string, exists bool) {
+	v := m.language
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLanguageCode resets all changes to the "language_code" field.
+func (m *SpokenLanguageTranslationMutation) ResetLanguageCode() {
+	m.language = nil
+}
+
+// SetLocale sets the "locale" field.
+func (m *SpokenLanguageTranslationMutation) SetLocale(s string) {
+	m.locale_record = &s
+}
+
+// Locale returns the value of the "locale" field in the mutation.
+func (m *SpokenLanguageTranslationMutation) Locale() (r string, exists bool) {
+	v := m.locale_record
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLocale resets all changes to the "locale" field.
+func (m *SpokenLanguageTranslationMutation) ResetLocale() {
+	m.locale_record = nil
+}
+
+// SetName sets the "name" field.
+func (m *SpokenLanguageTranslationMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *SpokenLanguageTranslationMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *SpokenLanguageTranslationMutation) ResetName() {
+	m.name = nil
+}
+
+// SetLanguageID sets the "language" edge to the SpokenLanguage entity by id.
+func (m *SpokenLanguageTranslationMutation) SetLanguageID(id string) {
+	m.language = &id
+}
+
+// ClearLanguage clears the "language" edge to the SpokenLanguage entity.
+func (m *SpokenLanguageTranslationMutation) ClearLanguage() {
+	m.clearedlanguage = true
+	m.clearedFields[spokenlanguagetranslation.FieldLanguageCode] = struct{}{}
+}
+
+// LanguageCleared reports if the "language" edge to the SpokenLanguage entity was cleared.
+func (m *SpokenLanguageTranslationMutation) LanguageCleared() bool {
+	return m.clearedlanguage
+}
+
+// LanguageID returns the "language" edge ID in the mutation.
+func (m *SpokenLanguageTranslationMutation) LanguageID() (id string, exists bool) {
+	if m.language != nil {
+		return *m.language, true
+	}
+	return
+}
+
+// LanguageIDs returns the "language" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// LanguageID instead. It exists only for internal usage by the builders.
+func (m *SpokenLanguageTranslationMutation) LanguageIDs() (ids []string) {
+	if id := m.language; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetLanguage resets all changes to the "language" edge.
+func (m *SpokenLanguageTranslationMutation) ResetLanguage() {
+	m.language = nil
+	m.clearedlanguage = false
+}
+
+// SetLocaleRecordID sets the "locale_record" edge to the SupportedLocale entity by id.
+func (m *SpokenLanguageTranslationMutation) SetLocaleRecordID(id string) {
+	m.locale_record = &id
+}
+
+// ClearLocaleRecord clears the "locale_record" edge to the SupportedLocale entity.
+func (m *SpokenLanguageTranslationMutation) ClearLocaleRecord() {
+	m.clearedlocale_record = true
+	m.clearedFields[spokenlanguagetranslation.FieldLocale] = struct{}{}
+}
+
+// LocaleRecordCleared reports if the "locale_record" edge to the SupportedLocale entity was cleared.
+func (m *SpokenLanguageTranslationMutation) LocaleRecordCleared() bool {
+	return m.clearedlocale_record
+}
+
+// LocaleRecordID returns the "locale_record" edge ID in the mutation.
+func (m *SpokenLanguageTranslationMutation) LocaleRecordID() (id string, exists bool) {
+	if m.locale_record != nil {
+		return *m.locale_record, true
+	}
+	return
+}
+
+// LocaleRecordIDs returns the "locale_record" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// LocaleRecordID instead. It exists only for internal usage by the builders.
+func (m *SpokenLanguageTranslationMutation) LocaleRecordIDs() (ids []string) {
+	if id := m.locale_record; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetLocaleRecord resets all changes to the "locale_record" edge.
+func (m *SpokenLanguageTranslationMutation) ResetLocaleRecord() {
+	m.locale_record = nil
+	m.clearedlocale_record = false
+}
+
+// Where appends a list predicates to the SpokenLanguageTranslationMutation builder.
+func (m *SpokenLanguageTranslationMutation) Where(ps ...predicate.SpokenLanguageTranslation) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the SpokenLanguageTranslationMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *SpokenLanguageTranslationMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SpokenLanguageTranslation, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *SpokenLanguageTranslationMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *SpokenLanguageTranslationMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (SpokenLanguageTranslation).
+func (m *SpokenLanguageTranslationMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SpokenLanguageTranslationMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.language != nil {
+		fields = append(fields, spokenlanguagetranslation.FieldLanguageCode)
+	}
+	if m.locale_record != nil {
+		fields = append(fields, spokenlanguagetranslation.FieldLocale)
+	}
+	if m.name != nil {
+		fields = append(fields, spokenlanguagetranslation.FieldName)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SpokenLanguageTranslationMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case spokenlanguagetranslation.FieldLanguageCode:
+		return m.LanguageCode()
+	case spokenlanguagetranslation.FieldLocale:
+		return m.Locale()
+	case spokenlanguagetranslation.FieldName:
+		return m.Name()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SpokenLanguageTranslationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	return nil, errors.New("edge schema SpokenLanguageTranslation does not support getting old values")
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SpokenLanguageTranslationMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case spokenlanguagetranslation.FieldLanguageCode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLanguageCode(v)
+		return nil
+	case spokenlanguagetranslation.FieldLocale:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocale(v)
+		return nil
+	case spokenlanguagetranslation.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SpokenLanguageTranslation field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SpokenLanguageTranslationMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SpokenLanguageTranslationMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SpokenLanguageTranslationMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown SpokenLanguageTranslation numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SpokenLanguageTranslationMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SpokenLanguageTranslationMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SpokenLanguageTranslationMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown SpokenLanguageTranslation nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SpokenLanguageTranslationMutation) ResetField(name string) error {
+	switch name {
+	case spokenlanguagetranslation.FieldLanguageCode:
+		m.ResetLanguageCode()
+		return nil
+	case spokenlanguagetranslation.FieldLocale:
+		m.ResetLocale()
+		return nil
+	case spokenlanguagetranslation.FieldName:
+		m.ResetName()
+		return nil
+	}
+	return fmt.Errorf("unknown SpokenLanguageTranslation field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SpokenLanguageTranslationMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.language != nil {
+		edges = append(edges, spokenlanguagetranslation.EdgeLanguage)
+	}
+	if m.locale_record != nil {
+		edges = append(edges, spokenlanguagetranslation.EdgeLocaleRecord)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SpokenLanguageTranslationMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case spokenlanguagetranslation.EdgeLanguage:
+		if id := m.language; id != nil {
+			return []ent.Value{*id}
+		}
+	case spokenlanguagetranslation.EdgeLocaleRecord:
+		if id := m.locale_record; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SpokenLanguageTranslationMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SpokenLanguageTranslationMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SpokenLanguageTranslationMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedlanguage {
+		edges = append(edges, spokenlanguagetranslation.EdgeLanguage)
+	}
+	if m.clearedlocale_record {
+		edges = append(edges, spokenlanguagetranslation.EdgeLocaleRecord)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SpokenLanguageTranslationMutation) EdgeCleared(name string) bool {
+	switch name {
+	case spokenlanguagetranslation.EdgeLanguage:
+		return m.clearedlanguage
+	case spokenlanguagetranslation.EdgeLocaleRecord:
+		return m.clearedlocale_record
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SpokenLanguageTranslationMutation) ClearEdge(name string) error {
+	switch name {
+	case spokenlanguagetranslation.EdgeLanguage:
+		m.ClearLanguage()
+		return nil
+	case spokenlanguagetranslation.EdgeLocaleRecord:
+		m.ClearLocaleRecord()
+		return nil
+	}
+	return fmt.Errorf("unknown SpokenLanguageTranslation unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SpokenLanguageTranslationMutation) ResetEdge(name string) error {
+	switch name {
+	case spokenlanguagetranslation.EdgeLanguage:
+		m.ResetLanguage()
+		return nil
+	case spokenlanguagetranslation.EdgeLocaleRecord:
+		m.ResetLocaleRecord()
+		return nil
+	}
+	return fmt.Errorf("unknown SpokenLanguageTranslation edge %s", name)
+}
+
+// SupportedLocaleMutation represents an operation that mutates the SupportedLocale nodes in the graph.
+type SupportedLocaleMutation struct {
+	config
+	op                           Op
+	typ                          string
+	id                           *string
+	active                       *bool
+	sort_order                   *int
+	addsort_order                *int
+	clearedFields                map[string]struct{}
+	translated_categories        map[uuid.UUID]struct{}
+	removedtranslated_categories map[uuid.UUID]struct{}
+	clearedtranslated_categories bool
+	translated_languages         map[string]struct{}
+	removedtranslated_languages  map[string]struct{}
+	clearedtranslated_languages  bool
+	done                         bool
+	oldValue                     func(context.Context) (*SupportedLocale, error)
+	predicates                   []predicate.SupportedLocale
+}
+
+var _ ent.Mutation = (*SupportedLocaleMutation)(nil)
+
+// supportedlocaleOption allows management of the mutation configuration using functional options.
+type supportedlocaleOption func(*SupportedLocaleMutation)
+
+// newSupportedLocaleMutation creates new mutation for the SupportedLocale entity.
+func newSupportedLocaleMutation(c config, op Op, opts ...supportedlocaleOption) *SupportedLocaleMutation {
+	m := &SupportedLocaleMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSupportedLocale,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withSupportedLocaleID sets the ID field of the mutation.
+func withSupportedLocaleID(id string) supportedlocaleOption {
+	return func(m *SupportedLocaleMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *SupportedLocale
+		)
+		m.oldValue = func(ctx context.Context) (*SupportedLocale, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().SupportedLocale.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withSupportedLocale sets the old SupportedLocale of the mutation.
+func withSupportedLocale(node *SupportedLocale) supportedlocaleOption {
+	return func(m *SupportedLocaleMutation) {
+		m.oldValue = func(context.Context) (*SupportedLocale, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SupportedLocaleMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SupportedLocaleMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of SupportedLocale entities.
+func (m *SupportedLocaleMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *SupportedLocaleMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *SupportedLocaleMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().SupportedLocale.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetActive sets the "active" field.
+func (m *SupportedLocaleMutation) SetActive(b bool) {
+	m.active = &b
+}
+
+// Active returns the value of the "active" field in the mutation.
+func (m *SupportedLocaleMutation) Active() (r bool, exists bool) {
+	v := m.active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActive returns the old "active" field's value of the SupportedLocale entity.
+// If the SupportedLocale object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SupportedLocaleMutation) OldActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActive: %w", err)
+	}
+	return oldValue.Active, nil
+}
+
+// ResetActive resets all changes to the "active" field.
+func (m *SupportedLocaleMutation) ResetActive() {
+	m.active = nil
+}
+
+// SetSortOrder sets the "sort_order" field.
+func (m *SupportedLocaleMutation) SetSortOrder(i int) {
+	m.sort_order = &i
+	m.addsort_order = nil
+}
+
+// SortOrder returns the value of the "sort_order" field in the mutation.
+func (m *SupportedLocaleMutation) SortOrder() (r int, exists bool) {
+	v := m.sort_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSortOrder returns the old "sort_order" field's value of the SupportedLocale entity.
+// If the SupportedLocale object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SupportedLocaleMutation) OldSortOrder(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSortOrder is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSortOrder requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSortOrder: %w", err)
+	}
+	return oldValue.SortOrder, nil
+}
+
+// AddSortOrder adds i to the "sort_order" field.
+func (m *SupportedLocaleMutation) AddSortOrder(i int) {
+	if m.addsort_order != nil {
+		*m.addsort_order += i
+	} else {
+		m.addsort_order = &i
+	}
+}
+
+// AddedSortOrder returns the value that was added to the "sort_order" field in this mutation.
+func (m *SupportedLocaleMutation) AddedSortOrder() (r int, exists bool) {
+	v := m.addsort_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSortOrder resets all changes to the "sort_order" field.
+func (m *SupportedLocaleMutation) ResetSortOrder() {
+	m.sort_order = nil
+	m.addsort_order = nil
+}
+
+// AddTranslatedCategoryIDs adds the "translated_categories" edge to the ServiceCategory entity by ids.
+func (m *SupportedLocaleMutation) AddTranslatedCategoryIDs(ids ...uuid.UUID) {
+	if m.translated_categories == nil {
+		m.translated_categories = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.translated_categories[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTranslatedCategories clears the "translated_categories" edge to the ServiceCategory entity.
+func (m *SupportedLocaleMutation) ClearTranslatedCategories() {
+	m.clearedtranslated_categories = true
+}
+
+// TranslatedCategoriesCleared reports if the "translated_categories" edge to the ServiceCategory entity was cleared.
+func (m *SupportedLocaleMutation) TranslatedCategoriesCleared() bool {
+	return m.clearedtranslated_categories
+}
+
+// RemoveTranslatedCategoryIDs removes the "translated_categories" edge to the ServiceCategory entity by IDs.
+func (m *SupportedLocaleMutation) RemoveTranslatedCategoryIDs(ids ...uuid.UUID) {
+	if m.removedtranslated_categories == nil {
+		m.removedtranslated_categories = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.translated_categories, ids[i])
+		m.removedtranslated_categories[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTranslatedCategories returns the removed IDs of the "translated_categories" edge to the ServiceCategory entity.
+func (m *SupportedLocaleMutation) RemovedTranslatedCategoriesIDs() (ids []uuid.UUID) {
+	for id := range m.removedtranslated_categories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TranslatedCategoriesIDs returns the "translated_categories" edge IDs in the mutation.
+func (m *SupportedLocaleMutation) TranslatedCategoriesIDs() (ids []uuid.UUID) {
+	for id := range m.translated_categories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTranslatedCategories resets all changes to the "translated_categories" edge.
+func (m *SupportedLocaleMutation) ResetTranslatedCategories() {
+	m.translated_categories = nil
+	m.clearedtranslated_categories = false
+	m.removedtranslated_categories = nil
+}
+
+// AddTranslatedLanguageIDs adds the "translated_languages" edge to the SpokenLanguage entity by ids.
+func (m *SupportedLocaleMutation) AddTranslatedLanguageIDs(ids ...string) {
+	if m.translated_languages == nil {
+		m.translated_languages = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.translated_languages[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTranslatedLanguages clears the "translated_languages" edge to the SpokenLanguage entity.
+func (m *SupportedLocaleMutation) ClearTranslatedLanguages() {
+	m.clearedtranslated_languages = true
+}
+
+// TranslatedLanguagesCleared reports if the "translated_languages" edge to the SpokenLanguage entity was cleared.
+func (m *SupportedLocaleMutation) TranslatedLanguagesCleared() bool {
+	return m.clearedtranslated_languages
+}
+
+// RemoveTranslatedLanguageIDs removes the "translated_languages" edge to the SpokenLanguage entity by IDs.
+func (m *SupportedLocaleMutation) RemoveTranslatedLanguageIDs(ids ...string) {
+	if m.removedtranslated_languages == nil {
+		m.removedtranslated_languages = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.translated_languages, ids[i])
+		m.removedtranslated_languages[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTranslatedLanguages returns the removed IDs of the "translated_languages" edge to the SpokenLanguage entity.
+func (m *SupportedLocaleMutation) RemovedTranslatedLanguagesIDs() (ids []string) {
+	for id := range m.removedtranslated_languages {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TranslatedLanguagesIDs returns the "translated_languages" edge IDs in the mutation.
+func (m *SupportedLocaleMutation) TranslatedLanguagesIDs() (ids []string) {
+	for id := range m.translated_languages {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTranslatedLanguages resets all changes to the "translated_languages" edge.
+func (m *SupportedLocaleMutation) ResetTranslatedLanguages() {
+	m.translated_languages = nil
+	m.clearedtranslated_languages = false
+	m.removedtranslated_languages = nil
+}
+
+// Where appends a list predicates to the SupportedLocaleMutation builder.
+func (m *SupportedLocaleMutation) Where(ps ...predicate.SupportedLocale) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the SupportedLocaleMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *SupportedLocaleMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SupportedLocale, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *SupportedLocaleMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *SupportedLocaleMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (SupportedLocale).
+func (m *SupportedLocaleMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SupportedLocaleMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.active != nil {
+		fields = append(fields, supportedlocale.FieldActive)
+	}
+	if m.sort_order != nil {
+		fields = append(fields, supportedlocale.FieldSortOrder)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SupportedLocaleMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case supportedlocale.FieldActive:
+		return m.Active()
+	case supportedlocale.FieldSortOrder:
+		return m.SortOrder()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SupportedLocaleMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case supportedlocale.FieldActive:
+		return m.OldActive(ctx)
+	case supportedlocale.FieldSortOrder:
+		return m.OldSortOrder(ctx)
+	}
+	return nil, fmt.Errorf("unknown SupportedLocale field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SupportedLocaleMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case supportedlocale.FieldActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActive(v)
+		return nil
+	case supportedlocale.FieldSortOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSortOrder(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SupportedLocale field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SupportedLocaleMutation) AddedFields() []string {
+	var fields []string
+	if m.addsort_order != nil {
+		fields = append(fields, supportedlocale.FieldSortOrder)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SupportedLocaleMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case supportedlocale.FieldSortOrder:
+		return m.AddedSortOrder()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SupportedLocaleMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case supportedlocale.FieldSortOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSortOrder(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SupportedLocale numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SupportedLocaleMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SupportedLocaleMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SupportedLocaleMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown SupportedLocale nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SupportedLocaleMutation) ResetField(name string) error {
+	switch name {
+	case supportedlocale.FieldActive:
+		m.ResetActive()
+		return nil
+	case supportedlocale.FieldSortOrder:
+		m.ResetSortOrder()
+		return nil
+	}
+	return fmt.Errorf("unknown SupportedLocale field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SupportedLocaleMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.translated_categories != nil {
+		edges = append(edges, supportedlocale.EdgeTranslatedCategories)
+	}
+	if m.translated_languages != nil {
+		edges = append(edges, supportedlocale.EdgeTranslatedLanguages)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SupportedLocaleMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case supportedlocale.EdgeTranslatedCategories:
+		ids := make([]ent.Value, 0, len(m.translated_categories))
+		for id := range m.translated_categories {
+			ids = append(ids, id)
+		}
+		return ids
+	case supportedlocale.EdgeTranslatedLanguages:
+		ids := make([]ent.Value, 0, len(m.translated_languages))
+		for id := range m.translated_languages {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SupportedLocaleMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedtranslated_categories != nil {
+		edges = append(edges, supportedlocale.EdgeTranslatedCategories)
+	}
+	if m.removedtranslated_languages != nil {
+		edges = append(edges, supportedlocale.EdgeTranslatedLanguages)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SupportedLocaleMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case supportedlocale.EdgeTranslatedCategories:
+		ids := make([]ent.Value, 0, len(m.removedtranslated_categories))
+		for id := range m.removedtranslated_categories {
+			ids = append(ids, id)
+		}
+		return ids
+	case supportedlocale.EdgeTranslatedLanguages:
+		ids := make([]ent.Value, 0, len(m.removedtranslated_languages))
+		for id := range m.removedtranslated_languages {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SupportedLocaleMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedtranslated_categories {
+		edges = append(edges, supportedlocale.EdgeTranslatedCategories)
+	}
+	if m.clearedtranslated_languages {
+		edges = append(edges, supportedlocale.EdgeTranslatedLanguages)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SupportedLocaleMutation) EdgeCleared(name string) bool {
+	switch name {
+	case supportedlocale.EdgeTranslatedCategories:
+		return m.clearedtranslated_categories
+	case supportedlocale.EdgeTranslatedLanguages:
+		return m.clearedtranslated_languages
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SupportedLocaleMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown SupportedLocale unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SupportedLocaleMutation) ResetEdge(name string) error {
+	switch name {
+	case supportedlocale.EdgeTranslatedCategories:
+		m.ResetTranslatedCategories()
+		return nil
+	case supportedlocale.EdgeTranslatedLanguages:
+		m.ResetTranslatedLanguages()
+		return nil
+	}
+	return fmt.Errorf("unknown SupportedLocale edge %s", name)
 }
 
 // UserAccountMutation represents an operation that mutates the UserAccount nodes in the graph.

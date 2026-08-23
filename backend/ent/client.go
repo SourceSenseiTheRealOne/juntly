@@ -15,7 +15,18 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/administrativearea"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/internaluser"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/locality"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerprofile"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerservicelocality"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerspokenlanguage"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/servicecategory"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/servicecategorytranslation"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/spokenlanguage"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/spokenlanguagetranslation"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/supportedlocale"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/useraccount"
 )
 
@@ -24,8 +35,28 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// AdministrativeArea is the client for interacting with the AdministrativeArea builders.
+	AdministrativeArea *AdministrativeAreaClient
 	// InternalUser is the client for interacting with the InternalUser builders.
 	InternalUser *InternalUserClient
+	// Locality is the client for interacting with the Locality builders.
+	Locality *LocalityClient
+	// ProviderProfile is the client for interacting with the ProviderProfile builders.
+	ProviderProfile *ProviderProfileClient
+	// ProviderServiceLocality is the client for interacting with the ProviderServiceLocality builders.
+	ProviderServiceLocality *ProviderServiceLocalityClient
+	// ProviderSpokenLanguage is the client for interacting with the ProviderSpokenLanguage builders.
+	ProviderSpokenLanguage *ProviderSpokenLanguageClient
+	// ServiceCategory is the client for interacting with the ServiceCategory builders.
+	ServiceCategory *ServiceCategoryClient
+	// ServiceCategoryTranslation is the client for interacting with the ServiceCategoryTranslation builders.
+	ServiceCategoryTranslation *ServiceCategoryTranslationClient
+	// SpokenLanguage is the client for interacting with the SpokenLanguage builders.
+	SpokenLanguage *SpokenLanguageClient
+	// SpokenLanguageTranslation is the client for interacting with the SpokenLanguageTranslation builders.
+	SpokenLanguageTranslation *SpokenLanguageTranslationClient
+	// SupportedLocale is the client for interacting with the SupportedLocale builders.
+	SupportedLocale *SupportedLocaleClient
 	// UserAccount is the client for interacting with the UserAccount builders.
 	UserAccount *UserAccountClient
 }
@@ -39,7 +70,17 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.AdministrativeArea = NewAdministrativeAreaClient(c.config)
 	c.InternalUser = NewInternalUserClient(c.config)
+	c.Locality = NewLocalityClient(c.config)
+	c.ProviderProfile = NewProviderProfileClient(c.config)
+	c.ProviderServiceLocality = NewProviderServiceLocalityClient(c.config)
+	c.ProviderSpokenLanguage = NewProviderSpokenLanguageClient(c.config)
+	c.ServiceCategory = NewServiceCategoryClient(c.config)
+	c.ServiceCategoryTranslation = NewServiceCategoryTranslationClient(c.config)
+	c.SpokenLanguage = NewSpokenLanguageClient(c.config)
+	c.SpokenLanguageTranslation = NewSpokenLanguageTranslationClient(c.config)
+	c.SupportedLocale = NewSupportedLocaleClient(c.config)
 	c.UserAccount = NewUserAccountClient(c.config)
 }
 
@@ -131,10 +172,20 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:          ctx,
-		config:       cfg,
-		InternalUser: NewInternalUserClient(cfg),
-		UserAccount:  NewUserAccountClient(cfg),
+		ctx:                        ctx,
+		config:                     cfg,
+		AdministrativeArea:         NewAdministrativeAreaClient(cfg),
+		InternalUser:               NewInternalUserClient(cfg),
+		Locality:                   NewLocalityClient(cfg),
+		ProviderProfile:            NewProviderProfileClient(cfg),
+		ProviderServiceLocality:    NewProviderServiceLocalityClient(cfg),
+		ProviderSpokenLanguage:     NewProviderSpokenLanguageClient(cfg),
+		ServiceCategory:            NewServiceCategoryClient(cfg),
+		ServiceCategoryTranslation: NewServiceCategoryTranslationClient(cfg),
+		SpokenLanguage:             NewSpokenLanguageClient(cfg),
+		SpokenLanguageTranslation:  NewSpokenLanguageTranslationClient(cfg),
+		SupportedLocale:            NewSupportedLocaleClient(cfg),
+		UserAccount:                NewUserAccountClient(cfg),
 	}, nil
 }
 
@@ -152,17 +203,27 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:          ctx,
-		config:       cfg,
-		InternalUser: NewInternalUserClient(cfg),
-		UserAccount:  NewUserAccountClient(cfg),
+		ctx:                        ctx,
+		config:                     cfg,
+		AdministrativeArea:         NewAdministrativeAreaClient(cfg),
+		InternalUser:               NewInternalUserClient(cfg),
+		Locality:                   NewLocalityClient(cfg),
+		ProviderProfile:            NewProviderProfileClient(cfg),
+		ProviderServiceLocality:    NewProviderServiceLocalityClient(cfg),
+		ProviderSpokenLanguage:     NewProviderSpokenLanguageClient(cfg),
+		ServiceCategory:            NewServiceCategoryClient(cfg),
+		ServiceCategoryTranslation: NewServiceCategoryTranslationClient(cfg),
+		SpokenLanguage:             NewSpokenLanguageClient(cfg),
+		SpokenLanguageTranslation:  NewSpokenLanguageTranslationClient(cfg),
+		SupportedLocale:            NewSupportedLocaleClient(cfg),
+		UserAccount:                NewUserAccountClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		InternalUser.
+//		AdministrativeArea.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -184,26 +245,239 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.InternalUser.Use(hooks...)
-	c.UserAccount.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.AdministrativeArea, c.InternalUser, c.Locality, c.ProviderProfile,
+		c.ProviderServiceLocality, c.ProviderSpokenLanguage, c.ServiceCategory,
+		c.ServiceCategoryTranslation, c.SpokenLanguage, c.SpokenLanguageTranslation,
+		c.SupportedLocale, c.UserAccount,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.InternalUser.Intercept(interceptors...)
-	c.UserAccount.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.AdministrativeArea, c.InternalUser, c.Locality, c.ProviderProfile,
+		c.ProviderServiceLocality, c.ProviderSpokenLanguage, c.ServiceCategory,
+		c.ServiceCategoryTranslation, c.SpokenLanguage, c.SpokenLanguageTranslation,
+		c.SupportedLocale, c.UserAccount,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *AdministrativeAreaMutation:
+		return c.AdministrativeArea.mutate(ctx, m)
 	case *InternalUserMutation:
 		return c.InternalUser.mutate(ctx, m)
+	case *LocalityMutation:
+		return c.Locality.mutate(ctx, m)
+	case *ProviderProfileMutation:
+		return c.ProviderProfile.mutate(ctx, m)
+	case *ProviderServiceLocalityMutation:
+		return c.ProviderServiceLocality.mutate(ctx, m)
+	case *ProviderSpokenLanguageMutation:
+		return c.ProviderSpokenLanguage.mutate(ctx, m)
+	case *ServiceCategoryMutation:
+		return c.ServiceCategory.mutate(ctx, m)
+	case *ServiceCategoryTranslationMutation:
+		return c.ServiceCategoryTranslation.mutate(ctx, m)
+	case *SpokenLanguageMutation:
+		return c.SpokenLanguage.mutate(ctx, m)
+	case *SpokenLanguageTranslationMutation:
+		return c.SpokenLanguageTranslation.mutate(ctx, m)
+	case *SupportedLocaleMutation:
+		return c.SupportedLocale.mutate(ctx, m)
 	case *UserAccountMutation:
 		return c.UserAccount.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// AdministrativeAreaClient is a client for the AdministrativeArea schema.
+type AdministrativeAreaClient struct {
+	config
+}
+
+// NewAdministrativeAreaClient returns a client for the AdministrativeArea from the given config.
+func NewAdministrativeAreaClient(c config) *AdministrativeAreaClient {
+	return &AdministrativeAreaClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `administrativearea.Hooks(f(g(h())))`.
+func (c *AdministrativeAreaClient) Use(hooks ...Hook) {
+	c.hooks.AdministrativeArea = append(c.hooks.AdministrativeArea, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `administrativearea.Intercept(f(g(h())))`.
+func (c *AdministrativeAreaClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AdministrativeArea = append(c.inters.AdministrativeArea, interceptors...)
+}
+
+// Create returns a builder for creating a AdministrativeArea entity.
+func (c *AdministrativeAreaClient) Create() *AdministrativeAreaCreate {
+	mutation := newAdministrativeAreaMutation(c.config, OpCreate)
+	return &AdministrativeAreaCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AdministrativeArea entities.
+func (c *AdministrativeAreaClient) CreateBulk(builders ...*AdministrativeAreaCreate) *AdministrativeAreaCreateBulk {
+	return &AdministrativeAreaCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AdministrativeAreaClient) MapCreateBulk(slice any, setFunc func(*AdministrativeAreaCreate, int)) *AdministrativeAreaCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AdministrativeAreaCreateBulk{err: fmt.Errorf("calling to AdministrativeAreaClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AdministrativeAreaCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AdministrativeAreaCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AdministrativeArea.
+func (c *AdministrativeAreaClient) Update() *AdministrativeAreaUpdate {
+	mutation := newAdministrativeAreaMutation(c.config, OpUpdate)
+	return &AdministrativeAreaUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AdministrativeAreaClient) UpdateOne(_m *AdministrativeArea) *AdministrativeAreaUpdateOne {
+	mutation := newAdministrativeAreaMutation(c.config, OpUpdateOne, withAdministrativeArea(_m))
+	return &AdministrativeAreaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AdministrativeAreaClient) UpdateOneID(id uuid.UUID) *AdministrativeAreaUpdateOne {
+	mutation := newAdministrativeAreaMutation(c.config, OpUpdateOne, withAdministrativeAreaID(id))
+	return &AdministrativeAreaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AdministrativeArea.
+func (c *AdministrativeAreaClient) Delete() *AdministrativeAreaDelete {
+	mutation := newAdministrativeAreaMutation(c.config, OpDelete)
+	return &AdministrativeAreaDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AdministrativeAreaClient) DeleteOne(_m *AdministrativeArea) *AdministrativeAreaDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AdministrativeAreaClient) DeleteOneID(id uuid.UUID) *AdministrativeAreaDeleteOne {
+	builder := c.Delete().Where(administrativearea.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AdministrativeAreaDeleteOne{builder}
+}
+
+// Query returns a query builder for AdministrativeArea.
+func (c *AdministrativeAreaClient) Query() *AdministrativeAreaQuery {
+	return &AdministrativeAreaQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAdministrativeArea},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AdministrativeArea entity by its id.
+func (c *AdministrativeAreaClient) Get(ctx context.Context, id uuid.UUID) (*AdministrativeArea, error) {
+	return c.Query().Where(administrativearea.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AdministrativeAreaClient) GetX(ctx context.Context, id uuid.UUID) *AdministrativeArea {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryChildren queries the children edge of a AdministrativeArea.
+func (c *AdministrativeAreaClient) QueryChildren(_m *AdministrativeArea) *AdministrativeAreaQuery {
+	query := (&AdministrativeAreaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(administrativearea.Table, administrativearea.FieldID, id),
+			sqlgraph.To(administrativearea.Table, administrativearea.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, administrativearea.ChildrenTable, administrativearea.ChildrenColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryParent queries the parent edge of a AdministrativeArea.
+func (c *AdministrativeAreaClient) QueryParent(_m *AdministrativeArea) *AdministrativeAreaQuery {
+	query := (&AdministrativeAreaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(administrativearea.Table, administrativearea.FieldID, id),
+			sqlgraph.To(administrativearea.Table, administrativearea.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, administrativearea.ParentTable, administrativearea.ParentColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLocalities queries the localities edge of a AdministrativeArea.
+func (c *AdministrativeAreaClient) QueryLocalities(_m *AdministrativeArea) *LocalityQuery {
+	query := (&LocalityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(administrativearea.Table, administrativearea.FieldID, id),
+			sqlgraph.To(locality.Table, locality.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, administrativearea.LocalitiesTable, administrativearea.LocalitiesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AdministrativeAreaClient) Hooks() []Hook {
+	return c.hooks.AdministrativeArea
+}
+
+// Interceptors returns the client interceptors.
+func (c *AdministrativeAreaClient) Interceptors() []Interceptor {
+	return c.inters.AdministrativeArea
+}
+
+func (c *AdministrativeAreaClient) mutate(ctx context.Context, m *AdministrativeAreaMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AdministrativeAreaCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AdministrativeAreaUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AdministrativeAreaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AdministrativeAreaDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AdministrativeArea mutation op: %q", m.Op())
 	}
 }
 
@@ -337,6 +611,1375 @@ func (c *InternalUserClient) mutate(ctx context.Context, m *InternalUserMutation
 		return (&InternalUserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown InternalUser mutation op: %q", m.Op())
+	}
+}
+
+// LocalityClient is a client for the Locality schema.
+type LocalityClient struct {
+	config
+}
+
+// NewLocalityClient returns a client for the Locality from the given config.
+func NewLocalityClient(c config) *LocalityClient {
+	return &LocalityClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `locality.Hooks(f(g(h())))`.
+func (c *LocalityClient) Use(hooks ...Hook) {
+	c.hooks.Locality = append(c.hooks.Locality, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `locality.Intercept(f(g(h())))`.
+func (c *LocalityClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Locality = append(c.inters.Locality, interceptors...)
+}
+
+// Create returns a builder for creating a Locality entity.
+func (c *LocalityClient) Create() *LocalityCreate {
+	mutation := newLocalityMutation(c.config, OpCreate)
+	return &LocalityCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Locality entities.
+func (c *LocalityClient) CreateBulk(builders ...*LocalityCreate) *LocalityCreateBulk {
+	return &LocalityCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *LocalityClient) MapCreateBulk(slice any, setFunc func(*LocalityCreate, int)) *LocalityCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &LocalityCreateBulk{err: fmt.Errorf("calling to LocalityClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*LocalityCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &LocalityCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Locality.
+func (c *LocalityClient) Update() *LocalityUpdate {
+	mutation := newLocalityMutation(c.config, OpUpdate)
+	return &LocalityUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *LocalityClient) UpdateOne(_m *Locality) *LocalityUpdateOne {
+	mutation := newLocalityMutation(c.config, OpUpdateOne, withLocality(_m))
+	return &LocalityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *LocalityClient) UpdateOneID(id uuid.UUID) *LocalityUpdateOne {
+	mutation := newLocalityMutation(c.config, OpUpdateOne, withLocalityID(id))
+	return &LocalityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Locality.
+func (c *LocalityClient) Delete() *LocalityDelete {
+	mutation := newLocalityMutation(c.config, OpDelete)
+	return &LocalityDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *LocalityClient) DeleteOne(_m *Locality) *LocalityDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *LocalityClient) DeleteOneID(id uuid.UUID) *LocalityDeleteOne {
+	builder := c.Delete().Where(locality.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &LocalityDeleteOne{builder}
+}
+
+// Query returns a query builder for Locality.
+func (c *LocalityClient) Query() *LocalityQuery {
+	return &LocalityQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeLocality},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Locality entity by its id.
+func (c *LocalityClient) Get(ctx context.Context, id uuid.UUID) (*Locality, error) {
+	return c.Query().Where(locality.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *LocalityClient) GetX(ctx context.Context, id uuid.UUID) *Locality {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryParentParish queries the parent_parish edge of a Locality.
+func (c *LocalityClient) QueryParentParish(_m *Locality) *AdministrativeAreaQuery {
+	query := (&AdministrativeAreaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(locality.Table, locality.FieldID, id),
+			sqlgraph.To(administrativearea.Table, administrativearea.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, locality.ParentParishTable, locality.ParentParishColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryProviderProfiles queries the provider_profiles edge of a Locality.
+func (c *LocalityClient) QueryProviderProfiles(_m *Locality) *ProviderProfileQuery {
+	query := (&ProviderProfileClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(locality.Table, locality.FieldID, id),
+			sqlgraph.To(providerprofile.Table, providerprofile.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, locality.ProviderProfilesTable, locality.ProviderProfilesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *LocalityClient) Hooks() []Hook {
+	return c.hooks.Locality
+}
+
+// Interceptors returns the client interceptors.
+func (c *LocalityClient) Interceptors() []Interceptor {
+	return c.inters.Locality
+}
+
+func (c *LocalityClient) mutate(ctx context.Context, m *LocalityMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&LocalityCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&LocalityUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&LocalityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&LocalityDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Locality mutation op: %q", m.Op())
+	}
+}
+
+// ProviderProfileClient is a client for the ProviderProfile schema.
+type ProviderProfileClient struct {
+	config
+}
+
+// NewProviderProfileClient returns a client for the ProviderProfile from the given config.
+func NewProviderProfileClient(c config) *ProviderProfileClient {
+	return &ProviderProfileClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `providerprofile.Hooks(f(g(h())))`.
+func (c *ProviderProfileClient) Use(hooks ...Hook) {
+	c.hooks.ProviderProfile = append(c.hooks.ProviderProfile, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `providerprofile.Intercept(f(g(h())))`.
+func (c *ProviderProfileClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ProviderProfile = append(c.inters.ProviderProfile, interceptors...)
+}
+
+// Create returns a builder for creating a ProviderProfile entity.
+func (c *ProviderProfileClient) Create() *ProviderProfileCreate {
+	mutation := newProviderProfileMutation(c.config, OpCreate)
+	return &ProviderProfileCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProviderProfile entities.
+func (c *ProviderProfileClient) CreateBulk(builders ...*ProviderProfileCreate) *ProviderProfileCreateBulk {
+	return &ProviderProfileCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ProviderProfileClient) MapCreateBulk(slice any, setFunc func(*ProviderProfileCreate, int)) *ProviderProfileCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ProviderProfileCreateBulk{err: fmt.Errorf("calling to ProviderProfileClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ProviderProfileCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ProviderProfileCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProviderProfile.
+func (c *ProviderProfileClient) Update() *ProviderProfileUpdate {
+	mutation := newProviderProfileMutation(c.config, OpUpdate)
+	return &ProviderProfileUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProviderProfileClient) UpdateOne(_m *ProviderProfile) *ProviderProfileUpdateOne {
+	mutation := newProviderProfileMutation(c.config, OpUpdateOne, withProviderProfile(_m))
+	return &ProviderProfileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProviderProfileClient) UpdateOneID(id uuid.UUID) *ProviderProfileUpdateOne {
+	mutation := newProviderProfileMutation(c.config, OpUpdateOne, withProviderProfileID(id))
+	return &ProviderProfileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProviderProfile.
+func (c *ProviderProfileClient) Delete() *ProviderProfileDelete {
+	mutation := newProviderProfileMutation(c.config, OpDelete)
+	return &ProviderProfileDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ProviderProfileClient) DeleteOne(_m *ProviderProfile) *ProviderProfileDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ProviderProfileClient) DeleteOneID(id uuid.UUID) *ProviderProfileDeleteOne {
+	builder := c.Delete().Where(providerprofile.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProviderProfileDeleteOne{builder}
+}
+
+// Query returns a query builder for ProviderProfile.
+func (c *ProviderProfileClient) Query() *ProviderProfileQuery {
+	return &ProviderProfileQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeProviderProfile},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ProviderProfile entity by its id.
+func (c *ProviderProfileClient) Get(ctx context.Context, id uuid.UUID) (*ProviderProfile, error) {
+	return c.Query().Where(providerprofile.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProviderProfileClient) GetX(ctx context.Context, id uuid.UUID) *ProviderProfile {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryServiceLocalities queries the service_localities edge of a ProviderProfile.
+func (c *ProviderProfileClient) QueryServiceLocalities(_m *ProviderProfile) *LocalityQuery {
+	query := (&LocalityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(providerprofile.Table, providerprofile.FieldID, id),
+			sqlgraph.To(locality.Table, locality.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, providerprofile.ServiceLocalitiesTable, providerprofile.ServiceLocalitiesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySpokenLanguages queries the spoken_languages edge of a ProviderProfile.
+func (c *ProviderProfileClient) QuerySpokenLanguages(_m *ProviderProfile) *SpokenLanguageQuery {
+	query := (&SpokenLanguageClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(providerprofile.Table, providerprofile.FieldID, id),
+			sqlgraph.To(spokenlanguage.Table, spokenlanguage.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, providerprofile.SpokenLanguagesTable, providerprofile.SpokenLanguagesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryServiceLocalityLinks queries the service_locality_links edge of a ProviderProfile.
+func (c *ProviderProfileClient) QueryServiceLocalityLinks(_m *ProviderProfile) *ProviderServiceLocalityQuery {
+	query := (&ProviderServiceLocalityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(providerprofile.Table, providerprofile.FieldID, id),
+			sqlgraph.To(providerservicelocality.Table, providerservicelocality.ProfileColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, providerprofile.ServiceLocalityLinksTable, providerprofile.ServiceLocalityLinksColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySpokenLanguageLinks queries the spoken_language_links edge of a ProviderProfile.
+func (c *ProviderProfileClient) QuerySpokenLanguageLinks(_m *ProviderProfile) *ProviderSpokenLanguageQuery {
+	query := (&ProviderSpokenLanguageClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(providerprofile.Table, providerprofile.FieldID, id),
+			sqlgraph.To(providerspokenlanguage.Table, providerspokenlanguage.ProfileColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, providerprofile.SpokenLanguageLinksTable, providerprofile.SpokenLanguageLinksColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProviderProfileClient) Hooks() []Hook {
+	return c.hooks.ProviderProfile
+}
+
+// Interceptors returns the client interceptors.
+func (c *ProviderProfileClient) Interceptors() []Interceptor {
+	return c.inters.ProviderProfile
+}
+
+func (c *ProviderProfileClient) mutate(ctx context.Context, m *ProviderProfileMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ProviderProfileCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ProviderProfileUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ProviderProfileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ProviderProfileDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ProviderProfile mutation op: %q", m.Op())
+	}
+}
+
+// ProviderServiceLocalityClient is a client for the ProviderServiceLocality schema.
+type ProviderServiceLocalityClient struct {
+	config
+}
+
+// NewProviderServiceLocalityClient returns a client for the ProviderServiceLocality from the given config.
+func NewProviderServiceLocalityClient(c config) *ProviderServiceLocalityClient {
+	return &ProviderServiceLocalityClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `providerservicelocality.Hooks(f(g(h())))`.
+func (c *ProviderServiceLocalityClient) Use(hooks ...Hook) {
+	c.hooks.ProviderServiceLocality = append(c.hooks.ProviderServiceLocality, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `providerservicelocality.Intercept(f(g(h())))`.
+func (c *ProviderServiceLocalityClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ProviderServiceLocality = append(c.inters.ProviderServiceLocality, interceptors...)
+}
+
+// Create returns a builder for creating a ProviderServiceLocality entity.
+func (c *ProviderServiceLocalityClient) Create() *ProviderServiceLocalityCreate {
+	mutation := newProviderServiceLocalityMutation(c.config, OpCreate)
+	return &ProviderServiceLocalityCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProviderServiceLocality entities.
+func (c *ProviderServiceLocalityClient) CreateBulk(builders ...*ProviderServiceLocalityCreate) *ProviderServiceLocalityCreateBulk {
+	return &ProviderServiceLocalityCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ProviderServiceLocalityClient) MapCreateBulk(slice any, setFunc func(*ProviderServiceLocalityCreate, int)) *ProviderServiceLocalityCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ProviderServiceLocalityCreateBulk{err: fmt.Errorf("calling to ProviderServiceLocalityClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ProviderServiceLocalityCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ProviderServiceLocalityCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProviderServiceLocality.
+func (c *ProviderServiceLocalityClient) Update() *ProviderServiceLocalityUpdate {
+	mutation := newProviderServiceLocalityMutation(c.config, OpUpdate)
+	return &ProviderServiceLocalityUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProviderServiceLocalityClient) UpdateOne(_m *ProviderServiceLocality) *ProviderServiceLocalityUpdateOne {
+	mutation := newProviderServiceLocalityMutation(c.config, OpUpdateOne)
+	mutation.profile = &_m.InternalUserID
+	mutation.locality = &_m.LocalityID
+	return &ProviderServiceLocalityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProviderServiceLocality.
+func (c *ProviderServiceLocalityClient) Delete() *ProviderServiceLocalityDelete {
+	mutation := newProviderServiceLocalityMutation(c.config, OpDelete)
+	return &ProviderServiceLocalityDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Query returns a query builder for ProviderServiceLocality.
+func (c *ProviderServiceLocalityClient) Query() *ProviderServiceLocalityQuery {
+	return &ProviderServiceLocalityQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeProviderServiceLocality},
+		inters: c.Interceptors(),
+	}
+}
+
+// QueryProfile queries the profile edge of a ProviderServiceLocality.
+func (c *ProviderServiceLocalityClient) QueryProfile(_m *ProviderServiceLocality) *ProviderProfileQuery {
+	return c.Query().
+		Where(providerservicelocality.InternalUserID(_m.InternalUserID), providerservicelocality.LocalityID(_m.LocalityID)).
+		QueryProfile()
+}
+
+// QueryLocality queries the locality edge of a ProviderServiceLocality.
+func (c *ProviderServiceLocalityClient) QueryLocality(_m *ProviderServiceLocality) *LocalityQuery {
+	return c.Query().
+		Where(providerservicelocality.InternalUserID(_m.InternalUserID), providerservicelocality.LocalityID(_m.LocalityID)).
+		QueryLocality()
+}
+
+// Hooks returns the client hooks.
+func (c *ProviderServiceLocalityClient) Hooks() []Hook {
+	return c.hooks.ProviderServiceLocality
+}
+
+// Interceptors returns the client interceptors.
+func (c *ProviderServiceLocalityClient) Interceptors() []Interceptor {
+	return c.inters.ProviderServiceLocality
+}
+
+func (c *ProviderServiceLocalityClient) mutate(ctx context.Context, m *ProviderServiceLocalityMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ProviderServiceLocalityCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ProviderServiceLocalityUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ProviderServiceLocalityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ProviderServiceLocalityDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ProviderServiceLocality mutation op: %q", m.Op())
+	}
+}
+
+// ProviderSpokenLanguageClient is a client for the ProviderSpokenLanguage schema.
+type ProviderSpokenLanguageClient struct {
+	config
+}
+
+// NewProviderSpokenLanguageClient returns a client for the ProviderSpokenLanguage from the given config.
+func NewProviderSpokenLanguageClient(c config) *ProviderSpokenLanguageClient {
+	return &ProviderSpokenLanguageClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `providerspokenlanguage.Hooks(f(g(h())))`.
+func (c *ProviderSpokenLanguageClient) Use(hooks ...Hook) {
+	c.hooks.ProviderSpokenLanguage = append(c.hooks.ProviderSpokenLanguage, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `providerspokenlanguage.Intercept(f(g(h())))`.
+func (c *ProviderSpokenLanguageClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ProviderSpokenLanguage = append(c.inters.ProviderSpokenLanguage, interceptors...)
+}
+
+// Create returns a builder for creating a ProviderSpokenLanguage entity.
+func (c *ProviderSpokenLanguageClient) Create() *ProviderSpokenLanguageCreate {
+	mutation := newProviderSpokenLanguageMutation(c.config, OpCreate)
+	return &ProviderSpokenLanguageCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProviderSpokenLanguage entities.
+func (c *ProviderSpokenLanguageClient) CreateBulk(builders ...*ProviderSpokenLanguageCreate) *ProviderSpokenLanguageCreateBulk {
+	return &ProviderSpokenLanguageCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ProviderSpokenLanguageClient) MapCreateBulk(slice any, setFunc func(*ProviderSpokenLanguageCreate, int)) *ProviderSpokenLanguageCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ProviderSpokenLanguageCreateBulk{err: fmt.Errorf("calling to ProviderSpokenLanguageClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ProviderSpokenLanguageCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ProviderSpokenLanguageCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProviderSpokenLanguage.
+func (c *ProviderSpokenLanguageClient) Update() *ProviderSpokenLanguageUpdate {
+	mutation := newProviderSpokenLanguageMutation(c.config, OpUpdate)
+	return &ProviderSpokenLanguageUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProviderSpokenLanguageClient) UpdateOne(_m *ProviderSpokenLanguage) *ProviderSpokenLanguageUpdateOne {
+	mutation := newProviderSpokenLanguageMutation(c.config, OpUpdateOne)
+	mutation.profile = &_m.InternalUserID
+	mutation.language = &_m.LanguageCode
+	return &ProviderSpokenLanguageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProviderSpokenLanguage.
+func (c *ProviderSpokenLanguageClient) Delete() *ProviderSpokenLanguageDelete {
+	mutation := newProviderSpokenLanguageMutation(c.config, OpDelete)
+	return &ProviderSpokenLanguageDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Query returns a query builder for ProviderSpokenLanguage.
+func (c *ProviderSpokenLanguageClient) Query() *ProviderSpokenLanguageQuery {
+	return &ProviderSpokenLanguageQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeProviderSpokenLanguage},
+		inters: c.Interceptors(),
+	}
+}
+
+// QueryProfile queries the profile edge of a ProviderSpokenLanguage.
+func (c *ProviderSpokenLanguageClient) QueryProfile(_m *ProviderSpokenLanguage) *ProviderProfileQuery {
+	return c.Query().
+		Where(providerspokenlanguage.InternalUserID(_m.InternalUserID), providerspokenlanguage.LanguageCode(_m.LanguageCode)).
+		QueryProfile()
+}
+
+// QueryLanguage queries the language edge of a ProviderSpokenLanguage.
+func (c *ProviderSpokenLanguageClient) QueryLanguage(_m *ProviderSpokenLanguage) *SpokenLanguageQuery {
+	return c.Query().
+		Where(providerspokenlanguage.InternalUserID(_m.InternalUserID), providerspokenlanguage.LanguageCode(_m.LanguageCode)).
+		QueryLanguage()
+}
+
+// Hooks returns the client hooks.
+func (c *ProviderSpokenLanguageClient) Hooks() []Hook {
+	return c.hooks.ProviderSpokenLanguage
+}
+
+// Interceptors returns the client interceptors.
+func (c *ProviderSpokenLanguageClient) Interceptors() []Interceptor {
+	return c.inters.ProviderSpokenLanguage
+}
+
+func (c *ProviderSpokenLanguageClient) mutate(ctx context.Context, m *ProviderSpokenLanguageMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ProviderSpokenLanguageCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ProviderSpokenLanguageUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ProviderSpokenLanguageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ProviderSpokenLanguageDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ProviderSpokenLanguage mutation op: %q", m.Op())
+	}
+}
+
+// ServiceCategoryClient is a client for the ServiceCategory schema.
+type ServiceCategoryClient struct {
+	config
+}
+
+// NewServiceCategoryClient returns a client for the ServiceCategory from the given config.
+func NewServiceCategoryClient(c config) *ServiceCategoryClient {
+	return &ServiceCategoryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `servicecategory.Hooks(f(g(h())))`.
+func (c *ServiceCategoryClient) Use(hooks ...Hook) {
+	c.hooks.ServiceCategory = append(c.hooks.ServiceCategory, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `servicecategory.Intercept(f(g(h())))`.
+func (c *ServiceCategoryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ServiceCategory = append(c.inters.ServiceCategory, interceptors...)
+}
+
+// Create returns a builder for creating a ServiceCategory entity.
+func (c *ServiceCategoryClient) Create() *ServiceCategoryCreate {
+	mutation := newServiceCategoryMutation(c.config, OpCreate)
+	return &ServiceCategoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ServiceCategory entities.
+func (c *ServiceCategoryClient) CreateBulk(builders ...*ServiceCategoryCreate) *ServiceCategoryCreateBulk {
+	return &ServiceCategoryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ServiceCategoryClient) MapCreateBulk(slice any, setFunc func(*ServiceCategoryCreate, int)) *ServiceCategoryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ServiceCategoryCreateBulk{err: fmt.Errorf("calling to ServiceCategoryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ServiceCategoryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ServiceCategoryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ServiceCategory.
+func (c *ServiceCategoryClient) Update() *ServiceCategoryUpdate {
+	mutation := newServiceCategoryMutation(c.config, OpUpdate)
+	return &ServiceCategoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ServiceCategoryClient) UpdateOne(_m *ServiceCategory) *ServiceCategoryUpdateOne {
+	mutation := newServiceCategoryMutation(c.config, OpUpdateOne, withServiceCategory(_m))
+	return &ServiceCategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ServiceCategoryClient) UpdateOneID(id uuid.UUID) *ServiceCategoryUpdateOne {
+	mutation := newServiceCategoryMutation(c.config, OpUpdateOne, withServiceCategoryID(id))
+	return &ServiceCategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ServiceCategory.
+func (c *ServiceCategoryClient) Delete() *ServiceCategoryDelete {
+	mutation := newServiceCategoryMutation(c.config, OpDelete)
+	return &ServiceCategoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ServiceCategoryClient) DeleteOne(_m *ServiceCategory) *ServiceCategoryDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ServiceCategoryClient) DeleteOneID(id uuid.UUID) *ServiceCategoryDeleteOne {
+	builder := c.Delete().Where(servicecategory.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ServiceCategoryDeleteOne{builder}
+}
+
+// Query returns a query builder for ServiceCategory.
+func (c *ServiceCategoryClient) Query() *ServiceCategoryQuery {
+	return &ServiceCategoryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeServiceCategory},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ServiceCategory entity by its id.
+func (c *ServiceCategoryClient) Get(ctx context.Context, id uuid.UUID) (*ServiceCategory, error) {
+	return c.Query().Where(servicecategory.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ServiceCategoryClient) GetX(ctx context.Context, id uuid.UUID) *ServiceCategory {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryChildren queries the children edge of a ServiceCategory.
+func (c *ServiceCategoryClient) QueryChildren(_m *ServiceCategory) *ServiceCategoryQuery {
+	query := (&ServiceCategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(servicecategory.Table, servicecategory.FieldID, id),
+			sqlgraph.To(servicecategory.Table, servicecategory.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, servicecategory.ChildrenTable, servicecategory.ChildrenColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryParent queries the parent edge of a ServiceCategory.
+func (c *ServiceCategoryClient) QueryParent(_m *ServiceCategory) *ServiceCategoryQuery {
+	query := (&ServiceCategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(servicecategory.Table, servicecategory.FieldID, id),
+			sqlgraph.To(servicecategory.Table, servicecategory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, servicecategory.ParentTable, servicecategory.ParentColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLocalizedIn queries the localized_in edge of a ServiceCategory.
+func (c *ServiceCategoryClient) QueryLocalizedIn(_m *ServiceCategory) *SupportedLocaleQuery {
+	query := (&SupportedLocaleClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(servicecategory.Table, servicecategory.FieldID, id),
+			sqlgraph.To(supportedlocale.Table, supportedlocale.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, servicecategory.LocalizedInTable, servicecategory.LocalizedInPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTranslations queries the translations edge of a ServiceCategory.
+func (c *ServiceCategoryClient) QueryTranslations(_m *ServiceCategory) *ServiceCategoryTranslationQuery {
+	query := (&ServiceCategoryTranslationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(servicecategory.Table, servicecategory.FieldID, id),
+			sqlgraph.To(servicecategorytranslation.Table, servicecategorytranslation.CategoryColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, servicecategory.TranslationsTable, servicecategory.TranslationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ServiceCategoryClient) Hooks() []Hook {
+	return c.hooks.ServiceCategory
+}
+
+// Interceptors returns the client interceptors.
+func (c *ServiceCategoryClient) Interceptors() []Interceptor {
+	return c.inters.ServiceCategory
+}
+
+func (c *ServiceCategoryClient) mutate(ctx context.Context, m *ServiceCategoryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ServiceCategoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ServiceCategoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ServiceCategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ServiceCategoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ServiceCategory mutation op: %q", m.Op())
+	}
+}
+
+// ServiceCategoryTranslationClient is a client for the ServiceCategoryTranslation schema.
+type ServiceCategoryTranslationClient struct {
+	config
+}
+
+// NewServiceCategoryTranslationClient returns a client for the ServiceCategoryTranslation from the given config.
+func NewServiceCategoryTranslationClient(c config) *ServiceCategoryTranslationClient {
+	return &ServiceCategoryTranslationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `servicecategorytranslation.Hooks(f(g(h())))`.
+func (c *ServiceCategoryTranslationClient) Use(hooks ...Hook) {
+	c.hooks.ServiceCategoryTranslation = append(c.hooks.ServiceCategoryTranslation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `servicecategorytranslation.Intercept(f(g(h())))`.
+func (c *ServiceCategoryTranslationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ServiceCategoryTranslation = append(c.inters.ServiceCategoryTranslation, interceptors...)
+}
+
+// Create returns a builder for creating a ServiceCategoryTranslation entity.
+func (c *ServiceCategoryTranslationClient) Create() *ServiceCategoryTranslationCreate {
+	mutation := newServiceCategoryTranslationMutation(c.config, OpCreate)
+	return &ServiceCategoryTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ServiceCategoryTranslation entities.
+func (c *ServiceCategoryTranslationClient) CreateBulk(builders ...*ServiceCategoryTranslationCreate) *ServiceCategoryTranslationCreateBulk {
+	return &ServiceCategoryTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ServiceCategoryTranslationClient) MapCreateBulk(slice any, setFunc func(*ServiceCategoryTranslationCreate, int)) *ServiceCategoryTranslationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ServiceCategoryTranslationCreateBulk{err: fmt.Errorf("calling to ServiceCategoryTranslationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ServiceCategoryTranslationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ServiceCategoryTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ServiceCategoryTranslation.
+func (c *ServiceCategoryTranslationClient) Update() *ServiceCategoryTranslationUpdate {
+	mutation := newServiceCategoryTranslationMutation(c.config, OpUpdate)
+	return &ServiceCategoryTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ServiceCategoryTranslationClient) UpdateOne(_m *ServiceCategoryTranslation) *ServiceCategoryTranslationUpdateOne {
+	mutation := newServiceCategoryTranslationMutation(c.config, OpUpdateOne)
+	mutation.category = &_m.CategoryID
+	mutation.locale_record = &_m.Locale
+	return &ServiceCategoryTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ServiceCategoryTranslation.
+func (c *ServiceCategoryTranslationClient) Delete() *ServiceCategoryTranslationDelete {
+	mutation := newServiceCategoryTranslationMutation(c.config, OpDelete)
+	return &ServiceCategoryTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Query returns a query builder for ServiceCategoryTranslation.
+func (c *ServiceCategoryTranslationClient) Query() *ServiceCategoryTranslationQuery {
+	return &ServiceCategoryTranslationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeServiceCategoryTranslation},
+		inters: c.Interceptors(),
+	}
+}
+
+// QueryCategory queries the category edge of a ServiceCategoryTranslation.
+func (c *ServiceCategoryTranslationClient) QueryCategory(_m *ServiceCategoryTranslation) *ServiceCategoryQuery {
+	return c.Query().
+		Where(servicecategorytranslation.CategoryID(_m.CategoryID), servicecategorytranslation.Locale(_m.Locale)).
+		QueryCategory()
+}
+
+// QueryLocaleRecord queries the locale_record edge of a ServiceCategoryTranslation.
+func (c *ServiceCategoryTranslationClient) QueryLocaleRecord(_m *ServiceCategoryTranslation) *SupportedLocaleQuery {
+	return c.Query().
+		Where(servicecategorytranslation.CategoryID(_m.CategoryID), servicecategorytranslation.Locale(_m.Locale)).
+		QueryLocaleRecord()
+}
+
+// Hooks returns the client hooks.
+func (c *ServiceCategoryTranslationClient) Hooks() []Hook {
+	return c.hooks.ServiceCategoryTranslation
+}
+
+// Interceptors returns the client interceptors.
+func (c *ServiceCategoryTranslationClient) Interceptors() []Interceptor {
+	return c.inters.ServiceCategoryTranslation
+}
+
+func (c *ServiceCategoryTranslationClient) mutate(ctx context.Context, m *ServiceCategoryTranslationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ServiceCategoryTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ServiceCategoryTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ServiceCategoryTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ServiceCategoryTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ServiceCategoryTranslation mutation op: %q", m.Op())
+	}
+}
+
+// SpokenLanguageClient is a client for the SpokenLanguage schema.
+type SpokenLanguageClient struct {
+	config
+}
+
+// NewSpokenLanguageClient returns a client for the SpokenLanguage from the given config.
+func NewSpokenLanguageClient(c config) *SpokenLanguageClient {
+	return &SpokenLanguageClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `spokenlanguage.Hooks(f(g(h())))`.
+func (c *SpokenLanguageClient) Use(hooks ...Hook) {
+	c.hooks.SpokenLanguage = append(c.hooks.SpokenLanguage, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `spokenlanguage.Intercept(f(g(h())))`.
+func (c *SpokenLanguageClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SpokenLanguage = append(c.inters.SpokenLanguage, interceptors...)
+}
+
+// Create returns a builder for creating a SpokenLanguage entity.
+func (c *SpokenLanguageClient) Create() *SpokenLanguageCreate {
+	mutation := newSpokenLanguageMutation(c.config, OpCreate)
+	return &SpokenLanguageCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SpokenLanguage entities.
+func (c *SpokenLanguageClient) CreateBulk(builders ...*SpokenLanguageCreate) *SpokenLanguageCreateBulk {
+	return &SpokenLanguageCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SpokenLanguageClient) MapCreateBulk(slice any, setFunc func(*SpokenLanguageCreate, int)) *SpokenLanguageCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SpokenLanguageCreateBulk{err: fmt.Errorf("calling to SpokenLanguageClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SpokenLanguageCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SpokenLanguageCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SpokenLanguage.
+func (c *SpokenLanguageClient) Update() *SpokenLanguageUpdate {
+	mutation := newSpokenLanguageMutation(c.config, OpUpdate)
+	return &SpokenLanguageUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SpokenLanguageClient) UpdateOne(_m *SpokenLanguage) *SpokenLanguageUpdateOne {
+	mutation := newSpokenLanguageMutation(c.config, OpUpdateOne, withSpokenLanguage(_m))
+	return &SpokenLanguageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SpokenLanguageClient) UpdateOneID(id string) *SpokenLanguageUpdateOne {
+	mutation := newSpokenLanguageMutation(c.config, OpUpdateOne, withSpokenLanguageID(id))
+	return &SpokenLanguageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SpokenLanguage.
+func (c *SpokenLanguageClient) Delete() *SpokenLanguageDelete {
+	mutation := newSpokenLanguageMutation(c.config, OpDelete)
+	return &SpokenLanguageDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SpokenLanguageClient) DeleteOne(_m *SpokenLanguage) *SpokenLanguageDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SpokenLanguageClient) DeleteOneID(id string) *SpokenLanguageDeleteOne {
+	builder := c.Delete().Where(spokenlanguage.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SpokenLanguageDeleteOne{builder}
+}
+
+// Query returns a query builder for SpokenLanguage.
+func (c *SpokenLanguageClient) Query() *SpokenLanguageQuery {
+	return &SpokenLanguageQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSpokenLanguage},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SpokenLanguage entity by its id.
+func (c *SpokenLanguageClient) Get(ctx context.Context, id string) (*SpokenLanguage, error) {
+	return c.Query().Where(spokenlanguage.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SpokenLanguageClient) GetX(ctx context.Context, id string) *SpokenLanguage {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryLocalizedIn queries the localized_in edge of a SpokenLanguage.
+func (c *SpokenLanguageClient) QueryLocalizedIn(_m *SpokenLanguage) *SupportedLocaleQuery {
+	query := (&SupportedLocaleClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(spokenlanguage.Table, spokenlanguage.FieldID, id),
+			sqlgraph.To(supportedlocale.Table, supportedlocale.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, spokenlanguage.LocalizedInTable, spokenlanguage.LocalizedInPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryProviderProfiles queries the provider_profiles edge of a SpokenLanguage.
+func (c *SpokenLanguageClient) QueryProviderProfiles(_m *SpokenLanguage) *ProviderProfileQuery {
+	query := (&ProviderProfileClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(spokenlanguage.Table, spokenlanguage.FieldID, id),
+			sqlgraph.To(providerprofile.Table, providerprofile.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, spokenlanguage.ProviderProfilesTable, spokenlanguage.ProviderProfilesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTranslations queries the translations edge of a SpokenLanguage.
+func (c *SpokenLanguageClient) QueryTranslations(_m *SpokenLanguage) *SpokenLanguageTranslationQuery {
+	query := (&SpokenLanguageTranslationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(spokenlanguage.Table, spokenlanguage.FieldID, id),
+			sqlgraph.To(spokenlanguagetranslation.Table, spokenlanguagetranslation.LanguageColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, spokenlanguage.TranslationsTable, spokenlanguage.TranslationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SpokenLanguageClient) Hooks() []Hook {
+	return c.hooks.SpokenLanguage
+}
+
+// Interceptors returns the client interceptors.
+func (c *SpokenLanguageClient) Interceptors() []Interceptor {
+	return c.inters.SpokenLanguage
+}
+
+func (c *SpokenLanguageClient) mutate(ctx context.Context, m *SpokenLanguageMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SpokenLanguageCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SpokenLanguageUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SpokenLanguageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SpokenLanguageDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SpokenLanguage mutation op: %q", m.Op())
+	}
+}
+
+// SpokenLanguageTranslationClient is a client for the SpokenLanguageTranslation schema.
+type SpokenLanguageTranslationClient struct {
+	config
+}
+
+// NewSpokenLanguageTranslationClient returns a client for the SpokenLanguageTranslation from the given config.
+func NewSpokenLanguageTranslationClient(c config) *SpokenLanguageTranslationClient {
+	return &SpokenLanguageTranslationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `spokenlanguagetranslation.Hooks(f(g(h())))`.
+func (c *SpokenLanguageTranslationClient) Use(hooks ...Hook) {
+	c.hooks.SpokenLanguageTranslation = append(c.hooks.SpokenLanguageTranslation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `spokenlanguagetranslation.Intercept(f(g(h())))`.
+func (c *SpokenLanguageTranslationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SpokenLanguageTranslation = append(c.inters.SpokenLanguageTranslation, interceptors...)
+}
+
+// Create returns a builder for creating a SpokenLanguageTranslation entity.
+func (c *SpokenLanguageTranslationClient) Create() *SpokenLanguageTranslationCreate {
+	mutation := newSpokenLanguageTranslationMutation(c.config, OpCreate)
+	return &SpokenLanguageTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SpokenLanguageTranslation entities.
+func (c *SpokenLanguageTranslationClient) CreateBulk(builders ...*SpokenLanguageTranslationCreate) *SpokenLanguageTranslationCreateBulk {
+	return &SpokenLanguageTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SpokenLanguageTranslationClient) MapCreateBulk(slice any, setFunc func(*SpokenLanguageTranslationCreate, int)) *SpokenLanguageTranslationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SpokenLanguageTranslationCreateBulk{err: fmt.Errorf("calling to SpokenLanguageTranslationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SpokenLanguageTranslationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SpokenLanguageTranslationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SpokenLanguageTranslation.
+func (c *SpokenLanguageTranslationClient) Update() *SpokenLanguageTranslationUpdate {
+	mutation := newSpokenLanguageTranslationMutation(c.config, OpUpdate)
+	return &SpokenLanguageTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SpokenLanguageTranslationClient) UpdateOne(_m *SpokenLanguageTranslation) *SpokenLanguageTranslationUpdateOne {
+	mutation := newSpokenLanguageTranslationMutation(c.config, OpUpdateOne)
+	mutation.language = &_m.LanguageCode
+	mutation.locale_record = &_m.Locale
+	return &SpokenLanguageTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SpokenLanguageTranslation.
+func (c *SpokenLanguageTranslationClient) Delete() *SpokenLanguageTranslationDelete {
+	mutation := newSpokenLanguageTranslationMutation(c.config, OpDelete)
+	return &SpokenLanguageTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Query returns a query builder for SpokenLanguageTranslation.
+func (c *SpokenLanguageTranslationClient) Query() *SpokenLanguageTranslationQuery {
+	return &SpokenLanguageTranslationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSpokenLanguageTranslation},
+		inters: c.Interceptors(),
+	}
+}
+
+// QueryLanguage queries the language edge of a SpokenLanguageTranslation.
+func (c *SpokenLanguageTranslationClient) QueryLanguage(_m *SpokenLanguageTranslation) *SpokenLanguageQuery {
+	return c.Query().
+		Where(spokenlanguagetranslation.LanguageCode(_m.LanguageCode), spokenlanguagetranslation.Locale(_m.Locale)).
+		QueryLanguage()
+}
+
+// QueryLocaleRecord queries the locale_record edge of a SpokenLanguageTranslation.
+func (c *SpokenLanguageTranslationClient) QueryLocaleRecord(_m *SpokenLanguageTranslation) *SupportedLocaleQuery {
+	return c.Query().
+		Where(spokenlanguagetranslation.LanguageCode(_m.LanguageCode), spokenlanguagetranslation.Locale(_m.Locale)).
+		QueryLocaleRecord()
+}
+
+// Hooks returns the client hooks.
+func (c *SpokenLanguageTranslationClient) Hooks() []Hook {
+	return c.hooks.SpokenLanguageTranslation
+}
+
+// Interceptors returns the client interceptors.
+func (c *SpokenLanguageTranslationClient) Interceptors() []Interceptor {
+	return c.inters.SpokenLanguageTranslation
+}
+
+func (c *SpokenLanguageTranslationClient) mutate(ctx context.Context, m *SpokenLanguageTranslationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SpokenLanguageTranslationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SpokenLanguageTranslationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SpokenLanguageTranslationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SpokenLanguageTranslationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SpokenLanguageTranslation mutation op: %q", m.Op())
+	}
+}
+
+// SupportedLocaleClient is a client for the SupportedLocale schema.
+type SupportedLocaleClient struct {
+	config
+}
+
+// NewSupportedLocaleClient returns a client for the SupportedLocale from the given config.
+func NewSupportedLocaleClient(c config) *SupportedLocaleClient {
+	return &SupportedLocaleClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `supportedlocale.Hooks(f(g(h())))`.
+func (c *SupportedLocaleClient) Use(hooks ...Hook) {
+	c.hooks.SupportedLocale = append(c.hooks.SupportedLocale, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `supportedlocale.Intercept(f(g(h())))`.
+func (c *SupportedLocaleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SupportedLocale = append(c.inters.SupportedLocale, interceptors...)
+}
+
+// Create returns a builder for creating a SupportedLocale entity.
+func (c *SupportedLocaleClient) Create() *SupportedLocaleCreate {
+	mutation := newSupportedLocaleMutation(c.config, OpCreate)
+	return &SupportedLocaleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SupportedLocale entities.
+func (c *SupportedLocaleClient) CreateBulk(builders ...*SupportedLocaleCreate) *SupportedLocaleCreateBulk {
+	return &SupportedLocaleCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SupportedLocaleClient) MapCreateBulk(slice any, setFunc func(*SupportedLocaleCreate, int)) *SupportedLocaleCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SupportedLocaleCreateBulk{err: fmt.Errorf("calling to SupportedLocaleClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SupportedLocaleCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SupportedLocaleCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SupportedLocale.
+func (c *SupportedLocaleClient) Update() *SupportedLocaleUpdate {
+	mutation := newSupportedLocaleMutation(c.config, OpUpdate)
+	return &SupportedLocaleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SupportedLocaleClient) UpdateOne(_m *SupportedLocale) *SupportedLocaleUpdateOne {
+	mutation := newSupportedLocaleMutation(c.config, OpUpdateOne, withSupportedLocale(_m))
+	return &SupportedLocaleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SupportedLocaleClient) UpdateOneID(id string) *SupportedLocaleUpdateOne {
+	mutation := newSupportedLocaleMutation(c.config, OpUpdateOne, withSupportedLocaleID(id))
+	return &SupportedLocaleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SupportedLocale.
+func (c *SupportedLocaleClient) Delete() *SupportedLocaleDelete {
+	mutation := newSupportedLocaleMutation(c.config, OpDelete)
+	return &SupportedLocaleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SupportedLocaleClient) DeleteOne(_m *SupportedLocale) *SupportedLocaleDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SupportedLocaleClient) DeleteOneID(id string) *SupportedLocaleDeleteOne {
+	builder := c.Delete().Where(supportedlocale.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SupportedLocaleDeleteOne{builder}
+}
+
+// Query returns a query builder for SupportedLocale.
+func (c *SupportedLocaleClient) Query() *SupportedLocaleQuery {
+	return &SupportedLocaleQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSupportedLocale},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SupportedLocale entity by its id.
+func (c *SupportedLocaleClient) Get(ctx context.Context, id string) (*SupportedLocale, error) {
+	return c.Query().Where(supportedlocale.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SupportedLocaleClient) GetX(ctx context.Context, id string) *SupportedLocale {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTranslatedCategories queries the translated_categories edge of a SupportedLocale.
+func (c *SupportedLocaleClient) QueryTranslatedCategories(_m *SupportedLocale) *ServiceCategoryQuery {
+	query := (&ServiceCategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(supportedlocale.Table, supportedlocale.FieldID, id),
+			sqlgraph.To(servicecategory.Table, servicecategory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, supportedlocale.TranslatedCategoriesTable, supportedlocale.TranslatedCategoriesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTranslatedLanguages queries the translated_languages edge of a SupportedLocale.
+func (c *SupportedLocaleClient) QueryTranslatedLanguages(_m *SupportedLocale) *SpokenLanguageQuery {
+	query := (&SpokenLanguageClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(supportedlocale.Table, supportedlocale.FieldID, id),
+			sqlgraph.To(spokenlanguage.Table, spokenlanguage.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, supportedlocale.TranslatedLanguagesTable, supportedlocale.TranslatedLanguagesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SupportedLocaleClient) Hooks() []Hook {
+	return c.hooks.SupportedLocale
+}
+
+// Interceptors returns the client interceptors.
+func (c *SupportedLocaleClient) Interceptors() []Interceptor {
+	return c.inters.SupportedLocale
+}
+
+func (c *SupportedLocaleClient) mutate(ctx context.Context, m *SupportedLocaleMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SupportedLocaleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SupportedLocaleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SupportedLocaleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SupportedLocaleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SupportedLocale mutation op: %q", m.Op())
 	}
 }
 
@@ -476,9 +2119,15 @@ func (c *UserAccountClient) mutate(ctx context.Context, m *UserAccountMutation) 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		InternalUser, UserAccount []ent.Hook
+		AdministrativeArea, InternalUser, Locality, ProviderProfile,
+		ProviderServiceLocality, ProviderSpokenLanguage, ServiceCategory,
+		ServiceCategoryTranslation, SpokenLanguage, SpokenLanguageTranslation,
+		SupportedLocale, UserAccount []ent.Hook
 	}
 	inters struct {
-		InternalUser, UserAccount []ent.Interceptor
+		AdministrativeArea, InternalUser, Locality, ProviderProfile,
+		ProviderServiceLocality, ProviderSpokenLanguage, ServiceCategory,
+		ServiceCategoryTranslation, SpokenLanguage, SpokenLanguageTranslation,
+		SupportedLocale, UserAccount []ent.Interceptor
 	}
 )

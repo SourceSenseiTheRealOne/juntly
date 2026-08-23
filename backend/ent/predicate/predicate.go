@@ -6,8 +6,38 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// AdministrativeArea is the predicate function for administrativearea builders.
+type AdministrativeArea func(*sql.Selector)
+
 // InternalUser is the predicate function for internaluser builders.
 type InternalUser func(*sql.Selector)
+
+// Locality is the predicate function for locality builders.
+type Locality func(*sql.Selector)
+
+// ProviderProfile is the predicate function for providerprofile builders.
+type ProviderProfile func(*sql.Selector)
+
+// ProviderServiceLocality is the predicate function for providerservicelocality builders.
+type ProviderServiceLocality func(*sql.Selector)
+
+// ProviderSpokenLanguage is the predicate function for providerspokenlanguage builders.
+type ProviderSpokenLanguage func(*sql.Selector)
+
+// ServiceCategory is the predicate function for servicecategory builders.
+type ServiceCategory func(*sql.Selector)
+
+// ServiceCategoryTranslation is the predicate function for servicecategorytranslation builders.
+type ServiceCategoryTranslation func(*sql.Selector)
+
+// SpokenLanguage is the predicate function for spokenlanguage builders.
+type SpokenLanguage func(*sql.Selector)
+
+// SpokenLanguageTranslation is the predicate function for spokenlanguagetranslation builders.
+type SpokenLanguageTranslation func(*sql.Selector)
+
+// SupportedLocale is the predicate function for supportedlocale builders.
+type SupportedLocale func(*sql.Selector)
 
 // UserAccount is the predicate function for useraccount builders.
 type UserAccount func(*sql.Selector)

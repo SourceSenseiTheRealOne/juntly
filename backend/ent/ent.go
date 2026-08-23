@@ -12,7 +12,17 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/administrativearea"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/internaluser"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/locality"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerprofile"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerservicelocality"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerspokenlanguage"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/servicecategory"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/servicecategorytranslation"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/spokenlanguage"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/spokenlanguagetranslation"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/supportedlocale"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/useraccount"
 )
 
@@ -74,8 +84,18 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			internaluser.Table: internaluser.ValidColumn,
-			useraccount.Table:  useraccount.ValidColumn,
+			administrativearea.Table:         administrativearea.ValidColumn,
+			internaluser.Table:               internaluser.ValidColumn,
+			locality.Table:                   locality.ValidColumn,
+			providerprofile.Table:            providerprofile.ValidColumn,
+			providerservicelocality.Table:    providerservicelocality.ValidColumn,
+			providerspokenlanguage.Table:     providerspokenlanguage.ValidColumn,
+			servicecategory.Table:            servicecategory.ValidColumn,
+			servicecategorytranslation.Table: servicecategorytranslation.ValidColumn,
+			spokenlanguage.Table:             spokenlanguage.ValidColumn,
+			spokenlanguagetranslation.Table:  spokenlanguagetranslation.ValidColumn,
+			supportedlocale.Table:            supportedlocale.ValidColumn,
+			useraccount.Table:                useraccount.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

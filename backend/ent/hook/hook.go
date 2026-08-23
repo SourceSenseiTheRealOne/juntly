@@ -9,6 +9,18 @@ import (
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent"
 )
 
+// The AdministrativeAreaFunc type is an adapter to allow the use of ordinary
+// function as AdministrativeArea mutator.
+type AdministrativeAreaFunc func(context.Context, *ent.AdministrativeAreaMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AdministrativeAreaFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AdministrativeAreaMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AdministrativeAreaMutation", m)
+}
+
 // The InternalUserFunc type is an adapter to allow the use of ordinary
 // function as InternalUser mutator.
 type InternalUserFunc func(context.Context, *ent.InternalUserMutation) (ent.Value, error)
@@ -19,6 +31,114 @@ func (f InternalUserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.InternalUserMutation", m)
+}
+
+// The LocalityFunc type is an adapter to allow the use of ordinary
+// function as Locality mutator.
+type LocalityFunc func(context.Context, *ent.LocalityMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f LocalityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.LocalityMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.LocalityMutation", m)
+}
+
+// The ProviderProfileFunc type is an adapter to allow the use of ordinary
+// function as ProviderProfile mutator.
+type ProviderProfileFunc func(context.Context, *ent.ProviderProfileMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProviderProfileFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ProviderProfileMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProviderProfileMutation", m)
+}
+
+// The ProviderServiceLocalityFunc type is an adapter to allow the use of ordinary
+// function as ProviderServiceLocality mutator.
+type ProviderServiceLocalityFunc func(context.Context, *ent.ProviderServiceLocalityMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProviderServiceLocalityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ProviderServiceLocalityMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProviderServiceLocalityMutation", m)
+}
+
+// The ProviderSpokenLanguageFunc type is an adapter to allow the use of ordinary
+// function as ProviderSpokenLanguage mutator.
+type ProviderSpokenLanguageFunc func(context.Context, *ent.ProviderSpokenLanguageMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProviderSpokenLanguageFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ProviderSpokenLanguageMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProviderSpokenLanguageMutation", m)
+}
+
+// The ServiceCategoryFunc type is an adapter to allow the use of ordinary
+// function as ServiceCategory mutator.
+type ServiceCategoryFunc func(context.Context, *ent.ServiceCategoryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ServiceCategoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ServiceCategoryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ServiceCategoryMutation", m)
+}
+
+// The ServiceCategoryTranslationFunc type is an adapter to allow the use of ordinary
+// function as ServiceCategoryTranslation mutator.
+type ServiceCategoryTranslationFunc func(context.Context, *ent.ServiceCategoryTranslationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ServiceCategoryTranslationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ServiceCategoryTranslationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ServiceCategoryTranslationMutation", m)
+}
+
+// The SpokenLanguageFunc type is an adapter to allow the use of ordinary
+// function as SpokenLanguage mutator.
+type SpokenLanguageFunc func(context.Context, *ent.SpokenLanguageMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SpokenLanguageFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SpokenLanguageMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SpokenLanguageMutation", m)
+}
+
+// The SpokenLanguageTranslationFunc type is an adapter to allow the use of ordinary
+// function as SpokenLanguageTranslation mutator.
+type SpokenLanguageTranslationFunc func(context.Context, *ent.SpokenLanguageTranslationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SpokenLanguageTranslationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SpokenLanguageTranslationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SpokenLanguageTranslationMutation", m)
+}
+
+// The SupportedLocaleFunc type is an adapter to allow the use of ordinary
+// function as SupportedLocale mutator.
+type SupportedLocaleFunc func(context.Context, *ent.SupportedLocaleMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SupportedLocaleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SupportedLocaleMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SupportedLocaleMutation", m)
 }
 
 // The UserAccountFunc type is an adapter to allow the use of ordinary

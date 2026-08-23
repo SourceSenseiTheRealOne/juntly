@@ -12,8 +12,28 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// AdministrativeArea is the client for interacting with the AdministrativeArea builders.
+	AdministrativeArea *AdministrativeAreaClient
 	// InternalUser is the client for interacting with the InternalUser builders.
 	InternalUser *InternalUserClient
+	// Locality is the client for interacting with the Locality builders.
+	Locality *LocalityClient
+	// ProviderProfile is the client for interacting with the ProviderProfile builders.
+	ProviderProfile *ProviderProfileClient
+	// ProviderServiceLocality is the client for interacting with the ProviderServiceLocality builders.
+	ProviderServiceLocality *ProviderServiceLocalityClient
+	// ProviderSpokenLanguage is the client for interacting with the ProviderSpokenLanguage builders.
+	ProviderSpokenLanguage *ProviderSpokenLanguageClient
+	// ServiceCategory is the client for interacting with the ServiceCategory builders.
+	ServiceCategory *ServiceCategoryClient
+	// ServiceCategoryTranslation is the client for interacting with the ServiceCategoryTranslation builders.
+	ServiceCategoryTranslation *ServiceCategoryTranslationClient
+	// SpokenLanguage is the client for interacting with the SpokenLanguage builders.
+	SpokenLanguage *SpokenLanguageClient
+	// SpokenLanguageTranslation is the client for interacting with the SpokenLanguageTranslation builders.
+	SpokenLanguageTranslation *SpokenLanguageTranslationClient
+	// SupportedLocale is the client for interacting with the SupportedLocale builders.
+	SupportedLocale *SupportedLocaleClient
 	// UserAccount is the client for interacting with the UserAccount builders.
 	UserAccount *UserAccountClient
 
@@ -147,7 +167,17 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.AdministrativeArea = NewAdministrativeAreaClient(tx.config)
 	tx.InternalUser = NewInternalUserClient(tx.config)
+	tx.Locality = NewLocalityClient(tx.config)
+	tx.ProviderProfile = NewProviderProfileClient(tx.config)
+	tx.ProviderServiceLocality = NewProviderServiceLocalityClient(tx.config)
+	tx.ProviderSpokenLanguage = NewProviderSpokenLanguageClient(tx.config)
+	tx.ServiceCategory = NewServiceCategoryClient(tx.config)
+	tx.ServiceCategoryTranslation = NewServiceCategoryTranslationClient(tx.config)
+	tx.SpokenLanguage = NewSpokenLanguageClient(tx.config)
+	tx.SpokenLanguageTranslation = NewSpokenLanguageTranslationClient(tx.config)
+	tx.SupportedLocale = NewSupportedLocaleClient(tx.config)
 	tx.UserAccount = NewUserAccountClient(tx.config)
 }
 
@@ -158,7 +188,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: InternalUser.QueryXXX(), the query will be executed
+// applies a query, for example: AdministrativeArea.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

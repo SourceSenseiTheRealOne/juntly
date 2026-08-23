@@ -5,8 +5,17 @@ package ent
 import (
 	"time"
 
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/administrativearea"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/internaluser"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/locality"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerprofile"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerspokenlanguage"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/schema"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/servicecategory"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/servicecategorytranslation"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/spokenlanguage"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/spokenlanguagetranslation"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/supportedlocale"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/useraccount"
 	"github.com/google/uuid"
 )
@@ -15,6 +24,116 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	administrativeareaFields := schema.AdministrativeArea{}.Fields()
+	_ = administrativeareaFields
+	// administrativeareaDescSource is the schema descriptor for source field.
+	administrativeareaDescSource := administrativeareaFields[1].Descriptor()
+	// administrativearea.SourceValidator is a validator for the "source" field. It is called by the builders before save.
+	administrativearea.SourceValidator = func() func(string) error {
+		validators := administrativeareaDescSource.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(source string) error {
+			for _, fn := range fns {
+				if err := fn(source); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// administrativeareaDescSourceVersion is the schema descriptor for source_version field.
+	administrativeareaDescSourceVersion := administrativeareaFields[2].Descriptor()
+	// administrativearea.SourceVersionValidator is a validator for the "source_version" field. It is called by the builders before save.
+	administrativearea.SourceVersionValidator = func() func(string) error {
+		validators := administrativeareaDescSourceVersion.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(source_version string) error {
+			for _, fn := range fns {
+				if err := fn(source_version); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// administrativeareaDescExternalCode is the schema descriptor for external_code field.
+	administrativeareaDescExternalCode := administrativeareaFields[3].Descriptor()
+	// administrativearea.ExternalCodeValidator is a validator for the "external_code" field. It is called by the builders before save.
+	administrativearea.ExternalCodeValidator = func() func(string) error {
+		validators := administrativeareaDescExternalCode.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(external_code string) error {
+			for _, fn := range fns {
+				if err := fn(external_code); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// administrativeareaDescKind is the schema descriptor for kind field.
+	administrativeareaDescKind := administrativeareaFields[4].Descriptor()
+	// administrativearea.KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	administrativearea.KindValidator = func() func(string) error {
+		validators := administrativeareaDescKind.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(kind string) error {
+			for _, fn := range fns {
+				if err := fn(kind); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// administrativeareaDescName is the schema descriptor for name field.
+	administrativeareaDescName := administrativeareaFields[5].Descriptor()
+	// administrativearea.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	administrativearea.NameValidator = func() func(string) error {
+		validators := administrativeareaDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// administrativeareaDescActive is the schema descriptor for active field.
+	administrativeareaDescActive := administrativeareaFields[7].Descriptor()
+	// administrativearea.DefaultActive holds the default value on creation for the active field.
+	administrativearea.DefaultActive = administrativeareaDescActive.Default.(bool)
+	// administrativeareaDescCreatedAt is the schema descriptor for created_at field.
+	administrativeareaDescCreatedAt := administrativeareaFields[8].Descriptor()
+	// administrativearea.DefaultCreatedAt holds the default value on creation for the created_at field.
+	administrativearea.DefaultCreatedAt = administrativeareaDescCreatedAt.Default.(func() time.Time)
+	// administrativeareaDescUpdatedAt is the schema descriptor for updated_at field.
+	administrativeareaDescUpdatedAt := administrativeareaFields[9].Descriptor()
+	// administrativearea.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	administrativearea.DefaultUpdatedAt = administrativeareaDescUpdatedAt.Default.(func() time.Time)
+	// administrativearea.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	administrativearea.UpdateDefaultUpdatedAt = administrativeareaDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// administrativeareaDescID is the schema descriptor for id field.
+	administrativeareaDescID := administrativeareaFields[0].Descriptor()
+	// administrativearea.DefaultID holds the default value on creation for the id field.
+	administrativearea.DefaultID = administrativeareaDescID.Default.(func() uuid.UUID)
 	internaluserFields := schema.InternalUser{}.Fields()
 	_ = internaluserFields
 	// internaluserDescClerkSubject is the schema descriptor for clerk_subject field.
@@ -49,6 +168,450 @@ func init() {
 	internaluserDescID := internaluserFields[0].Descriptor()
 	// internaluser.DefaultID holds the default value on creation for the id field.
 	internaluser.DefaultID = internaluserDescID.Default.(func() uuid.UUID)
+	localityFields := schema.Locality{}.Fields()
+	_ = localityFields
+	// localityDescSlug is the schema descriptor for slug field.
+	localityDescSlug := localityFields[1].Descriptor()
+	// locality.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
+	locality.SlugValidator = func() func(string) error {
+		validators := localityDescSlug.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(slug string) error {
+			for _, fn := range fns {
+				if err := fn(slug); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// localityDescName is the schema descriptor for name field.
+	localityDescName := localityFields[2].Descriptor()
+	// locality.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	locality.NameValidator = func() func(string) error {
+		validators := localityDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// localityDescSource is the schema descriptor for source field.
+	localityDescSource := localityFields[4].Descriptor()
+	// locality.SourceValidator is a validator for the "source" field. It is called by the builders before save.
+	locality.SourceValidator = func() func(string) error {
+		validators := localityDescSource.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(source string) error {
+			for _, fn := range fns {
+				if err := fn(source); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// localityDescSourceElementID is the schema descriptor for source_element_id field.
+	localityDescSourceElementID := localityFields[5].Descriptor()
+	// locality.SourceElementIDValidator is a validator for the "source_element_id" field. It is called by the builders before save.
+	locality.SourceElementIDValidator = func() func(string) error {
+		validators := localityDescSourceElementID.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(source_element_id string) error {
+			for _, fn := range fns {
+				if err := fn(source_element_id); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// localityDescSourceVersion is the schema descriptor for source_version field.
+	localityDescSourceVersion := localityFields[6].Descriptor()
+	// locality.SourceVersionValidator is a validator for the "source_version" field. It is called by the builders before save.
+	locality.SourceVersionValidator = func() func(string) error {
+		validators := localityDescSourceVersion.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(source_version string) error {
+			for _, fn := range fns {
+				if err := fn(source_version); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// localityDescLatitude is the schema descriptor for latitude field.
+	localityDescLatitude := localityFields[8].Descriptor()
+	// locality.LatitudeValidator is a validator for the "latitude" field. It is called by the builders before save.
+	locality.LatitudeValidator = func() func(float64) error {
+		validators := localityDescLatitude.Validators
+		fns := [...]func(float64) error{
+			validators[0].(func(float64) error),
+			validators[1].(func(float64) error),
+		}
+		return func(latitude float64) error {
+			for _, fn := range fns {
+				if err := fn(latitude); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// localityDescLongitude is the schema descriptor for longitude field.
+	localityDescLongitude := localityFields[9].Descriptor()
+	// locality.LongitudeValidator is a validator for the "longitude" field. It is called by the builders before save.
+	locality.LongitudeValidator = func() func(float64) error {
+		validators := localityDescLongitude.Validators
+		fns := [...]func(float64) error{
+			validators[0].(func(float64) error),
+			validators[1].(func(float64) error),
+		}
+		return func(longitude float64) error {
+			for _, fn := range fns {
+				if err := fn(longitude); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// localityDescActive is the schema descriptor for active field.
+	localityDescActive := localityFields[10].Descriptor()
+	// locality.DefaultActive holds the default value on creation for the active field.
+	locality.DefaultActive = localityDescActive.Default.(bool)
+	// localityDescCreatedAt is the schema descriptor for created_at field.
+	localityDescCreatedAt := localityFields[11].Descriptor()
+	// locality.DefaultCreatedAt holds the default value on creation for the created_at field.
+	locality.DefaultCreatedAt = localityDescCreatedAt.Default.(func() time.Time)
+	// localityDescUpdatedAt is the schema descriptor for updated_at field.
+	localityDescUpdatedAt := localityFields[12].Descriptor()
+	// locality.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	locality.DefaultUpdatedAt = localityDescUpdatedAt.Default.(func() time.Time)
+	// locality.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	locality.UpdateDefaultUpdatedAt = localityDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// localityDescID is the schema descriptor for id field.
+	localityDescID := localityFields[0].Descriptor()
+	// locality.DefaultID holds the default value on creation for the id field.
+	locality.DefaultID = localityDescID.Default.(func() uuid.UUID)
+	providerprofileFields := schema.ProviderProfile{}.Fields()
+	_ = providerprofileFields
+	// providerprofileDescDisplayName is the schema descriptor for display_name field.
+	providerprofileDescDisplayName := providerprofileFields[1].Descriptor()
+	// providerprofile.DisplayNameValidator is a validator for the "display_name" field. It is called by the builders before save.
+	providerprofile.DisplayNameValidator = func() func(string) error {
+		validators := providerprofileDescDisplayName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(display_name string) error {
+			for _, fn := range fns {
+				if err := fn(display_name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// providerprofileDescProviderType is the schema descriptor for provider_type field.
+	providerprofileDescProviderType := providerprofileFields[2].Descriptor()
+	// providerprofile.ProviderTypeValidator is a validator for the "provider_type" field. It is called by the builders before save.
+	providerprofile.ProviderTypeValidator = func() func(string) error {
+		validators := providerprofileDescProviderType.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(provider_type string) error {
+			for _, fn := range fns {
+				if err := fn(provider_type); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// providerprofileDescBio is the schema descriptor for bio field.
+	providerprofileDescBio := providerprofileFields[3].Descriptor()
+	// providerprofile.BioValidator is a validator for the "bio" field. It is called by the builders before save.
+	providerprofile.BioValidator = providerprofileDescBio.Validators[0].(func(string) error)
+	// providerprofileDescMaxTravelDistanceKm is the schema descriptor for max_travel_distance_km field.
+	providerprofileDescMaxTravelDistanceKm := providerprofileFields[5].Descriptor()
+	// providerprofile.MaxTravelDistanceKmValidator is a validator for the "max_travel_distance_km" field. It is called by the builders before save.
+	providerprofile.MaxTravelDistanceKmValidator = func() func(int) error {
+		validators := providerprofileDescMaxTravelDistanceKm.Validators
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
+		}
+		return func(max_travel_distance_km int) error {
+			for _, fn := range fns {
+				if err := fn(max_travel_distance_km); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// providerprofileDescTravelsToCustomer is the schema descriptor for travels_to_customer field.
+	providerprofileDescTravelsToCustomer := providerprofileFields[6].Descriptor()
+	// providerprofile.DefaultTravelsToCustomer holds the default value on creation for the travels_to_customer field.
+	providerprofile.DefaultTravelsToCustomer = providerprofileDescTravelsToCustomer.Default.(bool)
+	// providerprofileDescReceivesCustomer is the schema descriptor for receives_customer field.
+	providerprofileDescReceivesCustomer := providerprofileFields[7].Descriptor()
+	// providerprofile.DefaultReceivesCustomer holds the default value on creation for the receives_customer field.
+	providerprofile.DefaultReceivesCustomer = providerprofileDescReceivesCustomer.Default.(bool)
+	// providerprofileDescRemoteServices is the schema descriptor for remote_services field.
+	providerprofileDescRemoteServices := providerprofileFields[8].Descriptor()
+	// providerprofile.DefaultRemoteServices holds the default value on creation for the remote_services field.
+	providerprofile.DefaultRemoteServices = providerprofileDescRemoteServices.Default.(bool)
+	// providerprofileDescCreatedAt is the schema descriptor for created_at field.
+	providerprofileDescCreatedAt := providerprofileFields[9].Descriptor()
+	// providerprofile.DefaultCreatedAt holds the default value on creation for the created_at field.
+	providerprofile.DefaultCreatedAt = providerprofileDescCreatedAt.Default.(func() time.Time)
+	// providerprofileDescUpdatedAt is the schema descriptor for updated_at field.
+	providerprofileDescUpdatedAt := providerprofileFields[10].Descriptor()
+	// providerprofile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	providerprofile.DefaultUpdatedAt = providerprofileDescUpdatedAt.Default.(func() time.Time)
+	// providerprofile.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	providerprofile.UpdateDefaultUpdatedAt = providerprofileDescUpdatedAt.UpdateDefault.(func() time.Time)
+	providerspokenlanguageFields := schema.ProviderSpokenLanguage{}.Fields()
+	_ = providerspokenlanguageFields
+	// providerspokenlanguageDescLanguageCode is the schema descriptor for language_code field.
+	providerspokenlanguageDescLanguageCode := providerspokenlanguageFields[1].Descriptor()
+	// providerspokenlanguage.LanguageCodeValidator is a validator for the "language_code" field. It is called by the builders before save.
+	providerspokenlanguage.LanguageCodeValidator = func() func(string) error {
+		validators := providerspokenlanguageDescLanguageCode.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(language string) error {
+			for _, fn := range fns {
+				if err := fn(language); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	servicecategoryFields := schema.ServiceCategory{}.Fields()
+	_ = servicecategoryFields
+	// servicecategoryDescSlug is the schema descriptor for slug field.
+	servicecategoryDescSlug := servicecategoryFields[2].Descriptor()
+	// servicecategory.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
+	servicecategory.SlugValidator = func() func(string) error {
+		validators := servicecategoryDescSlug.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(slug string) error {
+			for _, fn := range fns {
+				if err := fn(slug); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// servicecategoryDescActive is the schema descriptor for active field.
+	servicecategoryDescActive := servicecategoryFields[3].Descriptor()
+	// servicecategory.DefaultActive holds the default value on creation for the active field.
+	servicecategory.DefaultActive = servicecategoryDescActive.Default.(bool)
+	// servicecategoryDescSortOrder is the schema descriptor for sort_order field.
+	servicecategoryDescSortOrder := servicecategoryFields[4].Descriptor()
+	// servicecategory.SortOrderValidator is a validator for the "sort_order" field. It is called by the builders before save.
+	servicecategory.SortOrderValidator = servicecategoryDescSortOrder.Validators[0].(func(int) error)
+	// servicecategoryDescCreatedAt is the schema descriptor for created_at field.
+	servicecategoryDescCreatedAt := servicecategoryFields[5].Descriptor()
+	// servicecategory.DefaultCreatedAt holds the default value on creation for the created_at field.
+	servicecategory.DefaultCreatedAt = servicecategoryDescCreatedAt.Default.(func() time.Time)
+	// servicecategoryDescUpdatedAt is the schema descriptor for updated_at field.
+	servicecategoryDescUpdatedAt := servicecategoryFields[6].Descriptor()
+	// servicecategory.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	servicecategory.DefaultUpdatedAt = servicecategoryDescUpdatedAt.Default.(func() time.Time)
+	// servicecategory.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	servicecategory.UpdateDefaultUpdatedAt = servicecategoryDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// servicecategoryDescID is the schema descriptor for id field.
+	servicecategoryDescID := servicecategoryFields[0].Descriptor()
+	// servicecategory.DefaultID holds the default value on creation for the id field.
+	servicecategory.DefaultID = servicecategoryDescID.Default.(func() uuid.UUID)
+	servicecategorytranslationFields := schema.ServiceCategoryTranslation{}.Fields()
+	_ = servicecategorytranslationFields
+	// servicecategorytranslationDescLocale is the schema descriptor for locale field.
+	servicecategorytranslationDescLocale := servicecategorytranslationFields[1].Descriptor()
+	// servicecategorytranslation.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	servicecategorytranslation.LocaleValidator = func() func(string) error {
+		validators := servicecategorytranslationDescLocale.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(locale_record string) error {
+			for _, fn := range fns {
+				if err := fn(locale_record); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// servicecategorytranslationDescName is the schema descriptor for name field.
+	servicecategorytranslationDescName := servicecategorytranslationFields[2].Descriptor()
+	// servicecategorytranslation.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	servicecategorytranslation.NameValidator = func() func(string) error {
+		validators := servicecategorytranslationDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// servicecategorytranslationDescDescription is the schema descriptor for description field.
+	servicecategorytranslationDescDescription := servicecategorytranslationFields[3].Descriptor()
+	// servicecategorytranslation.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	servicecategorytranslation.DescriptionValidator = servicecategorytranslationDescDescription.Validators[0].(func(string) error)
+	spokenlanguageFields := schema.SpokenLanguage{}.Fields()
+	_ = spokenlanguageFields
+	// spokenlanguageDescActive is the schema descriptor for active field.
+	spokenlanguageDescActive := spokenlanguageFields[1].Descriptor()
+	// spokenlanguage.DefaultActive holds the default value on creation for the active field.
+	spokenlanguage.DefaultActive = spokenlanguageDescActive.Default.(bool)
+	// spokenlanguageDescSortOrder is the schema descriptor for sort_order field.
+	spokenlanguageDescSortOrder := spokenlanguageFields[2].Descriptor()
+	// spokenlanguage.SortOrderValidator is a validator for the "sort_order" field. It is called by the builders before save.
+	spokenlanguage.SortOrderValidator = spokenlanguageDescSortOrder.Validators[0].(func(int) error)
+	// spokenlanguageDescID is the schema descriptor for id field.
+	spokenlanguageDescID := spokenlanguageFields[0].Descriptor()
+	// spokenlanguage.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	spokenlanguage.IDValidator = func() func(string) error {
+		validators := spokenlanguageDescID.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(id string) error {
+			for _, fn := range fns {
+				if err := fn(id); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	spokenlanguagetranslationFields := schema.SpokenLanguageTranslation{}.Fields()
+	_ = spokenlanguagetranslationFields
+	// spokenlanguagetranslationDescLanguageCode is the schema descriptor for language_code field.
+	spokenlanguagetranslationDescLanguageCode := spokenlanguagetranslationFields[0].Descriptor()
+	// spokenlanguagetranslation.LanguageCodeValidator is a validator for the "language_code" field. It is called by the builders before save.
+	spokenlanguagetranslation.LanguageCodeValidator = func() func(string) error {
+		validators := spokenlanguagetranslationDescLanguageCode.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(language string) error {
+			for _, fn := range fns {
+				if err := fn(language); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// spokenlanguagetranslationDescLocale is the schema descriptor for locale field.
+	spokenlanguagetranslationDescLocale := spokenlanguagetranslationFields[1].Descriptor()
+	// spokenlanguagetranslation.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
+	spokenlanguagetranslation.LocaleValidator = func() func(string) error {
+		validators := spokenlanguagetranslationDescLocale.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(locale_record string) error {
+			for _, fn := range fns {
+				if err := fn(locale_record); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// spokenlanguagetranslationDescName is the schema descriptor for name field.
+	spokenlanguagetranslationDescName := spokenlanguagetranslationFields[2].Descriptor()
+	// spokenlanguagetranslation.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	spokenlanguagetranslation.NameValidator = func() func(string) error {
+		validators := spokenlanguagetranslationDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	supportedlocaleFields := schema.SupportedLocale{}.Fields()
+	_ = supportedlocaleFields
+	// supportedlocaleDescActive is the schema descriptor for active field.
+	supportedlocaleDescActive := supportedlocaleFields[1].Descriptor()
+	// supportedlocale.DefaultActive holds the default value on creation for the active field.
+	supportedlocale.DefaultActive = supportedlocaleDescActive.Default.(bool)
+	// supportedlocaleDescSortOrder is the schema descriptor for sort_order field.
+	supportedlocaleDescSortOrder := supportedlocaleFields[2].Descriptor()
+	// supportedlocale.SortOrderValidator is a validator for the "sort_order" field. It is called by the builders before save.
+	supportedlocale.SortOrderValidator = supportedlocaleDescSortOrder.Validators[0].(func(int) error)
+	// supportedlocaleDescID is the schema descriptor for id field.
+	supportedlocaleDescID := supportedlocaleFields[0].Descriptor()
+	// supportedlocale.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	supportedlocale.IDValidator = func() func(string) error {
+		validators := supportedlocaleDescID.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(id string) error {
+			for _, fn := range fns {
+				if err := fn(id); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	useraccountFields := schema.UserAccount{}.Fields()
 	_ = useraccountFields
 	// useraccountDescProviderEnabled is the schema descriptor for provider_enabled field.
