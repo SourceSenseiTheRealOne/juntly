@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => {
   const apiResponse = { source: "api" };
@@ -36,6 +36,14 @@ async function loadProxy() {
 }
 
 describe("proxy", () => {
+  beforeEach(() => {
+    mocks.clerkMiddleware.mockClear();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("composes Clerk with locale routing and matches API routes", async () => {
     const { config } = await loadProxy();
 
@@ -55,5 +63,26 @@ describe("proxy", () => {
     await expect(
       clerkProxy({}, { nextUrl: { pathname: "/pt-PT" } }),
     ).resolves.toBe(mocks.intlResponse);
+  });
+
+  it("uses bounded clock tolerance only during local development", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+
+    await loadProxy();
+
+    expect(mocks.clerkMiddleware).toHaveBeenCalledWith(expect.any(Function), {
+      clockSkewInMs: 30_000,
+    });
+  });
+
+  it("keeps production token verification at Clerk's strict default", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+
+    await loadProxy();
+
+    expect(mocks.clerkMiddleware).toHaveBeenCalledWith(
+      expect.any(Function),
+      undefined,
+    );
   });
 });

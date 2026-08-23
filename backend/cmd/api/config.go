@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/authn"
 )
@@ -19,15 +20,28 @@ func loadRuntimeConfig(lookup func(string) string) (runtimeConfig, error) {
 	if databaseURL == "" {
 		return runtimeConfig{}, ErrInvalidRuntimeConfig
 	}
+	clockSkew, err := parseOptionalDuration(lookup("CLERK_CLOCK_SKEW"))
+	if err != nil {
+		return runtimeConfig{}, ErrInvalidRuntimeConfig
+	}
 
 	verifier, err := authn.NewClerkVerifier(authn.ClerkVerifierConfig{
 		SecretKey:         lookup("CLERK_SECRET_KEY"),
 		JWTKey:            lookup("CLERK_JWT_KEY"),
 		AuthorizedParties: strings.Split(lookup("CLERK_AUTHORIZED_PARTIES"), ","),
+		ClockSkew:         clockSkew,
 	})
 	if err != nil {
 		return runtimeConfig{}, ErrInvalidRuntimeConfig
 	}
 
 	return runtimeConfig{databaseURL: databaseURL, verifier: verifier}, nil
+}
+
+func parseOptionalDuration(value string) (time.Duration, error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return 0, nil
+	}
+	return time.ParseDuration(value)
 }

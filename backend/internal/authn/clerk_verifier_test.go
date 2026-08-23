@@ -8,6 +8,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"testing"
+	"time"
 )
 
 func TestNewClerkVerifierRejectsMissingVerificationMaterial(t *testing.T) {
@@ -65,4 +66,39 @@ func testPublicKey(t *testing.T) string {
 		t.Fatalf("marshal public key: %v", err)
 	}
 	return string(pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: der}))
+}
+
+func TestNewClerkVerifierAcceptsBoundedClockSkew(t *testing.T) {
+	t.Parallel()
+
+	verifier, err := NewClerkVerifier(ClerkVerifierConfig{
+		JWTKey:            testPublicKey(t),
+		AuthorizedParties: []string{"http://localhost:4200"},
+		ClockSkew:         30 * time.Second,
+	})
+	if err != nil {
+		t.Fatalf("new Clerk verifier: %v", err)
+	}
+	concrete, ok := verifier.(*clerkVerifier)
+	if !ok {
+		t.Fatalf("verifier type = %T, want *clerkVerifier", verifier)
+	}
+	if concrete.clockSkew != 30*time.Second {
+		t.Fatalf("clock skew = %s, want 30s", concrete.clockSkew)
+	}
+}
+
+func TestNewClerkVerifierRejectsUnsafeClockSkew(t *testing.T) {
+	t.Parallel()
+
+	for _, clockSkew := range []time.Duration{-time.Second, 30*time.Second + time.Nanosecond} {
+		_, err := NewClerkVerifier(ClerkVerifierConfig{
+			JWTKey:            testPublicKey(t),
+			AuthorizedParties: []string{"http://localhost:4200"},
+			ClockSkew:         clockSkew,
+		})
+		if !errors.Is(err, ErrInvalidClerkVerifierConfig) {
+			t.Fatalf("clock skew %s error = %v, want ErrInvalidClerkVerifierConfig", clockSkew, err)
+		}
+	}
 }
