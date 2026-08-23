@@ -35,10 +35,11 @@ func (h HealthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(h.service.Check(requestID))
 }
 
-func NewRouter(service health.Service, verifier authn.Verifier, reconcileService ReconcileService) http.Handler {
+func NewRouter(service health.Service, verifier authn.Verifier, reconcileService ReconcileService, accountService AccountService) http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("/api/v1/health", NewHealthHandler(service))
 	mux.Handle("/api/v1/auth/reconcile", authn.RequireVerifiedIdentity(verifier, NewReconcileHandler(reconcileService)))
+	mux.Handle("/api/v1/me/account", authn.RequireVerifiedIdentity(verifier, NewAccountHandler(accountService)))
 	return mux
 }
 

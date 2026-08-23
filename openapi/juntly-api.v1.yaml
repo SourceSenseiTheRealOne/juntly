@@ -33,6 +33,92 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/me/account:
+    get:
+      operationId: getAccountCapabilities
+      summary: Read the current user's account capabilities.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+      responses:
+        "200":
+          description: Account capabilities are available.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountCapabilitiesResponse"
+        "401":
+          description: Session authorization is missing or invalid.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: A required service dependency is unavailable.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateAccountCapabilities
+      summary: Update the current user's provider capability.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAccountCapabilitiesRequest"
+      responses:
+        "200":
+          description: Account capabilities were updated.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountCapabilitiesResponse"
+        "400":
+          description: The request body is invalid.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Session authorization is missing or invalid.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: A required service dependency is unavailable.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /api/v1/auth/reconcile:
     post:
       operationId: reconcileInternalUser
@@ -129,6 +215,7 @@ components:
     ErrorCode:
       type: string
       enum:
+        - INVALID_REQUEST
         - UNAUTHORIZED
         - SERVICE_UNAVAILABLE
     ErrorDetail:
@@ -167,3 +254,27 @@ components:
         createdAt:
           type: string
           format: date-time
+    AccountCapabilitiesResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - customerEnabled
+        - providerEnabled
+        - onboardingCompletedAt
+      properties:
+        customerEnabled:
+          type: boolean
+          const: true
+        providerEnabled:
+          type: boolean
+        onboardingCompletedAt:
+          type: string
+          format: date-time
+    UpdateAccountCapabilitiesRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - providerEnabled
+      properties:
+        providerEnabled:
+          type: boolean

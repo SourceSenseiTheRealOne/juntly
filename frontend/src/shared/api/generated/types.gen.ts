@@ -16,7 +16,7 @@ export type HealthResponse = {
     requestId: RequestId;
 };
 
-export type ErrorCode = 'UNAUTHORIZED' | 'SERVICE_UNAVAILABLE';
+export type ErrorCode = 'INVALID_REQUEST' | 'UNAUTHORIZED' | 'SERVICE_UNAVAILABLE';
 
 export type ErrorDetail = {
     code: ErrorCode;
@@ -31,6 +31,16 @@ export type ErrorResponse = {
 export type InternalUserResponse = {
     id: string;
     createdAt: string;
+};
+
+export type AccountCapabilitiesResponse = {
+    customerEnabled: true;
+    providerEnabled: boolean;
+    onboardingCompletedAt: string;
+};
+
+export type UpdateAccountCapabilitiesRequest = {
+    providerEnabled: boolean;
 };
 
 /**
@@ -68,6 +78,80 @@ export type GetHealthResponses = {
 };
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
+
+export type GetAccountCapabilitiesData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/account';
+};
+
+export type GetAccountCapabilitiesErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * A required service dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetAccountCapabilitiesError = GetAccountCapabilitiesErrors[keyof GetAccountCapabilitiesErrors];
+
+export type GetAccountCapabilitiesResponses = {
+    /**
+     * Account capabilities are available.
+     */
+    200: AccountCapabilitiesResponse;
+};
+
+export type GetAccountCapabilitiesResponse = GetAccountCapabilitiesResponses[keyof GetAccountCapabilitiesResponses];
+
+export type UpdateAccountCapabilitiesData = {
+    body: UpdateAccountCapabilitiesRequest;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/account';
+};
+
+export type UpdateAccountCapabilitiesErrors = {
+    /**
+     * The request body is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * A required service dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type UpdateAccountCapabilitiesError = UpdateAccountCapabilitiesErrors[keyof UpdateAccountCapabilitiesErrors];
+
+export type UpdateAccountCapabilitiesResponses = {
+    /**
+     * Account capabilities were updated.
+     */
+    200: AccountCapabilitiesResponse;
+};
+
+export type UpdateAccountCapabilitiesResponse = UpdateAccountCapabilitiesResponses[keyof UpdateAccountCapabilitiesResponses];
 
 export type ReconcileInternalUserData = {
     body?: never;

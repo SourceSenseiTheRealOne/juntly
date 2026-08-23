@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetHealthData, GetHealthErrors, GetHealthResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses } from './types.gen';
+import type { GetAccountCapabilitiesData, GetAccountCapabilitiesErrors, GetAccountCapabilitiesResponses, GetHealthData, GetHealthErrors, GetHealthResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses, UpdateAccountCapabilitiesData, UpdateAccountCapabilitiesErrors, UpdateAccountCapabilitiesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -24,6 +24,28 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  * Returns privacy-safe API health with correlation evidence.
  */
 export const getHealth = <ThrowOnError extends boolean = false>(options?: Options<GetHealthData, ThrowOnError>) => (options?.client ?? client).get<GetHealthResponses, GetHealthErrors, ThrowOnError>({ url: '/api/v1/health', ...options });
+
+/**
+ * Read the current user's account capabilities.
+ */
+export const getAccountCapabilities = <ThrowOnError extends boolean = false>(options?: Options<GetAccountCapabilitiesData, ThrowOnError>) => (options?.client ?? client).get<GetAccountCapabilitiesResponses, GetAccountCapabilitiesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/account',
+    ...options
+});
+
+/**
+ * Update the current user's provider capability.
+ */
+export const updateAccountCapabilities = <ThrowOnError extends boolean = false>(options: Options<UpdateAccountCapabilitiesData, ThrowOnError>) => (options.client ?? client).put<UpdateAccountCapabilitiesResponses, UpdateAccountCapabilitiesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/account',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
 
 /**
  * Reconcile the current verified session to an internal user.

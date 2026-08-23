@@ -15,6 +15,7 @@ import (
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/accounts"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/health"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/httpapi"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/users"
@@ -92,5 +93,6 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 
 	healthService := health.NewService(version, time.Now)
 	userService := users.NewService(users.NewEntRepository(client))
-	return httpapi.NewRouter(healthService, config.verifier, userService), client, nil
+	accountService := accounts.NewService(userService, accounts.NewEntRepository(client))
+	return httpapi.NewRouter(healthService, config.verifier, userService, accountService), client, nil
 }
