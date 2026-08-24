@@ -72,6 +72,8 @@
     "newListing": "New listing",
     "create": "Save draft",
     "submit": "Submit for review",
+    "pause": "Pause",
+    "archive": "Archive",
     "loading": "Loading listings…",
     "error": "We could not load or save listings.",
     "retry": "Try again",

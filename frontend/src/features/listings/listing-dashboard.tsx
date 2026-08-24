@@ -25,6 +25,8 @@ export type ListingDashboardCopy = {
   newListing: string;
   create: string;
   submit: string;
+  pause: string;
+  archive: string;
   loading: string;
   error: string;
   retry: string;
@@ -59,36 +61,15 @@ export function ListingDashboard({
     const current = ++generation.current;
     setFailed(false);
     try {
-      const [listingResponse, categoryResponse, localityResponse] =
-        await Promise.all([
-          fetch("/api/v1/me/listings"),
-          fetch(
-            `/api/v1/catalog/categories?locale=${encodeURIComponent(locale)}`,
-          ),
-          fetch(
-            `/api/v1/reference/localities?locale=${encodeURIComponent(locale)}`,
-          ),
-        ]);
-      const listingsValue: unknown = await listingResponse.json(),
-        categoriesValue: unknown = await categoryResponse.json(),
-        localitiesValue: unknown = await localityResponse.json();
-      if (
-        !listingResponse.ok ||
-        !categoryResponse.ok ||
-        !localityResponse.ok ||
-        !validList(listingsValue) ||
-        !validCategories(categoriesValue) ||
-        !validLocalities(localitiesValue)
-      )
-        throw new Error();
+      const values = await fetchDashboardState(locale);
       if (current === generation.current) {
-        setListings(listingsValue.listings);
-        setCategoryRefs(categoriesValue.categories);
-        setLocalityRefs(localitiesValue.localities);
+        setListings(values.listings.listings);
+        setCategoryRefs(values.categories.categories);
+        setLocalityRefs(values.eligibleLocalities);
         setDraft((previous) =>
           previous.categoryId && previous.primaryLocalityId
             ? previous
-            : defaults(categoriesValue.categories, localitiesValue.localities),
+            : defaults(values.categories.categories, values.eligibleLocalities),
         );
       }
     } catch {
@@ -103,14 +84,11 @@ export function ListingDashboard({
         if (current !== generation.current) return;
         setListings(values.listings.listings);
         setCategoryRefs(values.categories.categories);
-        setLocalityRefs(values.localities.localities);
+        setLocalityRefs(values.eligibleLocalities);
         setDraft((previous) =>
           previous.categoryId && previous.primaryLocalityId
             ? previous
-            : defaults(
-                values.categories.categories,
-                values.localities.localities,
-              ),
+            : defaults(values.categories.categories, values.eligibleLocalities),
         );
       } catch {
         if (current === generation.current) setFailed(true);
@@ -137,6 +115,36 @@ export function ListingDashboard({
       if (current === generation.current)
         setListings(
           (prev) => prev?.map((item) => (item.id === id ? v : item)) ?? null,
+        );
+    } catch {
+      if (current === generation.current) setFailed(true);
+    } finally {
+      if (current === generation.current) setSaving(false);
+    }
+  }
+  async function transition(item: Listing, action: "pause" | "archive") {
+    if (saving) return;
+    const current = ++generation.current;
+    setSaving(true);
+    setFailed(false);
+    try {
+      const body =
+        action === "pause"
+          ? { revision: item.revision }
+          : { revision: item.revision, state: item.state };
+      const response = await fetch(`/api/v1/me/listings/${item.id}/${action}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const value: unknown = await response.json();
+      if (!response.ok || !validListing(value)) throw new Error();
+      if (current === generation.current)
+        setListings(
+          (previous) =>
+            previous?.map((listing) =>
+              listing.id === item.id ? value : listing,
+            ) ?? null,
         );
     } catch {
       if (current === generation.current) setFailed(true);
@@ -285,6 +293,28 @@ export function ListingDashboard({
                   {copy.submit}
                 </button>
               ) : null}
+              {item.state === "active" ? (
+                <button
+                  disabled={saving}
+                  type="button"
+                  className="mt-3 min-h-11 rounded-full border border-line px-4"
+                  onClick={() => void transition(item, "pause")}
+                >
+                  {copy.pause}
+                </button>
+              ) : null}
+              {["draft", "rejected", "active", "paused"].includes(
+                item.state,
+              ) ? (
+                <button
+                  disabled={saving}
+                  type="button"
+                  className="mt-3 min-h-11 rounded-full border border-line px-4"
+                  onClick={() => void transition(item, "archive")}
+                >
+                  {copy.archive}
+                </button>
+              ) : null}
             </article>
           ))
         ) : (
@@ -312,27 +342,35 @@ function defaults(categories: Ref[], localities: Ref[]) {
   };
 }
 async function fetchDashboardState(locale: "pt-PT" | "en" | "es") {
-  const [listingResponse, categoryResponse, localityResponse] =
+  const [listingResponse, profileResponse, categoryResponse, localityResponse] =
     await Promise.all([
       fetch("/api/v1/me/listings"),
+      fetch("/api/v1/me/provider-profile"),
       fetch(`/api/v1/catalog/categories?locale=${encodeURIComponent(locale)}`),
       fetch(
         `/api/v1/reference/localities?locale=${encodeURIComponent(locale)}`,
       ),
     ]);
   const listings: unknown = await listingResponse.json(),
+    profile: unknown = await profileResponse.json(),
     categories: unknown = await categoryResponse.json(),
     localities: unknown = await localityResponse.json();
   if (
     !listingResponse.ok ||
+    !profileResponse.ok ||
     !categoryResponse.ok ||
     !localityResponse.ok ||
     !validList(listings) ||
+    !validProfile(profile) ||
     !validCategories(categories) ||
     !validLocalities(localities)
   )
     throw new Error();
-  return { listings, categories, localities };
+  const eligibleLocalities = localities.localities.filter((locality) =>
+    profile.profile.serviceLocalityIds.includes(locality.id),
+  );
+  if (!eligibleLocalities.length) throw new Error();
+  return { listings, categories, eligibleLocalities };
 }
 function exact(v: unknown, k: string[]): v is Record<string, unknown> {
   if (v === null || typeof v !== "object" || Array.isArray(v)) return false;
@@ -376,6 +414,29 @@ function validLocalities(v: unknown): v is { localities: Ref[] } {
         typeof item.id === "string" &&
         typeof item.name === "string",
     )
+  );
+}
+function validProfile(
+  v: unknown,
+): v is { profile: { serviceLocalityIds: string[] } } {
+  return (
+    exact(v, ["profile"]) &&
+    exact(v.profile, [
+      "displayName",
+      "providerType",
+      "bio",
+      "primaryLocalityId",
+      "serviceLocalityIds",
+      "maxTravelDistanceKm",
+      "travelsToCustomer",
+      "receivesCustomer",
+      "remoteServices",
+      "languageCodes",
+      "createdAt",
+      "updatedAt",
+    ]) &&
+    Array.isArray(v.profile.serviceLocalityIds) &&
+    v.profile.serviceLocalityIds.every((id) => typeof id === "string")
   );
 }
 function validListing(v: unknown): v is Listing {

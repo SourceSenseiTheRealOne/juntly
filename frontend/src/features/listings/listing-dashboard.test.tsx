@@ -7,6 +7,8 @@ const copy = {
   newListing: "Novo anúncio",
   create: "Guardar rascunho",
   submit: "Enviar para revisão",
+  pause: "Pausar",
+  archive: "Arquivar",
   loading: "A carregar anúncios…",
   error: "Não foi possível carregar ou guardar os anúncios.",
   retry: "Tentar novamente",
@@ -42,6 +44,23 @@ describe("ListingDashboard", () => {
       const url = String(input);
       if (url.endsWith("/api/v1/me/listings"))
         return Response.json({ listings: [listing] });
+      if (url.endsWith("/api/v1/me/provider-profile"))
+        return Response.json({
+          profile: {
+            displayName: "Prestador",
+            providerType: "individual",
+            bio: "Perfil de teste suficientemente longo.",
+            primaryLocalityId: listing.primaryLocalityId,
+            serviceLocalityIds: [listing.primaryLocalityId],
+            maxTravelDistanceKm: 25,
+            travelsToCustomer: true,
+            receivesCustomer: false,
+            remoteServices: false,
+            languageCodes: ["pt-PT"],
+            createdAt: "2026-08-24T12:00:00Z",
+            updatedAt: "2026-08-24T12:00:00Z",
+          },
+        });
       if (url.includes("/api/v1/catalog/categories"))
         return Response.json({
           categories: [

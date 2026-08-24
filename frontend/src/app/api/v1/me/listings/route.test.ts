@@ -96,4 +96,40 @@ describe("/api/v1/me/listings", () => {
     expect(r.status).toBe(400);
     expect(fetch).not.toHaveBeenCalled();
   });
+
+  it("preserves a correlated upstream invalid request", async () => {
+    mocks.auth.mockResolvedValue({
+      isAuthenticated: true,
+      getToken: vi.fn().mockResolvedValue("server-token"),
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        Response.json(
+          {
+            error: {
+              code: "INVALID_REQUEST",
+              message: "Invalid request",
+              requestId: "req_listings_invalid",
+            },
+          },
+          { status: 400, headers: { "X-Request-ID": "req_listings_invalid" } },
+        ),
+      ),
+    );
+    const response = await POST(
+      new Request("http://localhost/api/v1/me/listings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Request-ID": "req_listings_invalid",
+        },
+        body: JSON.stringify(create),
+      }),
+    );
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toMatchObject({
+      error: { code: "INVALID_REQUEST" },
+    });
+  });
 });

@@ -47,6 +47,15 @@ export async function POST(request: Request): Promise<Response> {
       headers: headers(token, id),
     });
     if (
+      up.response?.status === 400 &&
+      isError(up.error, "INVALID_REQUEST", id) &&
+      up.response.headers.get(header) === id
+    )
+      return Response.json(up.error, {
+        status: 400,
+        headers: { [header]: id },
+      });
+    if (
       up.error ||
       !up.response?.ok ||
       up.response.headers.get(header) !== id ||
@@ -178,6 +187,22 @@ function exact(
   const a = Object.keys(value).sort(),
     b = [...keys].sort();
   return a.length === b.length && a.every((key, i) => key === b[i]);
+}
+function isError(
+  value: unknown,
+  code: string,
+  id: string,
+): value is ErrorResponse {
+  return (
+    exact(value, ["error"]) &&
+    exact((value as { error: unknown }).error, [
+      "code",
+      "message",
+      "requestId",
+    ]) &&
+    (value as ErrorResponse).error.code === code &&
+    (value as ErrorResponse).error.requestId === id
+  );
 }
 function uuid(v: unknown): v is string {
   return (

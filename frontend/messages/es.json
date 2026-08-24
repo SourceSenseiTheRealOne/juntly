@@ -72,6 +72,8 @@
     "newListing": "Nuevo anuncio",
     "create": "Guardar borrador",
     "submit": "Enviar a revisión",
+    "pause": "Pausar",
+    "archive": "Archivar",
     "loading": "Cargando anuncios…",
     "error": "No hemos podido cargar o guardar los anuncios.",
     "retry": "Intentar de nuevo",
