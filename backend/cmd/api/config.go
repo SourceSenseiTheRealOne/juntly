@@ -6,13 +6,15 @@ import (
 	"time"
 
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/authn"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/contactreveal"
 )
 
 var ErrInvalidRuntimeConfig = errors.New("invalid API runtime configuration")
 
 type runtimeConfig struct {
-	databaseURL string
-	verifier    authn.Verifier
+	databaseURL   string
+	verifier      authn.Verifier
+	contactCipher contactreveal.Cipher
 }
 
 func loadRuntimeConfig(lookup func(string) string) (runtimeConfig, error) {
@@ -34,8 +36,15 @@ func loadRuntimeConfig(lookup func(string) string) (runtimeConfig, error) {
 	if err != nil {
 		return runtimeConfig{}, ErrInvalidRuntimeConfig
 	}
+	var contactCipher contactreveal.Cipher
+	if encodedKey := strings.TrimSpace(lookup("JUNTLY_CONTACT_ENCRYPTION_KEY")); encodedKey != "" {
+		contactCipher, err = contactreveal.NewCipher(encodedKey)
+		if err != nil {
+			return runtimeConfig{}, ErrInvalidRuntimeConfig
+		}
+	}
 
-	return runtimeConfig{databaseURL: databaseURL, verifier: verifier}, nil
+	return runtimeConfig{databaseURL: databaseURL, verifier: verifier, contactCipher: contactCipher}, nil
 }
 
 func parseOptionalDuration(value string) (time.Duration, error) {

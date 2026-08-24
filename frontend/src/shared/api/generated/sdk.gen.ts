@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { ApproveListingData, ApproveListingErrors, ApproveListingResponses, ArchiveListingData, ArchiveListingErrors, ArchiveListingResponses, CreateListingData, CreateListingErrors, CreateListingMediaUploadIntentData, CreateListingMediaUploadIntentErrors, CreateListingMediaUploadIntentResponses, CreateListingResponses, GetAccountCapabilitiesData, GetAccountCapabilitiesErrors, GetAccountCapabilitiesResponses, GetHealthData, GetHealthErrors, GetHealthResponses, GetMyListingData, GetMyListingErrors, GetMyListingResponses, GetProviderProfileData, GetProviderProfileErrors, GetProviderProfileResponses, GetPublicListingData, GetPublicListingErrors, GetPublicListingResponses, ListLocalitiesData, ListLocalitiesErrors, ListLocalitiesResponses, ListMyListingsData, ListMyListingsErrors, ListMyListingsResponses, ListPendingModerationListingsData, ListPendingModerationListingsErrors, ListPendingModerationListingsResponses, ListServiceCategoriesData, ListServiceCategoriesErrors, ListServiceCategoriesResponses, ListSpokenLanguagesData, ListSpokenLanguagesErrors, ListSpokenLanguagesResponses, PauseListingData, PauseListingErrors, PauseListingResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses, RejectListingData, RejectListingErrors, RejectListingResponses, ReplaceMyDraftListingData, ReplaceMyDraftListingErrors, ReplaceMyDraftListingResponses, ReplaceProviderProfileData, ReplaceProviderProfileErrors, ReplaceProviderProfileResponses, SearchPublicListingsData, SearchPublicListingsErrors, SearchPublicListingsResponses, SubmitListingForReviewData, SubmitListingForReviewErrors, SubmitListingForReviewResponses, UpdateAccountCapabilitiesData, UpdateAccountCapabilitiesErrors, UpdateAccountCapabilitiesResponses } from './types.gen';
+import type { ApproveListingData, ApproveListingErrors, ApproveListingResponses, ArchiveListingData, ArchiveListingErrors, ArchiveListingResponses, CreateListingData, CreateListingErrors, CreateListingMediaUploadIntentData, CreateListingMediaUploadIntentErrors, CreateListingMediaUploadIntentResponses, CreateListingResponses, GetAccountCapabilitiesData, GetAccountCapabilitiesErrors, GetAccountCapabilitiesResponses, GetContactChannelStatusesData, GetContactChannelStatusesErrors, GetContactChannelStatusesResponses, GetHealthData, GetHealthErrors, GetHealthResponses, GetMyListingData, GetMyListingErrors, GetMyListingResponses, GetProviderProfileData, GetProviderProfileErrors, GetProviderProfileResponses, GetPublicListingData, GetPublicListingErrors, GetPublicListingResponses, ListLocalitiesData, ListLocalitiesErrors, ListLocalitiesResponses, ListMyListingsData, ListMyListingsErrors, ListMyListingsResponses, ListPendingModerationListingsData, ListPendingModerationListingsErrors, ListPendingModerationListingsResponses, ListServiceCategoriesData, ListServiceCategoriesErrors, ListServiceCategoriesResponses, ListSpokenLanguagesData, ListSpokenLanguagesErrors, ListSpokenLanguagesResponses, PauseListingData, PauseListingErrors, PauseListingResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses, RejectListingData, RejectListingErrors, RejectListingResponses, ReplaceContactChannelData, ReplaceContactChannelErrors, ReplaceContactChannelResponses, ReplaceMyDraftListingData, ReplaceMyDraftListingErrors, ReplaceMyDraftListingResponses, ReplaceProviderProfileData, ReplaceProviderProfileErrors, ReplaceProviderProfileResponses, RevealListingContactData, RevealListingContactErrors, RevealListingContactResponses, SearchPublicListingsData, SearchPublicListingsErrors, SearchPublicListingsResponses, SubmitListingForReviewData, SubmitListingForReviewErrors, SubmitListingForReviewResponses, UpdateAccountCapabilitiesData, UpdateAccountCapabilitiesErrors, UpdateAccountCapabilitiesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -40,6 +40,41 @@ export const getAccountCapabilities = <ThrowOnError extends boolean = false>(opt
 export const updateAccountCapabilities = <ThrowOnError extends boolean = false>(options: Options<UpdateAccountCapabilitiesData, ThrowOnError>) => (options.client ?? client).put<UpdateAccountCapabilitiesResponses, UpdateAccountCapabilitiesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/me/account',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Read provider-owned encrypted contact channel statuses.
+ */
+export const getContactChannelStatuses = <ThrowOnError extends boolean = false>(options?: Options<GetContactChannelStatusesData, ThrowOnError>) => (options?.client ?? client).get<GetContactChannelStatusesResponses, GetContactChannelStatusesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/contact-channels',
+    ...options
+});
+
+/**
+ * Replace one provider-owned encrypted contact channel.
+ */
+export const replaceContactChannel = <ThrowOnError extends boolean = false>(options: Options<ReplaceContactChannelData, ThrowOnError>) => (options.client ?? client).put<ReplaceContactChannelResponses, ReplaceContactChannelErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/contact-channels',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Reveal one enabled, consented provider contact channel to an authenticated customer.
+ */
+export const revealListingContact = <ThrowOnError extends boolean = false>(options: Options<RevealListingContactData, ThrowOnError>) => (options.client ?? client).post<RevealListingContactResponses, RevealListingContactErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/listings/{listingId}/contact-reveals',
     ...options,
     headers: {
         'Content-Type': 'application/json',

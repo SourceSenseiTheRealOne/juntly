@@ -16,6 +16,7 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/accounts"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/contactreveal"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/discovery"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/health"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/httpapi"
@@ -105,6 +106,8 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	referenceService := reference.NewService(referenceRepository)
 	publicDiscovery := discovery.NewService(discovery.NewSQLRepository(database))
 	providerAuthorizer := provideraccess.NewService(userService, accountService)
+	contactChannels := contactreveal.NewProviderChannelService(providerAuthorizer, contactreveal.NewSQLChannelStore(database), config.contactCipher)
+	contactReveal := contactreveal.NewRevealService(userService, contactreveal.NewSQLRevealStore(database), config.contactCipher, time.Now)
 	providerService := providers.NewService(providerAuthorizer, providers.NewEntRepository(client), referenceRepository)
 	listingRepository := listings.NewEntRepository(client)
 	listingDrafts := listings.NewService(providerAuthorizer, listingRepository)
@@ -114,5 +117,5 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	ownerListings := listings.NewOwnerService(listingDrafts, listingLifecycle, listingMedia)
 	moderationQueue := moderation.NewQueueService(moderatorAuthorizer, listingRepository)
 	moderationReview := moderation.NewReviewService(moderationQueue, listingLifecycle)
-	return httpapi.NewRouter(healthService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery), client, nil
+	return httpapi.NewRouter(healthService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery, contactChannels, contactReveal), client, nil
 }

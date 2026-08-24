@@ -85,6 +85,35 @@ export type LocalitiesResponse = {
 
 export type ProviderType = 'individual' | 'professional' | 'business';
 
+export type ContactChannel = 'phone' | 'whatsapp';
+
+export type ContactChannelStatus = {
+    channel: ContactChannel;
+    configured: boolean;
+    enabled: boolean;
+    revealConsent: boolean;
+};
+
+export type ContactChannelsResponse = {
+    channels: Array<ContactChannelStatus>;
+};
+
+export type ReplaceContactChannelRequest = {
+    channel: ContactChannel;
+    contact: string;
+    enabled: boolean;
+    revealConsent: boolean;
+};
+
+export type ContactRevealRequest = {
+    channel: ContactChannel;
+};
+
+export type ContactRevealResponse = {
+    channel: ContactChannel;
+    contact: string;
+};
+
 export type ReplaceProviderProfileRequest = {
     displayName: string;
     providerType: ProviderType;
@@ -333,6 +362,133 @@ export type UpdateAccountCapabilitiesResponses = {
 };
 
 export type UpdateAccountCapabilitiesResponse = UpdateAccountCapabilitiesResponses[keyof UpdateAccountCapabilitiesResponses];
+
+export type GetContactChannelStatusesData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/contact-channels';
+};
+
+export type GetContactChannelStatusesErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetContactChannelStatusesError = GetContactChannelStatusesErrors[keyof GetContactChannelStatusesErrors];
+
+export type GetContactChannelStatusesResponses = {
+    /**
+     * Status-only provider contact channels
+     */
+    200: ContactChannelsResponse;
+};
+
+export type GetContactChannelStatusesResponse = GetContactChannelStatusesResponses[keyof GetContactChannelStatusesResponses];
+
+export type ReplaceContactChannelData = {
+    body: ReplaceContactChannelRequest;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/contact-channels';
+};
+
+export type ReplaceContactChannelErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ReplaceContactChannelError = ReplaceContactChannelErrors[keyof ReplaceContactChannelErrors];
+
+export type ReplaceContactChannelResponses = {
+    /**
+     * Updated status-only channel
+     */
+    200: ContactChannelStatus;
+};
+
+export type ReplaceContactChannelResponse = ReplaceContactChannelResponses[keyof ReplaceContactChannelResponses];
+
+export type RevealListingContactData = {
+    body: ContactRevealRequest;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{listingId}/contact-reveals';
+};
+
+export type RevealListingContactErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type RevealListingContactError = RevealListingContactErrors[keyof RevealListingContactErrors];
+
+export type RevealListingContactResponses = {
+    /**
+     * Authenticated contact reveal
+     */
+    200: ContactRevealResponse;
+};
+
+export type RevealListingContactResponse = RevealListingContactResponses[keyof RevealListingContactResponses];
 
 export type ListServiceCategoriesData = {
     body?: never;

@@ -119,6 +119,42 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/me/contact-channels:
+    get:
+      operationId: getContactChannelStatuses
+      summary: Read provider-owned encrypted contact channel statuses.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }]
+      responses:
+        "200": { description: Status-only provider contact channels, content: { application/json: { schema: { $ref: "#/components/schemas/ContactChannelsResponse" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+    put:
+      operationId: replaceContactChannel
+      summary: Replace one provider-owned encrypted contact channel.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ReplaceContactChannelRequest" } } } }
+      responses:
+        "200": { description: Updated status-only channel, content: { application/json: { schema: { $ref: "#/components/schemas/ContactChannelStatus" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/listings/{listingId}/contact-reveals:
+    post:
+      operationId: revealListingContact
+      summary: Reveal one enabled, consented provider contact channel to an authenticated customer.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ContactRevealRequest" } } } }
+      responses:
+        "200": { description: Authenticated contact reveal, content: { application/json: { schema: { $ref: "#/components/schemas/ContactRevealResponse" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
   /api/v1/catalog/categories:
     get:
       operationId: listServiceCategories
@@ -750,6 +786,48 @@ components:
     ProviderType:
       type: string
       enum: [individual, professional, business]
+    ContactChannel:
+      type: string
+      enum: [phone, whatsapp]
+    ContactChannelStatus:
+      type: object
+      additionalProperties: false
+      required: [channel, configured, enabled, revealConsent]
+      properties:
+        channel: { $ref: "#/components/schemas/ContactChannel" }
+        configured: { type: boolean }
+        enabled: { type: boolean }
+        revealConsent: { type: boolean }
+    ContactChannelsResponse:
+      type: object
+      additionalProperties: false
+      required: [channels]
+      properties:
+        channels:
+          type: array
+          items: { $ref: "#/components/schemas/ContactChannelStatus" }
+    ReplaceContactChannelRequest:
+      type: object
+      additionalProperties: false
+      required: [channel, contact, enabled, revealConsent]
+      properties:
+        channel: { $ref: "#/components/schemas/ContactChannel" }
+        contact: { type: string, minLength: 9, maxLength: 16, pattern: "^\\+[1-9][0-9]{7,14}$" }
+        enabled: { type: boolean }
+        revealConsent: { type: boolean }
+    ContactRevealRequest:
+      type: object
+      additionalProperties: false
+      required: [channel]
+      properties:
+        channel: { $ref: "#/components/schemas/ContactChannel" }
+    ContactRevealResponse:
+      type: object
+      additionalProperties: false
+      required: [channel, contact]
+      properties:
+        channel: { $ref: "#/components/schemas/ContactChannel" }
+        contact: { type: string, minLength: 9, maxLength: 16 }
     ReplaceProviderProfileRequest:
       type: object
       additionalProperties: false

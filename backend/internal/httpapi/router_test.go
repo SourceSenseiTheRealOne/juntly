@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/accounts"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/contactreveal"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/discovery"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/health"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/httpapi"
@@ -34,7 +35,9 @@ func TestRouterLeavesHealthPublicAndProtectsReconciliation(t *testing.T) {
 	referenceService := &recordingReferenceService{}
 	providerProfileService := &recordingProviderProfileService{}
 	discoveryService := &recordingPublicDiscoveryService{}
-	router := httpapi.NewRouter(healthService, verifier, reconcileService, accountService, referenceService, providerProfileService, &recordingListingService{created: sampleListing()}, &recordingModerationReview{listing: sampleListing()}, discoveryService)
+	contactChannelService := &recordingRouterContactChannelService{}
+	contactRevealService := &recordingRouterContactRevealService{}
+	router := httpapi.NewRouter(healthService, verifier, reconcileService, accountService, referenceService, providerProfileService, &recordingListingService{created: sampleListing()}, &recordingModerationReview{listing: sampleListing()}, discoveryService, contactChannelService, contactRevealService)
 
 	healthResponse := httptest.NewRecorder()
 	router.ServeHTTP(healthResponse, httptest.NewRequest(http.MethodGet, "/api/v1/health", nil))
@@ -93,6 +96,36 @@ func TestRouterLeavesHealthPublicAndProtectsReconciliation(t *testing.T) {
 	if accountService.calls != 1 {
 		t.Fatalf("account service calls = %d, want 1", accountService.calls)
 	}
+
+	unauthorizedContactResponse := httptest.NewRecorder()
+	router.ServeHTTP(unauthorizedContactResponse, httptest.NewRequest(http.MethodGet, "/api/v1/me/contact-channels", nil))
+	if unauthorizedContactResponse.Code != http.StatusUnauthorized || contactChannelService.calls != 0 {
+		t.Fatalf("contact status/calls = %d/%d", unauthorizedContactResponse.Code, contactChannelService.calls)
+	}
+
+	unauthorizedRevealResponse := httptest.NewRecorder()
+	router.ServeHTTP(unauthorizedRevealResponse, httptest.NewRequest(http.MethodPost, "/api/v1/listings/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/contact-reveals", nil))
+	if unauthorizedRevealResponse.Code != http.StatusUnauthorized || contactRevealService.calls != 0 {
+		t.Fatalf("reveal status/calls = %d/%d", unauthorizedRevealResponse.Code, contactRevealService.calls)
+	}
+}
+
+type recordingRouterContactChannelService struct{ calls int }
+
+func (s *recordingRouterContactChannelService) Get(context.Context, users.VerifiedIdentity) ([]contactreveal.ChannelStatus, error) {
+	s.calls++
+	return nil, nil
+}
+func (s *recordingRouterContactChannelService) Put(context.Context, users.VerifiedIdentity, contactreveal.ReplaceChannel) (contactreveal.ChannelStatus, error) {
+	s.calls++
+	return contactreveal.ChannelStatus{}, nil
+}
+
+type recordingRouterContactRevealService struct{ calls int }
+
+func (s *recordingRouterContactRevealService) Reveal(context.Context, users.VerifiedIdentity, uuid.UUID, contactreveal.Channel) (contactreveal.RevealedContact, error) {
+	s.calls++
+	return contactreveal.RevealedContact{}, nil
 }
 
 type recordingPublicDiscoveryService struct{ calls int }

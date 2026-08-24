@@ -35,7 +35,7 @@ func (h HealthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(h.service.Check(requestID))
 }
 
-func NewRouter(service health.Service, verifier authn.Verifier, reconcileService ReconcileService, accountService AccountService, referenceService ReferenceService, providerProfileService ProviderProfileService, listingService ListingService, moderationListingService ModerationListingService, publicDiscoveryService PublicDiscoveryService) http.Handler {
+func NewRouter(service health.Service, verifier authn.Verifier, reconcileService ReconcileService, accountService AccountService, referenceService ReferenceService, providerProfileService ProviderProfileService, listingService ListingService, moderationListingService ModerationListingService, publicDiscoveryService PublicDiscoveryService, contactChannelService ContactChannelService, contactRevealService ContactRevealService) http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("/api/v1/health", NewHealthHandler(service))
 	mux.Handle("/api/v1/catalog/categories", NewCategoriesHandler(referenceService))
@@ -46,6 +46,8 @@ func NewRouter(service health.Service, verifier authn.Verifier, reconcileService
 	mux.Handle("/api/v1/auth/reconcile", authn.RequireVerifiedIdentity(verifier, NewReconcileHandler(reconcileService)))
 	mux.Handle("/api/v1/me/account", authn.RequireVerifiedIdentity(verifier, NewAccountHandler(accountService)))
 	mux.Handle("/api/v1/me/provider-profile", authn.RequireVerifiedIdentity(verifier, NewProviderProfileHandler(providerProfileService)))
+	mux.Handle("/api/v1/me/contact-channels", authn.RequireVerifiedIdentity(verifier, NewContactChannelHandler(contactChannelService)))
+	mux.Handle("/api/v1/listings/", authn.RequireVerifiedIdentity(verifier, NewContactRevealHandler(contactRevealService)))
 	mux.Handle("/api/v1/me/listings", authn.RequireVerifiedIdentity(verifier, NewListingHandler(listingService)))
 	mux.Handle("/api/v1/me/listings/", authn.RequireVerifiedIdentity(verifier, NewListingHandler(listingService)))
 	mux.Handle("/api/v1/moderation/listings", authn.RequireVerifiedIdentity(verifier, NewModerationListingHandler(moderationListingService)))
