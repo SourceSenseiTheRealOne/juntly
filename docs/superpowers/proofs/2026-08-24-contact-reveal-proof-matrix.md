@@ -13,8 +13,8 @@
 | Lead event and same-day idempotency | `sql_store_test.go` against local PostgreSQL | Synthetic provider/customer service flow: first and repeat reveal completed; event count 1; daily count 1 | Proven |
 | Daily abuse cap | Concurrent real PostgreSQL test: 11 requests → 10 successes, 1 forbidden | N/A — real DB integration proof | Proven |
 | Contact plaintext remains transient client state | `contact-reveal-control.tsx` tests and UI scan reject storage/query/cookie use | No contact present in public initial HTML | Proven |
-| Separate authenticated customer browser reveal | BFF, Go handler, service/store tests cover flow | No distinct approved Clerk browser customer session was available | **Blocked** |
+| Separate authenticated customer browser reveal | BFF, Go handler, service/store tests cover flow | Separate customer clicked phone: `200`; WhatsApp unconsented channel: generic `403`; repeat phone: `200`; aggregate `lead_events=1`, `daily_successful_count=1` | Proven |
 
-## Honest acceptance boundary
+## Acceptance result
 
-Source, migrations, contracts, BFFs, provider UI, service-level acceptance, public runtime proof, and cleanup are verified. Final customer-browser acceptance remains blocked only by absence of a distinct authenticated customer session; no identity/session was fabricated to cover that gap.
+Source, migrations, contracts, BFFs, provider UI, authenticated provider channel configuration, separate-customer phone reveal, generic channel denial, same-day idempotency, public runtime boundary, and cleanup are verified. No identity/session was fabricated; all temporary synthetic provider/listing/channel/event/limit state and local processes were removed.
