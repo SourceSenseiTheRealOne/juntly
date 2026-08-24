@@ -18,6 +18,9 @@ import (
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/accounts"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/health"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/httpapi"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/listingmedia"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/listings"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/moderation"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/provideraccess"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/providers"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/reference"
@@ -101,5 +104,13 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	referenceService := reference.NewService(referenceRepository)
 	providerAuthorizer := provideraccess.NewService(userService, accountService)
 	providerService := providers.NewService(providerAuthorizer, providers.NewEntRepository(client), referenceRepository)
-	return httpapi.NewRouter(healthService, config.verifier, userService, accountService, referenceService, providerService), client, nil
+	listingRepository := listings.NewEntRepository(client)
+	listingDrafts := listings.NewService(providerAuthorizer, listingRepository)
+	moderatorAuthorizer := moderation.NewService(userService, moderation.NewEntRepository(client))
+	listingLifecycle := listings.NewLifecycleService(providerAuthorizer, moderatorAuthorizer, listingRepository)
+	listingMedia := listingmedia.NewService(providerAuthorizer, listingmedia.NewEntRepository(client), listingmedia.NewUnavailableStorage())
+	ownerListings := listings.NewOwnerService(listingDrafts, listingLifecycle, listingMedia)
+	moderationQueue := moderation.NewQueueService(moderatorAuthorizer, listingRepository)
+	moderationReview := moderation.NewReviewService(moderationQueue, listingLifecycle)
+	return httpapi.NewRouter(healthService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview), client, nil
 }

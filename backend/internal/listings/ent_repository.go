@@ -16,7 +16,7 @@ import (
 
 type entRepository struct{ client *jent.Client }
 
-func NewEntRepository(client *jent.Client) Repository { return entRepository{client: client} }
+func NewEntRepository(client *jent.Client) *entRepository { return &entRepository{client: client} }
 
 func (r entRepository) Create(ctx context.Context, owner uuid.UUID, input CreateListing) (Listing, error) {
 	if r.client == nil {
@@ -204,6 +204,21 @@ func (r entRepository) ListByOwner(ctx context.Context, owner uuid.UUID) ([]List
 		return nil, errors.New("Ent client is nil")
 	}
 	entities, err := r.client.Listing.Query().Where(listing.InternalUserIDEQ(owner)).Order(jent.Desc(listing.FieldUpdatedAt), jent.Asc(listing.FieldID)).All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	values := make([]Listing, 0, len(entities))
+	for _, entity := range entities {
+		values = append(values, listingFromEnt(entity))
+	}
+	return values, nil
+}
+
+func (r entRepository) ListPending(ctx context.Context) ([]Listing, error) {
+	if r.client == nil {
+		return nil, errors.New("Ent client is nil")
+	}
+	entities, err := r.client.Listing.Query().Where(listing.StateEQ(listing.StatePendingReview)).Order(jent.Asc(listing.FieldUpdatedAt), jent.Asc(listing.FieldID)).All(ctx)
 	if err != nil {
 		return nil, err
 	}

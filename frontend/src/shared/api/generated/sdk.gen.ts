@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetAccountCapabilitiesData, GetAccountCapabilitiesErrors, GetAccountCapabilitiesResponses, GetHealthData, GetHealthErrors, GetHealthResponses, GetProviderProfileData, GetProviderProfileErrors, GetProviderProfileResponses, ListLocalitiesData, ListLocalitiesErrors, ListLocalitiesResponses, ListServiceCategoriesData, ListServiceCategoriesErrors, ListServiceCategoriesResponses, ListSpokenLanguagesData, ListSpokenLanguagesErrors, ListSpokenLanguagesResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses, ReplaceProviderProfileData, ReplaceProviderProfileErrors, ReplaceProviderProfileResponses, UpdateAccountCapabilitiesData, UpdateAccountCapabilitiesErrors, UpdateAccountCapabilitiesResponses } from './types.gen';
+import type { ApproveListingData, ApproveListingErrors, ApproveListingResponses, ArchiveListingData, ArchiveListingErrors, ArchiveListingResponses, CreateListingData, CreateListingErrors, CreateListingMediaUploadIntentData, CreateListingMediaUploadIntentErrors, CreateListingMediaUploadIntentResponses, CreateListingResponses, GetAccountCapabilitiesData, GetAccountCapabilitiesErrors, GetAccountCapabilitiesResponses, GetHealthData, GetHealthErrors, GetHealthResponses, GetMyListingData, GetMyListingErrors, GetMyListingResponses, GetProviderProfileData, GetProviderProfileErrors, GetProviderProfileResponses, ListLocalitiesData, ListLocalitiesErrors, ListLocalitiesResponses, ListMyListingsData, ListMyListingsErrors, ListMyListingsResponses, ListPendingModerationListingsData, ListPendingModerationListingsErrors, ListPendingModerationListingsResponses, ListServiceCategoriesData, ListServiceCategoriesErrors, ListServiceCategoriesResponses, ListSpokenLanguagesData, ListSpokenLanguagesErrors, ListSpokenLanguagesResponses, PauseListingData, PauseListingErrors, PauseListingResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses, RejectListingData, RejectListingErrors, RejectListingResponses, ReplaceMyDraftListingData, ReplaceMyDraftListingErrors, ReplaceMyDraftListingResponses, ReplaceProviderProfileData, ReplaceProviderProfileErrors, ReplaceProviderProfileResponses, SubmitListingForReviewData, SubmitListingForReviewErrors, SubmitListingForReviewResponses, UpdateAccountCapabilitiesData, UpdateAccountCapabilitiesErrors, UpdateAccountCapabilitiesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -77,6 +77,137 @@ export const getProviderProfile = <ThrowOnError extends boolean = false>(options
 export const replaceProviderProfile = <ThrowOnError extends boolean = false>(options: Options<ReplaceProviderProfileData, ThrowOnError>) => (options.client ?? client).put<ReplaceProviderProfileResponses, ReplaceProviderProfileErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/me/provider-profile',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List the current provider's owner-only listings.
+ */
+export const listMyListings = <ThrowOnError extends boolean = false>(options?: Options<ListMyListingsData, ThrowOnError>) => (options?.client ?? client).get<ListMyListingsResponses, ListMyListingsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/listings',
+    ...options
+});
+
+/**
+ * Create a private provider listing draft.
+ */
+export const createListing = <ThrowOnError extends boolean = false>(options: Options<CreateListingData, ThrowOnError>) => (options.client ?? client).post<CreateListingResponses, CreateListingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/listings',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Read one owner-only listing.
+ */
+export const getMyListing = <ThrowOnError extends boolean = false>(options: Options<GetMyListingData, ThrowOnError>) => (options.client ?? client).get<GetMyListingResponses, GetMyListingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/listings/{listingId}',
+    ...options
+});
+
+/**
+ * Fully replace one owner draft listing.
+ */
+export const replaceMyDraftListing = <ThrowOnError extends boolean = false>(options: Options<ReplaceMyDraftListingData, ThrowOnError>) => (options.client ?? client).put<ReplaceMyDraftListingResponses, ReplaceMyDraftListingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/listings/{listingId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Submit one owner draft for moderator review.
+ */
+export const submitListingForReview = <ThrowOnError extends boolean = false>(options: Options<SubmitListingForReviewData, ThrowOnError>) => (options.client ?? client).post<SubmitListingForReviewResponses, SubmitListingForReviewErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/listings/{listingId}/submit',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Pause one active owner listing.
+ */
+export const pauseListing = <ThrowOnError extends boolean = false>(options: Options<PauseListingData, ThrowOnError>) => (options.client ?? client).post<PauseListingResponses, PauseListingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/listings/{listingId}/pause',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Archive one owner listing from an allowed current state.
+ */
+export const archiveListing = <ThrowOnError extends boolean = false>(options: Options<ArchiveListingData, ThrowOnError>) => (options.client ?? client).post<ArchiveListingResponses, ArchiveListingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/listings/{listingId}/archive',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Create an owner-only image upload capability.
+ */
+export const createListingMediaUploadIntent = <ThrowOnError extends boolean = false>(options: Options<CreateListingMediaUploadIntentData, ThrowOnError>) => (options.client ?? client).post<CreateListingMediaUploadIntentResponses, CreateListingMediaUploadIntentErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/listings/{listingId}/media/upload-intents',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List pending-review listings for persisted moderators.
+ */
+export const listPendingModerationListings = <ThrowOnError extends boolean = false>(options?: Options<ListPendingModerationListingsData, ThrowOnError>) => (options?.client ?? client).get<ListPendingModerationListingsResponses, ListPendingModerationListingsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/moderation/listings',
+    ...options
+});
+
+/**
+ * Approve one pending-review listing.
+ */
+export const approveListing = <ThrowOnError extends boolean = false>(options: Options<ApproveListingData, ThrowOnError>) => (options.client ?? client).post<ApproveListingResponses, ApproveListingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/moderation/listings/{listingId}/approve',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Reject one pending-review listing with bounded reason.
+ */
+export const rejectListing = <ThrowOnError extends boolean = false>(options: Options<RejectListingData, ThrowOnError>) => (options.client ?? client).post<RejectListingResponses, RejectListingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/moderation/listings/{listingId}/reject',
     ...options,
     headers: {
         'Content-Type': 'application/json',

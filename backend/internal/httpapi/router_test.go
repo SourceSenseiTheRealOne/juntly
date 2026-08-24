@@ -32,7 +32,7 @@ func TestRouterLeavesHealthPublicAndProtectsReconciliation(t *testing.T) {
 	}}
 	referenceService := &recordingReferenceService{}
 	providerProfileService := &recordingProviderProfileService{}
-	router := httpapi.NewRouter(healthService, verifier, reconcileService, accountService, referenceService, providerProfileService)
+	router := httpapi.NewRouter(healthService, verifier, reconcileService, accountService, referenceService, providerProfileService, &recordingListingService{created: sampleListing()}, &recordingModerationReview{listing: sampleListing()})
 
 	healthResponse := httptest.NewRecorder()
 	router.ServeHTTP(healthResponse, httptest.NewRequest(http.MethodGet, "/api/v1/health", nil))

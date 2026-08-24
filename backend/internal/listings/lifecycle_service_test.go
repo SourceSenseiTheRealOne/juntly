@@ -5,7 +5,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/moderation"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/provideraccess"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/users"
 	"github.com/google/uuid"
@@ -36,12 +35,13 @@ func TestLifecycleServiceScopesOwnerAndModeratorTransitions(t *testing.T) {
 func TestLifecycleServiceShortCircuitsUnauthorizedOwnersAndModerators(t *testing.T) {
 	t.Parallel()
 	listingID := uuid.New()
+	moderatorForbidden := errors.New("moderator forbidden")
 	for _, test := range []struct {
 		providerErr, moderatorErr, want error
 		action                          string
 	}{
 		{providerErr: provideraccess.ErrForbidden, want: provideraccess.ErrForbidden, action: "submit"},
-		{moderatorErr: moderation.ErrForbidden, want: moderation.ErrForbidden, action: "approve"},
+		{moderatorErr: moderatorForbidden, want: moderatorForbidden, action: "approve"},
 	} {
 		repository := &recordingLifecycleRepository{}
 		service := NewLifecycleService(&recordingAuthorizer{err: test.providerErr}, &recordingModeratorAuthorizer{err: test.moderatorErr}, repository)

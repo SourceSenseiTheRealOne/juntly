@@ -16,7 +16,7 @@ export type HealthResponse = {
     requestId: RequestId;
 };
 
-export type ErrorCode = 'INVALID_REQUEST' | 'UNAUTHORIZED' | 'FORBIDDEN' | 'SERVICE_UNAVAILABLE';
+export type ErrorCode = 'INVALID_REQUEST' | 'UNAUTHORIZED' | 'FORBIDDEN' | 'CONFLICT' | 'SERVICE_UNAVAILABLE';
 
 export type ErrorDetail = {
     code: ErrorCode;
@@ -117,12 +117,90 @@ export type ProviderProfileEnvelope = {
     profile: ProviderProfileResponse | null;
 };
 
+export type ListingPriceType = 'fixed' | 'hourly' | 'daily' | 'quote' | 'negotiable';
+
+export type ListingState = 'draft' | 'pending_review' | 'active' | 'rejected' | 'paused' | 'archived';
+
+export type CreateListingRequest = {
+    categoryId: string;
+    primaryLocalityId: string;
+    title: string;
+    description: string;
+    priceType: ListingPriceType;
+    priceMinor: number | null;
+    currency: 'EUR';
+    travelsToCustomer: boolean;
+    receivesCustomer: boolean;
+    remoteServices: boolean;
+};
+
+export type ReplaceDraftListingRequest = CreateListingRequest & {
+    revision: number;
+};
+
+export type ListingResponse = {
+    id: string;
+    categoryId: string;
+    primaryLocalityId: string;
+    title: string;
+    description: string;
+    priceType: ListingPriceType;
+    priceMinor: number | null;
+    currency: 'EUR';
+    travelsToCustomer: boolean;
+    receivesCustomer: boolean;
+    remoteServices: boolean;
+    state: ListingState;
+    revision: number;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type ListingsResponse = {
+    listings: Array<ListingResponse>;
+};
+
+export type RevisionRequest = {
+    revision: number;
+};
+
+export type ArchiveListingRequest = {
+    revision: number;
+    state: 'draft' | 'rejected' | 'active' | 'paused';
+};
+
+export type RejectListingRequest = RevisionRequest & {
+    reason: string;
+};
+
+export type CreateUploadIntentRequest = {
+    ordinal: number;
+    contentType: 'image/jpeg' | 'image/png' | 'image/webp';
+    byteSize: number;
+    checksumSha256: string;
+};
+
+export type UploadCapability = {
+    url: string;
+    method: 'PUT';
+    headers: {
+        [key: string]: string;
+    };
+};
+
+export type UploadIntentResponse = {
+    mediaId: string;
+    capability: UploadCapability;
+};
+
 /**
  * Optional client-supplied correlation identifier.
  */
 export type RequestIdHeader = RequestId;
 
 export type LocaleQuery = 'pt-PT' | 'en' | 'es';
+
+export type ListingIdPath = string;
 
 export type GetHealthData = {
     body?: never;
@@ -423,6 +501,507 @@ export type ReplaceProviderProfileResponses = {
 };
 
 export type ReplaceProviderProfileResponse = ReplaceProviderProfileResponses[keyof ReplaceProviderProfileResponses];
+
+export type ListMyListingsData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/listings';
+};
+
+export type ListMyListingsErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListMyListingsError = ListMyListingsErrors[keyof ListMyListingsErrors];
+
+export type ListMyListingsResponses = {
+    /**
+     * Owner listings
+     */
+    200: ListingsResponse;
+};
+
+export type ListMyListingsResponse = ListMyListingsResponses[keyof ListMyListingsResponses];
+
+export type CreateListingData = {
+    body: CreateListingRequest;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/listings';
+};
+
+export type CreateListingErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type CreateListingError = CreateListingErrors[keyof CreateListingErrors];
+
+export type CreateListingResponses = {
+    /**
+     * Owner listing draft
+     */
+    200: ListingResponse;
+};
+
+export type CreateListingResponse = CreateListingResponses[keyof CreateListingResponses];
+
+export type GetMyListingData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/listings/{listingId}';
+};
+
+export type GetMyListingErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetMyListingError = GetMyListingErrors[keyof GetMyListingErrors];
+
+export type GetMyListingResponses = {
+    /**
+     * Owner listing
+     */
+    200: ListingResponse;
+};
+
+export type GetMyListingResponse = GetMyListingResponses[keyof GetMyListingResponses];
+
+export type ReplaceMyDraftListingData = {
+    body: ReplaceDraftListingRequest;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/listings/{listingId}';
+};
+
+export type ReplaceMyDraftListingErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ReplaceMyDraftListingError = ReplaceMyDraftListingErrors[keyof ReplaceMyDraftListingErrors];
+
+export type ReplaceMyDraftListingResponses = {
+    /**
+     * Updated owner draft
+     */
+    200: ListingResponse;
+};
+
+export type ReplaceMyDraftListingResponse = ReplaceMyDraftListingResponses[keyof ReplaceMyDraftListingResponses];
+
+export type SubmitListingForReviewData = {
+    body: RevisionRequest;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/listings/{listingId}/submit';
+};
+
+export type SubmitListingForReviewErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type SubmitListingForReviewError = SubmitListingForReviewErrors[keyof SubmitListingForReviewErrors];
+
+export type SubmitListingForReviewResponses = {
+    /**
+     * Pending-review listing
+     */
+    200: ListingResponse;
+};
+
+export type SubmitListingForReviewResponse = SubmitListingForReviewResponses[keyof SubmitListingForReviewResponses];
+
+export type PauseListingData = {
+    body: RevisionRequest;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/listings/{listingId}/pause';
+};
+
+export type PauseListingErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type PauseListingError = PauseListingErrors[keyof PauseListingErrors];
+
+export type PauseListingResponses = {
+    /**
+     * Paused listing
+     */
+    200: ListingResponse;
+};
+
+export type PauseListingResponse = PauseListingResponses[keyof PauseListingResponses];
+
+export type ArchiveListingData = {
+    body: ArchiveListingRequest;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/listings/{listingId}/archive';
+};
+
+export type ArchiveListingErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ArchiveListingError = ArchiveListingErrors[keyof ArchiveListingErrors];
+
+export type ArchiveListingResponses = {
+    /**
+     * Archived listing
+     */
+    200: ListingResponse;
+};
+
+export type ArchiveListingResponse = ArchiveListingResponses[keyof ArchiveListingResponses];
+
+export type CreateListingMediaUploadIntentData = {
+    body: CreateUploadIntentRequest;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/listings/{listingId}/media/upload-intents';
+};
+
+export type CreateListingMediaUploadIntentErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type CreateListingMediaUploadIntentError = CreateListingMediaUploadIntentErrors[keyof CreateListingMediaUploadIntentErrors];
+
+export type CreateListingMediaUploadIntentResponses = {
+    /**
+     * Opaque upload capability
+     */
+    200: UploadIntentResponse;
+};
+
+export type CreateListingMediaUploadIntentResponse = CreateListingMediaUploadIntentResponses[keyof CreateListingMediaUploadIntentResponses];
+
+export type ListPendingModerationListingsData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/moderation/listings';
+};
+
+export type ListPendingModerationListingsErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListPendingModerationListingsError = ListPendingModerationListingsErrors[keyof ListPendingModerationListingsErrors];
+
+export type ListPendingModerationListingsResponses = {
+    /**
+     * Pending-review listing queue
+     */
+    200: ListingsResponse;
+};
+
+export type ListPendingModerationListingsResponse = ListPendingModerationListingsResponses[keyof ListPendingModerationListingsResponses];
+
+export type ApproveListingData = {
+    body: RevisionRequest;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/moderation/listings/{listingId}/approve';
+};
+
+export type ApproveListingErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ApproveListingError = ApproveListingErrors[keyof ApproveListingErrors];
+
+export type ApproveListingResponses = {
+    /**
+     * Active listing
+     */
+    200: ListingResponse;
+};
+
+export type ApproveListingResponse = ApproveListingResponses[keyof ApproveListingResponses];
+
+export type RejectListingData = {
+    body: RejectListingRequest;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/moderation/listings/{listingId}/reject';
+};
+
+export type RejectListingErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type RejectListingError = RejectListingErrors[keyof RejectListingErrors];
+
+export type RejectListingResponses = {
+    /**
+     * Rejected listing
+     */
+    200: ListingResponse;
+};
+
+export type RejectListingResponse = RejectListingResponses[keyof RejectListingResponses];
 
 export type ReconcileInternalUserData = {
     body?: never;

@@ -108,3 +108,31 @@ func TestTaxonomyLocationsProviderProfileOpenAPIContract(t *testing.T) {
 		}
 	}
 }
+
+func TestListingsModerationMediaOpenAPIContract(t *testing.T) {
+	t.Parallel()
+	contract, err := os.ReadFile("../../../openapi/juntly-api.v1.yaml")
+	if err != nil {
+		t.Fatalf("read OpenAPI contract: %v", err)
+	}
+	contents := string(contract)
+	for _, required := range []string{
+		"/api/v1/me/listings:", "operationId: listMyListings", "operationId: createListing",
+		"/api/v1/me/listings/{listingId}:", "operationId: getMyListing", "operationId: replaceMyDraftListing",
+		"/api/v1/me/listings/{listingId}/submit:", "operationId: submitListingForReview",
+		"/api/v1/me/listings/{listingId}/pause:", "operationId: pauseListing",
+		"/api/v1/me/listings/{listingId}/archive:", "operationId: archiveListing",
+		"/api/v1/me/listings/{listingId}/media/upload-intents:", "operationId: createListingMediaUploadIntent",
+		"/api/v1/moderation/listings:", "operationId: listPendingModerationListings", "operationId: approveListing", "operationId: rejectListing",
+		"ListingResponse:", "CreateListingRequest:", "UploadIntentResponse:", "CONFLICT", "clerkSession: []",
+	} {
+		if !strings.Contains(contents, required) {
+			t.Fatalf("OpenAPI contract does not contain %q", required)
+		}
+	}
+	for _, prohibited := range []string{"phoneNumber:", "whatsapp:", "exactAddress:", "objectReference:", "accessKey:", "bucket:"} {
+		if strings.Contains(contents, prohibited) {
+			t.Fatalf("OpenAPI contract must not contain %q", prohibited)
+		}
+	}
+}
