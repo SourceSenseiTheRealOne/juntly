@@ -12,6 +12,7 @@ const copy = {
   phone: "Telefone",
   whatsapp: "WhatsApp",
   contact: "Contacto",
+  formatHint: "Use o formato internacional.",
   enabled: "Ativo",
   consent: "Autorizar revelação",
   save: "Guardar canal",
@@ -56,7 +57,7 @@ describe("ContactChannelsCard", () => {
         screen.getByRole("combobox", { name: "Telefone" }),
       ).toBeInTheDocument(),
     );
-    fireEvent.change(screen.getByLabelText("Contacto"), {
+    fireEvent.change(screen.getByRole("textbox"), {
       target: { value: "+12025550123" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Guardar canal" }));

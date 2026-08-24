@@ -130,6 +130,7 @@
     "phone": "Phone",
     "whatsapp": "WhatsApp",
     "contact": "Contact",
+    "formatHint": "Use international format, for example +351912345678.",
     "enabled": "Enabled",
     "consent": "Allow reveal",
     "save": "Save channel",

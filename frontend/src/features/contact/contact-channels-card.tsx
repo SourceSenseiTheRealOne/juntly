@@ -19,6 +19,7 @@ export type ContactChannelsCopy = {
   phone: string;
   whatsapp: string;
   contact: string;
+  formatHint: string;
   enabled: string;
   consent: string;
   save: string;
@@ -66,6 +67,10 @@ export function ContactChannelsCard({ copy }: { copy: ContactChannelsCopy }) {
     event.preventDefault();
     setSaved(false);
     setFailed(false);
+    if (!/^\+[1-9][0-9]{7,14}$/.test(contact.trim())) {
+      setFailed(true);
+      return;
+    }
     try {
       const response = await fetch("/api/v1/me/contact-channels", {
         method: "PUT",
@@ -142,7 +147,11 @@ export function ContactChannelsCard({ copy }: { copy: ContactChannelsCopy }) {
             value={contact}
             onChange={(event) => setContact(event.target.value)}
             autoComplete="tel"
+            inputMode="tel"
           />
+          <span className="mt-1 block text-sm text-muted">
+            {copy.formatHint}
+          </span>
         </label>
         <label>
           <input

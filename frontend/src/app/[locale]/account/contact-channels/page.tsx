@@ -27,6 +27,7 @@ export default async function ContactChannelsPage({
           phone: t("phone"),
           whatsapp: t("whatsapp"),
           contact: t("contact"),
+          formatHint: t("formatHint"),
           enabled: t("enabled"),
           consent: t("consent"),
           save: t("save"),
