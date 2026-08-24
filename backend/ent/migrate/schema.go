@@ -61,6 +61,68 @@ var (
 		Columns:    InternalUsersColumns,
 		PrimaryKey: []*schema.Column{InternalUsersColumns[0]},
 	}
+	// ListingsColumns holds the columns for the "listings" table.
+	ListingsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "internal_user_id", Type: field.TypeUUID},
+		{Name: "category_id", Type: field.TypeUUID},
+		{Name: "primary_locality_id", Type: field.TypeUUID},
+		{Name: "title", Type: field.TypeString, Size: 140},
+		{Name: "description", Type: field.TypeString, Size: 4000},
+		{Name: "price_type", Type: field.TypeEnum, Enums: []string{"fixed", "hourly", "daily", "quote", "negotiable"}},
+		{Name: "price_minor", Type: field.TypeInt, Nullable: true},
+		{Name: "currency", Type: field.TypeString, Size: 3, Default: "EUR"},
+		{Name: "travels_to_customer", Type: field.TypeBool, Default: false},
+		{Name: "receives_customer", Type: field.TypeBool, Default: false},
+		{Name: "remote_services", Type: field.TypeBool, Default: false},
+		{Name: "state", Type: field.TypeEnum, Enums: []string{"draft", "pending_review", "active", "rejected", "paused", "archived"}, Default: "draft"},
+		{Name: "revision", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ListingsTable holds the schema information for the "listings" table.
+	ListingsTable = &schema.Table{
+		Name:       "listings",
+		Columns:    ListingsColumns,
+		PrimaryKey: []*schema.Column{ListingsColumns[0]},
+	}
+	// ListingEventsColumns holds the columns for the "listing_events" table.
+	ListingEventsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "listing_id", Type: field.TypeUUID},
+		{Name: "actor_internal_user_id", Type: field.TypeUUID},
+		{Name: "event_type", Type: field.TypeEnum, Enums: []string{"created", "updated", "submitted", "approved", "rejected", "paused", "archived"}},
+		{Name: "from_state", Type: field.TypeString, Nullable: true, Size: 32},
+		{Name: "to_state", Type: field.TypeString, Size: 32},
+		{Name: "revision", Type: field.TypeInt},
+		{Name: "reason", Type: field.TypeString, Nullable: true, Size: 500},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// ListingEventsTable holds the schema information for the "listing_events" table.
+	ListingEventsTable = &schema.Table{
+		Name:       "listing_events",
+		Columns:    ListingEventsColumns,
+		PrimaryKey: []*schema.Column{ListingEventsColumns[0]},
+	}
+	// ListingMediaColumns holds the columns for the "listing_media" table.
+	ListingMediaColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "listing_id", Type: field.TypeUUID},
+		{Name: "ordinal", Type: field.TypeInt},
+		{Name: "content_type", Type: field.TypeString, Size: 100},
+		{Name: "byte_size", Type: field.TypeInt64},
+		{Name: "checksum_sha256", Type: field.TypeString, Size: 64},
+		{Name: "object_reference", Type: field.TypeString, Size: 512},
+		{Name: "state", Type: field.TypeEnum, Enums: []string{"pending_upload", "ready", "deleted"}, Default: "pending_upload"},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ListingMediaTable holds the schema information for the "listing_media" table.
+	ListingMediaTable = &schema.Table{
+		Name:       "listing_media",
+		Columns:    ListingMediaColumns,
+		PrimaryKey: []*schema.Column{ListingMediaColumns[0]},
+	}
 	// LocalitiesColumns holds the columns for the "localities" table.
 	LocalitiesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -88,6 +150,26 @@ var (
 				Columns:    []*schema.Column{LocalitiesColumns[12]},
 				RefColumns: []*schema.Column{AdministrativeAreasColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// PlatformRolesColumns holds the columns for the "platform_roles" table.
+	PlatformRolesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "internal_user_id", Type: field.TypeUUID},
+		{Name: "role", Type: field.TypeString, Size: 20},
+		{Name: "granted_at", Type: field.TypeTime},
+	}
+	// PlatformRolesTable holds the schema information for the "platform_roles" table.
+	PlatformRolesTable = &schema.Table{
+		Name:       "platform_roles",
+		Columns:    PlatformRolesColumns,
+		PrimaryKey: []*schema.Column{PlatformRolesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "platformrole_internal_user_id_role",
+				Unique:  true,
+				Columns: []*schema.Column{PlatformRolesColumns[1], PlatformRolesColumns[2]},
 			},
 		},
 	}
@@ -287,7 +369,11 @@ var (
 	Tables = []*schema.Table{
 		AdministrativeAreasTable,
 		InternalUsersTable,
+		ListingsTable,
+		ListingEventsTable,
+		ListingMediaTable,
 		LocalitiesTable,
+		PlatformRolesTable,
 		ProviderProfilesTable,
 		ProviderServiceLocalitiesTable,
 		ProviderSpokenLanguagesTable,
@@ -308,9 +394,21 @@ func init() {
 	InternalUsersTable.Annotation = &entsql.Annotation{
 		Table: "internal_users",
 	}
+	ListingsTable.Annotation = &entsql.Annotation{
+		Table: "listings",
+	}
+	ListingEventsTable.Annotation = &entsql.Annotation{
+		Table: "listing_events",
+	}
+	ListingMediaTable.Annotation = &entsql.Annotation{
+		Table: "listing_media",
+	}
 	LocalitiesTable.ForeignKeys[0].RefTable = AdministrativeAreasTable
 	LocalitiesTable.Annotation = &entsql.Annotation{
 		Table: "localities",
+	}
+	PlatformRolesTable.Annotation = &entsql.Annotation{
+		Table: "platform_roles",
 	}
 	ProviderProfilesTable.Annotation = &entsql.Annotation{
 		Table: "provider_profiles",

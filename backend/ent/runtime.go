@@ -7,7 +7,11 @@ import (
 
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/administrativearea"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/internaluser"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listing"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listingevent"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listingmedia"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/locality"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/platformrole"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerprofile"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerspokenlanguage"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/schema"
@@ -168,6 +172,204 @@ func init() {
 	internaluserDescID := internaluserFields[0].Descriptor()
 	// internaluser.DefaultID holds the default value on creation for the id field.
 	internaluser.DefaultID = internaluserDescID.Default.(func() uuid.UUID)
+	listingFields := schema.Listing{}.Fields()
+	_ = listingFields
+	// listingDescTitle is the schema descriptor for title field.
+	listingDescTitle := listingFields[4].Descriptor()
+	// listing.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	listing.TitleValidator = func() func(string) error {
+		validators := listingDescTitle.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(title string) error {
+			for _, fn := range fns {
+				if err := fn(title); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// listingDescDescription is the schema descriptor for description field.
+	listingDescDescription := listingFields[5].Descriptor()
+	// listing.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	listing.DescriptionValidator = func() func(string) error {
+		validators := listingDescDescription.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(description string) error {
+			for _, fn := range fns {
+				if err := fn(description); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// listingDescPriceMinor is the schema descriptor for price_minor field.
+	listingDescPriceMinor := listingFields[7].Descriptor()
+	// listing.PriceMinorValidator is a validator for the "price_minor" field. It is called by the builders before save.
+	listing.PriceMinorValidator = listingDescPriceMinor.Validators[0].(func(int) error)
+	// listingDescCurrency is the schema descriptor for currency field.
+	listingDescCurrency := listingFields[8].Descriptor()
+	// listing.DefaultCurrency holds the default value on creation for the currency field.
+	listing.DefaultCurrency = listingDescCurrency.Default.(string)
+	// listing.CurrencyValidator is a validator for the "currency" field. It is called by the builders before save.
+	listing.CurrencyValidator = listingDescCurrency.Validators[0].(func(string) error)
+	// listingDescTravelsToCustomer is the schema descriptor for travels_to_customer field.
+	listingDescTravelsToCustomer := listingFields[9].Descriptor()
+	// listing.DefaultTravelsToCustomer holds the default value on creation for the travels_to_customer field.
+	listing.DefaultTravelsToCustomer = listingDescTravelsToCustomer.Default.(bool)
+	// listingDescReceivesCustomer is the schema descriptor for receives_customer field.
+	listingDescReceivesCustomer := listingFields[10].Descriptor()
+	// listing.DefaultReceivesCustomer holds the default value on creation for the receives_customer field.
+	listing.DefaultReceivesCustomer = listingDescReceivesCustomer.Default.(bool)
+	// listingDescRemoteServices is the schema descriptor for remote_services field.
+	listingDescRemoteServices := listingFields[11].Descriptor()
+	// listing.DefaultRemoteServices holds the default value on creation for the remote_services field.
+	listing.DefaultRemoteServices = listingDescRemoteServices.Default.(bool)
+	// listingDescRevision is the schema descriptor for revision field.
+	listingDescRevision := listingFields[13].Descriptor()
+	// listing.DefaultRevision holds the default value on creation for the revision field.
+	listing.DefaultRevision = listingDescRevision.Default.(int)
+	// listing.RevisionValidator is a validator for the "revision" field. It is called by the builders before save.
+	listing.RevisionValidator = listingDescRevision.Validators[0].(func(int) error)
+	// listingDescCreatedAt is the schema descriptor for created_at field.
+	listingDescCreatedAt := listingFields[14].Descriptor()
+	// listing.DefaultCreatedAt holds the default value on creation for the created_at field.
+	listing.DefaultCreatedAt = listingDescCreatedAt.Default.(func() time.Time)
+	// listingDescUpdatedAt is the schema descriptor for updated_at field.
+	listingDescUpdatedAt := listingFields[15].Descriptor()
+	// listing.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	listing.DefaultUpdatedAt = listingDescUpdatedAt.Default.(func() time.Time)
+	// listing.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	listing.UpdateDefaultUpdatedAt = listingDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// listingDescID is the schema descriptor for id field.
+	listingDescID := listingFields[0].Descriptor()
+	// listing.DefaultID holds the default value on creation for the id field.
+	listing.DefaultID = listingDescID.Default.(func() uuid.UUID)
+	listingeventFields := schema.ListingEvent{}.Fields()
+	_ = listingeventFields
+	// listingeventDescFromState is the schema descriptor for from_state field.
+	listingeventDescFromState := listingeventFields[4].Descriptor()
+	// listingevent.FromStateValidator is a validator for the "from_state" field. It is called by the builders before save.
+	listingevent.FromStateValidator = listingeventDescFromState.Validators[0].(func(string) error)
+	// listingeventDescToState is the schema descriptor for to_state field.
+	listingeventDescToState := listingeventFields[5].Descriptor()
+	// listingevent.ToStateValidator is a validator for the "to_state" field. It is called by the builders before save.
+	listingevent.ToStateValidator = func() func(string) error {
+		validators := listingeventDescToState.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(to_state string) error {
+			for _, fn := range fns {
+				if err := fn(to_state); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// listingeventDescRevision is the schema descriptor for revision field.
+	listingeventDescRevision := listingeventFields[6].Descriptor()
+	// listingevent.RevisionValidator is a validator for the "revision" field. It is called by the builders before save.
+	listingevent.RevisionValidator = listingeventDescRevision.Validators[0].(func(int) error)
+	// listingeventDescReason is the schema descriptor for reason field.
+	listingeventDescReason := listingeventFields[7].Descriptor()
+	// listingevent.ReasonValidator is a validator for the "reason" field. It is called by the builders before save.
+	listingevent.ReasonValidator = listingeventDescReason.Validators[0].(func(string) error)
+	// listingeventDescCreatedAt is the schema descriptor for created_at field.
+	listingeventDescCreatedAt := listingeventFields[8].Descriptor()
+	// listingevent.DefaultCreatedAt holds the default value on creation for the created_at field.
+	listingevent.DefaultCreatedAt = listingeventDescCreatedAt.Default.(func() time.Time)
+	// listingeventDescID is the schema descriptor for id field.
+	listingeventDescID := listingeventFields[0].Descriptor()
+	// listingevent.DefaultID holds the default value on creation for the id field.
+	listingevent.DefaultID = listingeventDescID.Default.(func() uuid.UUID)
+	listingmediaFields := schema.ListingMedia{}.Fields()
+	_ = listingmediaFields
+	// listingmediaDescOrdinal is the schema descriptor for ordinal field.
+	listingmediaDescOrdinal := listingmediaFields[2].Descriptor()
+	// listingmedia.OrdinalValidator is a validator for the "ordinal" field. It is called by the builders before save.
+	listingmedia.OrdinalValidator = listingmediaDescOrdinal.Validators[0].(func(int) error)
+	// listingmediaDescContentType is the schema descriptor for content_type field.
+	listingmediaDescContentType := listingmediaFields[3].Descriptor()
+	// listingmedia.ContentTypeValidator is a validator for the "content_type" field. It is called by the builders before save.
+	listingmedia.ContentTypeValidator = func() func(string) error {
+		validators := listingmediaDescContentType.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(content_type string) error {
+			for _, fn := range fns {
+				if err := fn(content_type); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// listingmediaDescByteSize is the schema descriptor for byte_size field.
+	listingmediaDescByteSize := listingmediaFields[4].Descriptor()
+	// listingmedia.ByteSizeValidator is a validator for the "byte_size" field. It is called by the builders before save.
+	listingmedia.ByteSizeValidator = listingmediaDescByteSize.Validators[0].(func(int64) error)
+	// listingmediaDescChecksumSha256 is the schema descriptor for checksum_sha256 field.
+	listingmediaDescChecksumSha256 := listingmediaFields[5].Descriptor()
+	// listingmedia.ChecksumSha256Validator is a validator for the "checksum_sha256" field. It is called by the builders before save.
+	listingmedia.ChecksumSha256Validator = func() func(string) error {
+		validators := listingmediaDescChecksumSha256.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(checksum_sha256 string) error {
+			for _, fn := range fns {
+				if err := fn(checksum_sha256); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// listingmediaDescObjectReference is the schema descriptor for object_reference field.
+	listingmediaDescObjectReference := listingmediaFields[6].Descriptor()
+	// listingmedia.ObjectReferenceValidator is a validator for the "object_reference" field. It is called by the builders before save.
+	listingmedia.ObjectReferenceValidator = func() func(string) error {
+		validators := listingmediaDescObjectReference.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(object_reference string) error {
+			for _, fn := range fns {
+				if err := fn(object_reference); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// listingmediaDescCreatedAt is the schema descriptor for created_at field.
+	listingmediaDescCreatedAt := listingmediaFields[8].Descriptor()
+	// listingmedia.DefaultCreatedAt holds the default value on creation for the created_at field.
+	listingmedia.DefaultCreatedAt = listingmediaDescCreatedAt.Default.(func() time.Time)
+	// listingmediaDescUpdatedAt is the schema descriptor for updated_at field.
+	listingmediaDescUpdatedAt := listingmediaFields[9].Descriptor()
+	// listingmedia.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	listingmedia.DefaultUpdatedAt = listingmediaDescUpdatedAt.Default.(func() time.Time)
+	// listingmedia.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	listingmedia.UpdateDefaultUpdatedAt = listingmediaDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// listingmediaDescID is the schema descriptor for id field.
+	listingmediaDescID := listingmediaFields[0].Descriptor()
+	// listingmedia.DefaultID holds the default value on creation for the id field.
+	listingmedia.DefaultID = listingmediaDescID.Default.(func() uuid.UUID)
 	localityFields := schema.Locality{}.Fields()
 	_ = localityFields
 	// localityDescSlug is the schema descriptor for slug field.
@@ -314,6 +516,34 @@ func init() {
 	localityDescID := localityFields[0].Descriptor()
 	// locality.DefaultID holds the default value on creation for the id field.
 	locality.DefaultID = localityDescID.Default.(func() uuid.UUID)
+	platformroleFields := schema.PlatformRole{}.Fields()
+	_ = platformroleFields
+	// platformroleDescRole is the schema descriptor for role field.
+	platformroleDescRole := platformroleFields[2].Descriptor()
+	// platformrole.RoleValidator is a validator for the "role" field. It is called by the builders before save.
+	platformrole.RoleValidator = func() func(string) error {
+		validators := platformroleDescRole.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(role string) error {
+			for _, fn := range fns {
+				if err := fn(role); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// platformroleDescGrantedAt is the schema descriptor for granted_at field.
+	platformroleDescGrantedAt := platformroleFields[3].Descriptor()
+	// platformrole.DefaultGrantedAt holds the default value on creation for the granted_at field.
+	platformrole.DefaultGrantedAt = platformroleDescGrantedAt.Default.(func() time.Time)
+	// platformroleDescID is the schema descriptor for id field.
+	platformroleDescID := platformroleFields[0].Descriptor()
+	// platformrole.DefaultID holds the default value on creation for the id field.
+	platformrole.DefaultID = platformroleDescID.Default.(func() uuid.UUID)
 	providerprofileFields := schema.ProviderProfile{}.Fields()
 	_ = providerprofileFields
 	// providerprofileDescDisplayName is the schema descriptor for display_name field.

@@ -12,7 +12,7 @@
 
 - Use the canonical checkout and local commits only; do not push or mutate remotes.
 - Use forward-only Supabase migrations and `go generate ./ent`.
-- A `moderator` grant is persisted server-side only; no Clerk/browser role authority.
+- A `moderator` grant is persisted server-side only with a unique `(internal_user_id, role)` key; no Clerk/browser role authority.
 - All new behavioral code follows observed RED → GREEN → REFACTOR.
 - Public/browser contracts omit exact addresses, contact data, internal user IDs, Clerk values, storage keys, credentials, and private object URLs.
 - Listings are owner-only until Slice 4; no public listing pages/search in this slice.

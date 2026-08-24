@@ -32,10 +32,11 @@ Go derives owner and moderator authority from the verified identity and persiste
 
 ### `platform_roles`
 
+- opaque UUID primary key
 - `internal_user_id uuid references internal_users(id)`
 - `role text` restricted initially to `moderator`
 - `granted_at timestamptz`
-- composite primary key `(internal_user_id, role)`
+- unique `(internal_user_id, role)`
 
 Slice 3 exposes no role mutation API. Operations may seed/grant a moderator through audited server-side data until Slice 11 owns broader role administration.
 

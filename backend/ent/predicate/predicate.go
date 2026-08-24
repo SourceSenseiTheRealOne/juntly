@@ -12,8 +12,20 @@ type AdministrativeArea func(*sql.Selector)
 // InternalUser is the predicate function for internaluser builders.
 type InternalUser func(*sql.Selector)
 
+// Listing is the predicate function for listing builders.
+type Listing func(*sql.Selector)
+
+// ListingEvent is the predicate function for listingevent builders.
+type ListingEvent func(*sql.Selector)
+
+// ListingMedia is the predicate function for listingmedia builders.
+type ListingMedia func(*sql.Selector)
+
 // Locality is the predicate function for locality builders.
 type Locality func(*sql.Selector)
+
+// PlatformRole is the predicate function for platformrole builders.
+type PlatformRole func(*sql.Selector)
 
 // ProviderProfile is the predicate function for providerprofile builders.
 type ProviderProfile func(*sql.Selector)

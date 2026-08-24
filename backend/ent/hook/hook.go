@@ -33,6 +33,42 @@ func (f InternalUserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.InternalUserMutation", m)
 }
 
+// The ListingFunc type is an adapter to allow the use of ordinary
+// function as Listing mutator.
+type ListingFunc func(context.Context, *ent.ListingMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ListingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ListingMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ListingMutation", m)
+}
+
+// The ListingEventFunc type is an adapter to allow the use of ordinary
+// function as ListingEvent mutator.
+type ListingEventFunc func(context.Context, *ent.ListingEventMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ListingEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ListingEventMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ListingEventMutation", m)
+}
+
+// The ListingMediaFunc type is an adapter to allow the use of ordinary
+// function as ListingMedia mutator.
+type ListingMediaFunc func(context.Context, *ent.ListingMediaMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ListingMediaFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ListingMediaMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ListingMediaMutation", m)
+}
+
 // The LocalityFunc type is an adapter to allow the use of ordinary
 // function as Locality mutator.
 type LocalityFunc func(context.Context, *ent.LocalityMutation) (ent.Value, error)
@@ -43,6 +79,18 @@ func (f LocalityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.LocalityMutation", m)
+}
+
+// The PlatformRoleFunc type is an adapter to allow the use of ordinary
+// function as PlatformRole mutator.
+type PlatformRoleFunc func(context.Context, *ent.PlatformRoleMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PlatformRoleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PlatformRoleMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlatformRoleMutation", m)
 }
 
 // The ProviderProfileFunc type is an adapter to allow the use of ordinary

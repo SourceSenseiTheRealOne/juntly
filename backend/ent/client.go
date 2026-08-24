@@ -18,7 +18,11 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/administrativearea"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/internaluser"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listing"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listingevent"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listingmedia"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/locality"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/platformrole"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerprofile"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerservicelocality"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerspokenlanguage"
@@ -39,8 +43,16 @@ type Client struct {
 	AdministrativeArea *AdministrativeAreaClient
 	// InternalUser is the client for interacting with the InternalUser builders.
 	InternalUser *InternalUserClient
+	// Listing is the client for interacting with the Listing builders.
+	Listing *ListingClient
+	// ListingEvent is the client for interacting with the ListingEvent builders.
+	ListingEvent *ListingEventClient
+	// ListingMedia is the client for interacting with the ListingMedia builders.
+	ListingMedia *ListingMediaClient
 	// Locality is the client for interacting with the Locality builders.
 	Locality *LocalityClient
+	// PlatformRole is the client for interacting with the PlatformRole builders.
+	PlatformRole *PlatformRoleClient
 	// ProviderProfile is the client for interacting with the ProviderProfile builders.
 	ProviderProfile *ProviderProfileClient
 	// ProviderServiceLocality is the client for interacting with the ProviderServiceLocality builders.
@@ -72,7 +84,11 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.AdministrativeArea = NewAdministrativeAreaClient(c.config)
 	c.InternalUser = NewInternalUserClient(c.config)
+	c.Listing = NewListingClient(c.config)
+	c.ListingEvent = NewListingEventClient(c.config)
+	c.ListingMedia = NewListingMediaClient(c.config)
 	c.Locality = NewLocalityClient(c.config)
+	c.PlatformRole = NewPlatformRoleClient(c.config)
 	c.ProviderProfile = NewProviderProfileClient(c.config)
 	c.ProviderServiceLocality = NewProviderServiceLocalityClient(c.config)
 	c.ProviderSpokenLanguage = NewProviderSpokenLanguageClient(c.config)
@@ -176,7 +192,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:                     cfg,
 		AdministrativeArea:         NewAdministrativeAreaClient(cfg),
 		InternalUser:               NewInternalUserClient(cfg),
+		Listing:                    NewListingClient(cfg),
+		ListingEvent:               NewListingEventClient(cfg),
+		ListingMedia:               NewListingMediaClient(cfg),
 		Locality:                   NewLocalityClient(cfg),
+		PlatformRole:               NewPlatformRoleClient(cfg),
 		ProviderProfile:            NewProviderProfileClient(cfg),
 		ProviderServiceLocality:    NewProviderServiceLocalityClient(cfg),
 		ProviderSpokenLanguage:     NewProviderSpokenLanguageClient(cfg),
@@ -207,7 +227,11 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:                     cfg,
 		AdministrativeArea:         NewAdministrativeAreaClient(cfg),
 		InternalUser:               NewInternalUserClient(cfg),
+		Listing:                    NewListingClient(cfg),
+		ListingEvent:               NewListingEventClient(cfg),
+		ListingMedia:               NewListingMediaClient(cfg),
 		Locality:                   NewLocalityClient(cfg),
+		PlatformRole:               NewPlatformRoleClient(cfg),
 		ProviderProfile:            NewProviderProfileClient(cfg),
 		ProviderServiceLocality:    NewProviderServiceLocalityClient(cfg),
 		ProviderSpokenLanguage:     NewProviderSpokenLanguageClient(cfg),
@@ -246,10 +270,11 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.AdministrativeArea, c.InternalUser, c.Locality, c.ProviderProfile,
-		c.ProviderServiceLocality, c.ProviderSpokenLanguage, c.ServiceCategory,
-		c.ServiceCategoryTranslation, c.SpokenLanguage, c.SpokenLanguageTranslation,
-		c.SupportedLocale, c.UserAccount,
+		c.AdministrativeArea, c.InternalUser, c.Listing, c.ListingEvent, c.ListingMedia,
+		c.Locality, c.PlatformRole, c.ProviderProfile, c.ProviderServiceLocality,
+		c.ProviderSpokenLanguage, c.ServiceCategory, c.ServiceCategoryTranslation,
+		c.SpokenLanguage, c.SpokenLanguageTranslation, c.SupportedLocale,
+		c.UserAccount,
 	} {
 		n.Use(hooks...)
 	}
@@ -259,10 +284,11 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.AdministrativeArea, c.InternalUser, c.Locality, c.ProviderProfile,
-		c.ProviderServiceLocality, c.ProviderSpokenLanguage, c.ServiceCategory,
-		c.ServiceCategoryTranslation, c.SpokenLanguage, c.SpokenLanguageTranslation,
-		c.SupportedLocale, c.UserAccount,
+		c.AdministrativeArea, c.InternalUser, c.Listing, c.ListingEvent, c.ListingMedia,
+		c.Locality, c.PlatformRole, c.ProviderProfile, c.ProviderServiceLocality,
+		c.ProviderSpokenLanguage, c.ServiceCategory, c.ServiceCategoryTranslation,
+		c.SpokenLanguage, c.SpokenLanguageTranslation, c.SupportedLocale,
+		c.UserAccount,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -275,8 +301,16 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AdministrativeArea.mutate(ctx, m)
 	case *InternalUserMutation:
 		return c.InternalUser.mutate(ctx, m)
+	case *ListingMutation:
+		return c.Listing.mutate(ctx, m)
+	case *ListingEventMutation:
+		return c.ListingEvent.mutate(ctx, m)
+	case *ListingMediaMutation:
+		return c.ListingMedia.mutate(ctx, m)
 	case *LocalityMutation:
 		return c.Locality.mutate(ctx, m)
+	case *PlatformRoleMutation:
+		return c.PlatformRole.mutate(ctx, m)
 	case *ProviderProfileMutation:
 		return c.ProviderProfile.mutate(ctx, m)
 	case *ProviderServiceLocalityMutation:
@@ -614,6 +648,405 @@ func (c *InternalUserClient) mutate(ctx context.Context, m *InternalUserMutation
 	}
 }
 
+// ListingClient is a client for the Listing schema.
+type ListingClient struct {
+	config
+}
+
+// NewListingClient returns a client for the Listing from the given config.
+func NewListingClient(c config) *ListingClient {
+	return &ListingClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `listing.Hooks(f(g(h())))`.
+func (c *ListingClient) Use(hooks ...Hook) {
+	c.hooks.Listing = append(c.hooks.Listing, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `listing.Intercept(f(g(h())))`.
+func (c *ListingClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Listing = append(c.inters.Listing, interceptors...)
+}
+
+// Create returns a builder for creating a Listing entity.
+func (c *ListingClient) Create() *ListingCreate {
+	mutation := newListingMutation(c.config, OpCreate)
+	return &ListingCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Listing entities.
+func (c *ListingClient) CreateBulk(builders ...*ListingCreate) *ListingCreateBulk {
+	return &ListingCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ListingClient) MapCreateBulk(slice any, setFunc func(*ListingCreate, int)) *ListingCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ListingCreateBulk{err: fmt.Errorf("calling to ListingClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ListingCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ListingCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Listing.
+func (c *ListingClient) Update() *ListingUpdate {
+	mutation := newListingMutation(c.config, OpUpdate)
+	return &ListingUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ListingClient) UpdateOne(_m *Listing) *ListingUpdateOne {
+	mutation := newListingMutation(c.config, OpUpdateOne, withListing(_m))
+	return &ListingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ListingClient) UpdateOneID(id uuid.UUID) *ListingUpdateOne {
+	mutation := newListingMutation(c.config, OpUpdateOne, withListingID(id))
+	return &ListingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Listing.
+func (c *ListingClient) Delete() *ListingDelete {
+	mutation := newListingMutation(c.config, OpDelete)
+	return &ListingDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ListingClient) DeleteOne(_m *Listing) *ListingDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ListingClient) DeleteOneID(id uuid.UUID) *ListingDeleteOne {
+	builder := c.Delete().Where(listing.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ListingDeleteOne{builder}
+}
+
+// Query returns a query builder for Listing.
+func (c *ListingClient) Query() *ListingQuery {
+	return &ListingQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeListing},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Listing entity by its id.
+func (c *ListingClient) Get(ctx context.Context, id uuid.UUID) (*Listing, error) {
+	return c.Query().Where(listing.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ListingClient) GetX(ctx context.Context, id uuid.UUID) *Listing {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ListingClient) Hooks() []Hook {
+	return c.hooks.Listing
+}
+
+// Interceptors returns the client interceptors.
+func (c *ListingClient) Interceptors() []Interceptor {
+	return c.inters.Listing
+}
+
+func (c *ListingClient) mutate(ctx context.Context, m *ListingMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ListingCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ListingUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ListingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ListingDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Listing mutation op: %q", m.Op())
+	}
+}
+
+// ListingEventClient is a client for the ListingEvent schema.
+type ListingEventClient struct {
+	config
+}
+
+// NewListingEventClient returns a client for the ListingEvent from the given config.
+func NewListingEventClient(c config) *ListingEventClient {
+	return &ListingEventClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `listingevent.Hooks(f(g(h())))`.
+func (c *ListingEventClient) Use(hooks ...Hook) {
+	c.hooks.ListingEvent = append(c.hooks.ListingEvent, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `listingevent.Intercept(f(g(h())))`.
+func (c *ListingEventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ListingEvent = append(c.inters.ListingEvent, interceptors...)
+}
+
+// Create returns a builder for creating a ListingEvent entity.
+func (c *ListingEventClient) Create() *ListingEventCreate {
+	mutation := newListingEventMutation(c.config, OpCreate)
+	return &ListingEventCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ListingEvent entities.
+func (c *ListingEventClient) CreateBulk(builders ...*ListingEventCreate) *ListingEventCreateBulk {
+	return &ListingEventCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ListingEventClient) MapCreateBulk(slice any, setFunc func(*ListingEventCreate, int)) *ListingEventCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ListingEventCreateBulk{err: fmt.Errorf("calling to ListingEventClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ListingEventCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ListingEventCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ListingEvent.
+func (c *ListingEventClient) Update() *ListingEventUpdate {
+	mutation := newListingEventMutation(c.config, OpUpdate)
+	return &ListingEventUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ListingEventClient) UpdateOne(_m *ListingEvent) *ListingEventUpdateOne {
+	mutation := newListingEventMutation(c.config, OpUpdateOne, withListingEvent(_m))
+	return &ListingEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ListingEventClient) UpdateOneID(id uuid.UUID) *ListingEventUpdateOne {
+	mutation := newListingEventMutation(c.config, OpUpdateOne, withListingEventID(id))
+	return &ListingEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ListingEvent.
+func (c *ListingEventClient) Delete() *ListingEventDelete {
+	mutation := newListingEventMutation(c.config, OpDelete)
+	return &ListingEventDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ListingEventClient) DeleteOne(_m *ListingEvent) *ListingEventDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ListingEventClient) DeleteOneID(id uuid.UUID) *ListingEventDeleteOne {
+	builder := c.Delete().Where(listingevent.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ListingEventDeleteOne{builder}
+}
+
+// Query returns a query builder for ListingEvent.
+func (c *ListingEventClient) Query() *ListingEventQuery {
+	return &ListingEventQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeListingEvent},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ListingEvent entity by its id.
+func (c *ListingEventClient) Get(ctx context.Context, id uuid.UUID) (*ListingEvent, error) {
+	return c.Query().Where(listingevent.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ListingEventClient) GetX(ctx context.Context, id uuid.UUID) *ListingEvent {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ListingEventClient) Hooks() []Hook {
+	return c.hooks.ListingEvent
+}
+
+// Interceptors returns the client interceptors.
+func (c *ListingEventClient) Interceptors() []Interceptor {
+	return c.inters.ListingEvent
+}
+
+func (c *ListingEventClient) mutate(ctx context.Context, m *ListingEventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ListingEventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ListingEventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ListingEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ListingEventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ListingEvent mutation op: %q", m.Op())
+	}
+}
+
+// ListingMediaClient is a client for the ListingMedia schema.
+type ListingMediaClient struct {
+	config
+}
+
+// NewListingMediaClient returns a client for the ListingMedia from the given config.
+func NewListingMediaClient(c config) *ListingMediaClient {
+	return &ListingMediaClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `listingmedia.Hooks(f(g(h())))`.
+func (c *ListingMediaClient) Use(hooks ...Hook) {
+	c.hooks.ListingMedia = append(c.hooks.ListingMedia, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `listingmedia.Intercept(f(g(h())))`.
+func (c *ListingMediaClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ListingMedia = append(c.inters.ListingMedia, interceptors...)
+}
+
+// Create returns a builder for creating a ListingMedia entity.
+func (c *ListingMediaClient) Create() *ListingMediaCreate {
+	mutation := newListingMediaMutation(c.config, OpCreate)
+	return &ListingMediaCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ListingMedia entities.
+func (c *ListingMediaClient) CreateBulk(builders ...*ListingMediaCreate) *ListingMediaCreateBulk {
+	return &ListingMediaCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ListingMediaClient) MapCreateBulk(slice any, setFunc func(*ListingMediaCreate, int)) *ListingMediaCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ListingMediaCreateBulk{err: fmt.Errorf("calling to ListingMediaClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ListingMediaCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ListingMediaCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ListingMedia.
+func (c *ListingMediaClient) Update() *ListingMediaUpdate {
+	mutation := newListingMediaMutation(c.config, OpUpdate)
+	return &ListingMediaUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ListingMediaClient) UpdateOne(_m *ListingMedia) *ListingMediaUpdateOne {
+	mutation := newListingMediaMutation(c.config, OpUpdateOne, withListingMedia(_m))
+	return &ListingMediaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ListingMediaClient) UpdateOneID(id uuid.UUID) *ListingMediaUpdateOne {
+	mutation := newListingMediaMutation(c.config, OpUpdateOne, withListingMediaID(id))
+	return &ListingMediaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ListingMedia.
+func (c *ListingMediaClient) Delete() *ListingMediaDelete {
+	mutation := newListingMediaMutation(c.config, OpDelete)
+	return &ListingMediaDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ListingMediaClient) DeleteOne(_m *ListingMedia) *ListingMediaDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ListingMediaClient) DeleteOneID(id uuid.UUID) *ListingMediaDeleteOne {
+	builder := c.Delete().Where(listingmedia.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ListingMediaDeleteOne{builder}
+}
+
+// Query returns a query builder for ListingMedia.
+func (c *ListingMediaClient) Query() *ListingMediaQuery {
+	return &ListingMediaQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeListingMedia},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ListingMedia entity by its id.
+func (c *ListingMediaClient) Get(ctx context.Context, id uuid.UUID) (*ListingMedia, error) {
+	return c.Query().Where(listingmedia.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ListingMediaClient) GetX(ctx context.Context, id uuid.UUID) *ListingMedia {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ListingMediaClient) Hooks() []Hook {
+	return c.hooks.ListingMedia
+}
+
+// Interceptors returns the client interceptors.
+func (c *ListingMediaClient) Interceptors() []Interceptor {
+	return c.inters.ListingMedia
+}
+
+func (c *ListingMediaClient) mutate(ctx context.Context, m *ListingMediaMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ListingMediaCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ListingMediaUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ListingMediaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ListingMediaDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ListingMedia mutation op: %q", m.Op())
+	}
+}
+
 // LocalityClient is a client for the Locality schema.
 type LocalityClient struct {
 	config
@@ -776,6 +1209,139 @@ func (c *LocalityClient) mutate(ctx context.Context, m *LocalityMutation) (Value
 		return (&LocalityDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Locality mutation op: %q", m.Op())
+	}
+}
+
+// PlatformRoleClient is a client for the PlatformRole schema.
+type PlatformRoleClient struct {
+	config
+}
+
+// NewPlatformRoleClient returns a client for the PlatformRole from the given config.
+func NewPlatformRoleClient(c config) *PlatformRoleClient {
+	return &PlatformRoleClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `platformrole.Hooks(f(g(h())))`.
+func (c *PlatformRoleClient) Use(hooks ...Hook) {
+	c.hooks.PlatformRole = append(c.hooks.PlatformRole, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `platformrole.Intercept(f(g(h())))`.
+func (c *PlatformRoleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PlatformRole = append(c.inters.PlatformRole, interceptors...)
+}
+
+// Create returns a builder for creating a PlatformRole entity.
+func (c *PlatformRoleClient) Create() *PlatformRoleCreate {
+	mutation := newPlatformRoleMutation(c.config, OpCreate)
+	return &PlatformRoleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PlatformRole entities.
+func (c *PlatformRoleClient) CreateBulk(builders ...*PlatformRoleCreate) *PlatformRoleCreateBulk {
+	return &PlatformRoleCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PlatformRoleClient) MapCreateBulk(slice any, setFunc func(*PlatformRoleCreate, int)) *PlatformRoleCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PlatformRoleCreateBulk{err: fmt.Errorf("calling to PlatformRoleClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PlatformRoleCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PlatformRoleCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PlatformRole.
+func (c *PlatformRoleClient) Update() *PlatformRoleUpdate {
+	mutation := newPlatformRoleMutation(c.config, OpUpdate)
+	return &PlatformRoleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PlatformRoleClient) UpdateOne(_m *PlatformRole) *PlatformRoleUpdateOne {
+	mutation := newPlatformRoleMutation(c.config, OpUpdateOne, withPlatformRole(_m))
+	return &PlatformRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PlatformRoleClient) UpdateOneID(id uuid.UUID) *PlatformRoleUpdateOne {
+	mutation := newPlatformRoleMutation(c.config, OpUpdateOne, withPlatformRoleID(id))
+	return &PlatformRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PlatformRole.
+func (c *PlatformRoleClient) Delete() *PlatformRoleDelete {
+	mutation := newPlatformRoleMutation(c.config, OpDelete)
+	return &PlatformRoleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PlatformRoleClient) DeleteOne(_m *PlatformRole) *PlatformRoleDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PlatformRoleClient) DeleteOneID(id uuid.UUID) *PlatformRoleDeleteOne {
+	builder := c.Delete().Where(platformrole.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PlatformRoleDeleteOne{builder}
+}
+
+// Query returns a query builder for PlatformRole.
+func (c *PlatformRoleClient) Query() *PlatformRoleQuery {
+	return &PlatformRoleQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePlatformRole},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PlatformRole entity by its id.
+func (c *PlatformRoleClient) Get(ctx context.Context, id uuid.UUID) (*PlatformRole, error) {
+	return c.Query().Where(platformrole.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PlatformRoleClient) GetX(ctx context.Context, id uuid.UUID) *PlatformRole {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *PlatformRoleClient) Hooks() []Hook {
+	return c.hooks.PlatformRole
+}
+
+// Interceptors returns the client interceptors.
+func (c *PlatformRoleClient) Interceptors() []Interceptor {
+	return c.inters.PlatformRole
+}
+
+func (c *PlatformRoleClient) mutate(ctx context.Context, m *PlatformRoleMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PlatformRoleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PlatformRoleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PlatformRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PlatformRoleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PlatformRole mutation op: %q", m.Op())
 	}
 }
 
@@ -2119,15 +2685,15 @@ func (c *UserAccountClient) mutate(ctx context.Context, m *UserAccountMutation) 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AdministrativeArea, InternalUser, Locality, ProviderProfile,
-		ProviderServiceLocality, ProviderSpokenLanguage, ServiceCategory,
-		ServiceCategoryTranslation, SpokenLanguage, SpokenLanguageTranslation,
-		SupportedLocale, UserAccount []ent.Hook
+		AdministrativeArea, InternalUser, Listing, ListingEvent, ListingMedia, Locality,
+		PlatformRole, ProviderProfile, ProviderServiceLocality, ProviderSpokenLanguage,
+		ServiceCategory, ServiceCategoryTranslation, SpokenLanguage,
+		SpokenLanguageTranslation, SupportedLocale, UserAccount []ent.Hook
 	}
 	inters struct {
-		AdministrativeArea, InternalUser, Locality, ProviderProfile,
-		ProviderServiceLocality, ProviderSpokenLanguage, ServiceCategory,
-		ServiceCategoryTranslation, SpokenLanguage, SpokenLanguageTranslation,
-		SupportedLocale, UserAccount []ent.Interceptor
+		AdministrativeArea, InternalUser, Listing, ListingEvent, ListingMedia, Locality,
+		PlatformRole, ProviderProfile, ProviderServiceLocality, ProviderSpokenLanguage,
+		ServiceCategory, ServiceCategoryTranslation, SpokenLanguage,
+		SpokenLanguageTranslation, SupportedLocale, UserAccount []ent.Interceptor
 	}
 )

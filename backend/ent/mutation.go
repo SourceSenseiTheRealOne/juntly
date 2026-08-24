@@ -13,7 +13,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/administrativearea"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/internaluser"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listing"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listingevent"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listingmedia"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/locality"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/platformrole"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/predicate"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerprofile"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerservicelocality"
@@ -38,7 +42,11 @@ const (
 	// Node types.
 	TypeAdministrativeArea         = "AdministrativeArea"
 	TypeInternalUser               = "InternalUser"
+	TypeListing                    = "Listing"
+	TypeListingEvent               = "ListingEvent"
+	TypeListingMedia               = "ListingMedia"
 	TypeLocality                   = "Locality"
+	TypePlatformRole               = "PlatformRole"
 	TypeProviderProfile            = "ProviderProfile"
 	TypeProviderServiceLocality    = "ProviderServiceLocality"
 	TypeProviderSpokenLanguage     = "ProviderSpokenLanguage"
@@ -1498,6 +1506,2806 @@ func (m *InternalUserMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown InternalUser edge %s", name)
 }
 
+// ListingMutation represents an operation that mutates the Listing nodes in the graph.
+type ListingMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *uuid.UUID
+	internal_user_id    *uuid.UUID
+	category_id         *uuid.UUID
+	primary_locality_id *uuid.UUID
+	title               *string
+	description         *string
+	price_type          *listing.PriceType
+	price_minor         *int
+	addprice_minor      *int
+	currency            *string
+	travels_to_customer *bool
+	receives_customer   *bool
+	remote_services     *bool
+	state               *listing.State
+	revision            *int
+	addrevision         *int
+	created_at          *time.Time
+	updated_at          *time.Time
+	clearedFields       map[string]struct{}
+	done                bool
+	oldValue            func(context.Context) (*Listing, error)
+	predicates          []predicate.Listing
+}
+
+var _ ent.Mutation = (*ListingMutation)(nil)
+
+// listingOption allows management of the mutation configuration using functional options.
+type listingOption func(*ListingMutation)
+
+// newListingMutation creates new mutation for the Listing entity.
+func newListingMutation(c config, op Op, opts ...listingOption) *ListingMutation {
+	m := &ListingMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeListing,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withListingID sets the ID field of the mutation.
+func withListingID(id uuid.UUID) listingOption {
+	return func(m *ListingMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Listing
+		)
+		m.oldValue = func(ctx context.Context) (*Listing, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Listing.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withListing sets the old Listing of the mutation.
+func withListing(node *Listing) listingOption {
+	return func(m *ListingMutation) {
+		m.oldValue = func(context.Context) (*Listing, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ListingMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ListingMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Listing entities.
+func (m *ListingMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ListingMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ListingMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Listing.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetInternalUserID sets the "internal_user_id" field.
+func (m *ListingMutation) SetInternalUserID(u uuid.UUID) {
+	m.internal_user_id = &u
+}
+
+// InternalUserID returns the value of the "internal_user_id" field in the mutation.
+func (m *ListingMutation) InternalUserID() (r uuid.UUID, exists bool) {
+	v := m.internal_user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInternalUserID returns the old "internal_user_id" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldInternalUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInternalUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInternalUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInternalUserID: %w", err)
+	}
+	return oldValue.InternalUserID, nil
+}
+
+// ResetInternalUserID resets all changes to the "internal_user_id" field.
+func (m *ListingMutation) ResetInternalUserID() {
+	m.internal_user_id = nil
+}
+
+// SetCategoryID sets the "category_id" field.
+func (m *ListingMutation) SetCategoryID(u uuid.UUID) {
+	m.category_id = &u
+}
+
+// CategoryID returns the value of the "category_id" field in the mutation.
+func (m *ListingMutation) CategoryID() (r uuid.UUID, exists bool) {
+	v := m.category_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCategoryID returns the old "category_id" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldCategoryID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCategoryID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCategoryID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCategoryID: %w", err)
+	}
+	return oldValue.CategoryID, nil
+}
+
+// ResetCategoryID resets all changes to the "category_id" field.
+func (m *ListingMutation) ResetCategoryID() {
+	m.category_id = nil
+}
+
+// SetPrimaryLocalityID sets the "primary_locality_id" field.
+func (m *ListingMutation) SetPrimaryLocalityID(u uuid.UUID) {
+	m.primary_locality_id = &u
+}
+
+// PrimaryLocalityID returns the value of the "primary_locality_id" field in the mutation.
+func (m *ListingMutation) PrimaryLocalityID() (r uuid.UUID, exists bool) {
+	v := m.primary_locality_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPrimaryLocalityID returns the old "primary_locality_id" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldPrimaryLocalityID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPrimaryLocalityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPrimaryLocalityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPrimaryLocalityID: %w", err)
+	}
+	return oldValue.PrimaryLocalityID, nil
+}
+
+// ResetPrimaryLocalityID resets all changes to the "primary_locality_id" field.
+func (m *ListingMutation) ResetPrimaryLocalityID() {
+	m.primary_locality_id = nil
+}
+
+// SetTitle sets the "title" field.
+func (m *ListingMutation) SetTitle(s string) {
+	m.title = &s
+}
+
+// Title returns the value of the "title" field in the mutation.
+func (m *ListingMutation) Title() (r string, exists bool) {
+	v := m.title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitle returns the old "title" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+	}
+	return oldValue.Title, nil
+}
+
+// ResetTitle resets all changes to the "title" field.
+func (m *ListingMutation) ResetTitle() {
+	m.title = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *ListingMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *ListingMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *ListingMutation) ResetDescription() {
+	m.description = nil
+}
+
+// SetPriceType sets the "price_type" field.
+func (m *ListingMutation) SetPriceType(lt listing.PriceType) {
+	m.price_type = &lt
+}
+
+// PriceType returns the value of the "price_type" field in the mutation.
+func (m *ListingMutation) PriceType() (r listing.PriceType, exists bool) {
+	v := m.price_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPriceType returns the old "price_type" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldPriceType(ctx context.Context) (v listing.PriceType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPriceType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPriceType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPriceType: %w", err)
+	}
+	return oldValue.PriceType, nil
+}
+
+// ResetPriceType resets all changes to the "price_type" field.
+func (m *ListingMutation) ResetPriceType() {
+	m.price_type = nil
+}
+
+// SetPriceMinor sets the "price_minor" field.
+func (m *ListingMutation) SetPriceMinor(i int) {
+	m.price_minor = &i
+	m.addprice_minor = nil
+}
+
+// PriceMinor returns the value of the "price_minor" field in the mutation.
+func (m *ListingMutation) PriceMinor() (r int, exists bool) {
+	v := m.price_minor
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPriceMinor returns the old "price_minor" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldPriceMinor(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPriceMinor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPriceMinor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPriceMinor: %w", err)
+	}
+	return oldValue.PriceMinor, nil
+}
+
+// AddPriceMinor adds i to the "price_minor" field.
+func (m *ListingMutation) AddPriceMinor(i int) {
+	if m.addprice_minor != nil {
+		*m.addprice_minor += i
+	} else {
+		m.addprice_minor = &i
+	}
+}
+
+// AddedPriceMinor returns the value that was added to the "price_minor" field in this mutation.
+func (m *ListingMutation) AddedPriceMinor() (r int, exists bool) {
+	v := m.addprice_minor
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearPriceMinor clears the value of the "price_minor" field.
+func (m *ListingMutation) ClearPriceMinor() {
+	m.price_minor = nil
+	m.addprice_minor = nil
+	m.clearedFields[listing.FieldPriceMinor] = struct{}{}
+}
+
+// PriceMinorCleared returns if the "price_minor" field was cleared in this mutation.
+func (m *ListingMutation) PriceMinorCleared() bool {
+	_, ok := m.clearedFields[listing.FieldPriceMinor]
+	return ok
+}
+
+// ResetPriceMinor resets all changes to the "price_minor" field.
+func (m *ListingMutation) ResetPriceMinor() {
+	m.price_minor = nil
+	m.addprice_minor = nil
+	delete(m.clearedFields, listing.FieldPriceMinor)
+}
+
+// SetCurrency sets the "currency" field.
+func (m *ListingMutation) SetCurrency(s string) {
+	m.currency = &s
+}
+
+// Currency returns the value of the "currency" field in the mutation.
+func (m *ListingMutation) Currency() (r string, exists bool) {
+	v := m.currency
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCurrency returns the old "currency" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldCurrency(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCurrency is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCurrency requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCurrency: %w", err)
+	}
+	return oldValue.Currency, nil
+}
+
+// ResetCurrency resets all changes to the "currency" field.
+func (m *ListingMutation) ResetCurrency() {
+	m.currency = nil
+}
+
+// SetTravelsToCustomer sets the "travels_to_customer" field.
+func (m *ListingMutation) SetTravelsToCustomer(b bool) {
+	m.travels_to_customer = &b
+}
+
+// TravelsToCustomer returns the value of the "travels_to_customer" field in the mutation.
+func (m *ListingMutation) TravelsToCustomer() (r bool, exists bool) {
+	v := m.travels_to_customer
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTravelsToCustomer returns the old "travels_to_customer" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldTravelsToCustomer(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTravelsToCustomer is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTravelsToCustomer requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTravelsToCustomer: %w", err)
+	}
+	return oldValue.TravelsToCustomer, nil
+}
+
+// ResetTravelsToCustomer resets all changes to the "travels_to_customer" field.
+func (m *ListingMutation) ResetTravelsToCustomer() {
+	m.travels_to_customer = nil
+}
+
+// SetReceivesCustomer sets the "receives_customer" field.
+func (m *ListingMutation) SetReceivesCustomer(b bool) {
+	m.receives_customer = &b
+}
+
+// ReceivesCustomer returns the value of the "receives_customer" field in the mutation.
+func (m *ListingMutation) ReceivesCustomer() (r bool, exists bool) {
+	v := m.receives_customer
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReceivesCustomer returns the old "receives_customer" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldReceivesCustomer(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReceivesCustomer is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReceivesCustomer requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReceivesCustomer: %w", err)
+	}
+	return oldValue.ReceivesCustomer, nil
+}
+
+// ResetReceivesCustomer resets all changes to the "receives_customer" field.
+func (m *ListingMutation) ResetReceivesCustomer() {
+	m.receives_customer = nil
+}
+
+// SetRemoteServices sets the "remote_services" field.
+func (m *ListingMutation) SetRemoteServices(b bool) {
+	m.remote_services = &b
+}
+
+// RemoteServices returns the value of the "remote_services" field in the mutation.
+func (m *ListingMutation) RemoteServices() (r bool, exists bool) {
+	v := m.remote_services
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoteServices returns the old "remote_services" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldRemoteServices(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoteServices is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoteServices requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoteServices: %w", err)
+	}
+	return oldValue.RemoteServices, nil
+}
+
+// ResetRemoteServices resets all changes to the "remote_services" field.
+func (m *ListingMutation) ResetRemoteServices() {
+	m.remote_services = nil
+}
+
+// SetState sets the "state" field.
+func (m *ListingMutation) SetState(l listing.State) {
+	m.state = &l
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *ListingMutation) State() (r listing.State, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldState(ctx context.Context) (v listing.State, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *ListingMutation) ResetState() {
+	m.state = nil
+}
+
+// SetRevision sets the "revision" field.
+func (m *ListingMutation) SetRevision(i int) {
+	m.revision = &i
+	m.addrevision = nil
+}
+
+// Revision returns the value of the "revision" field in the mutation.
+func (m *ListingMutation) Revision() (r int, exists bool) {
+	v := m.revision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRevision returns the old "revision" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldRevision(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRevision is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRevision requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRevision: %w", err)
+	}
+	return oldValue.Revision, nil
+}
+
+// AddRevision adds i to the "revision" field.
+func (m *ListingMutation) AddRevision(i int) {
+	if m.addrevision != nil {
+		*m.addrevision += i
+	} else {
+		m.addrevision = &i
+	}
+}
+
+// AddedRevision returns the value that was added to the "revision" field in this mutation.
+func (m *ListingMutation) AddedRevision() (r int, exists bool) {
+	v := m.addrevision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRevision resets all changes to the "revision" field.
+func (m *ListingMutation) ResetRevision() {
+	m.revision = nil
+	m.addrevision = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ListingMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ListingMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ListingMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ListingMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ListingMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Listing entity.
+// If the Listing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ListingMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the ListingMutation builder.
+func (m *ListingMutation) Where(ps ...predicate.Listing) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ListingMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ListingMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Listing, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ListingMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ListingMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Listing).
+func (m *ListingMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ListingMutation) Fields() []string {
+	fields := make([]string, 0, 15)
+	if m.internal_user_id != nil {
+		fields = append(fields, listing.FieldInternalUserID)
+	}
+	if m.category_id != nil {
+		fields = append(fields, listing.FieldCategoryID)
+	}
+	if m.primary_locality_id != nil {
+		fields = append(fields, listing.FieldPrimaryLocalityID)
+	}
+	if m.title != nil {
+		fields = append(fields, listing.FieldTitle)
+	}
+	if m.description != nil {
+		fields = append(fields, listing.FieldDescription)
+	}
+	if m.price_type != nil {
+		fields = append(fields, listing.FieldPriceType)
+	}
+	if m.price_minor != nil {
+		fields = append(fields, listing.FieldPriceMinor)
+	}
+	if m.currency != nil {
+		fields = append(fields, listing.FieldCurrency)
+	}
+	if m.travels_to_customer != nil {
+		fields = append(fields, listing.FieldTravelsToCustomer)
+	}
+	if m.receives_customer != nil {
+		fields = append(fields, listing.FieldReceivesCustomer)
+	}
+	if m.remote_services != nil {
+		fields = append(fields, listing.FieldRemoteServices)
+	}
+	if m.state != nil {
+		fields = append(fields, listing.FieldState)
+	}
+	if m.revision != nil {
+		fields = append(fields, listing.FieldRevision)
+	}
+	if m.created_at != nil {
+		fields = append(fields, listing.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, listing.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ListingMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case listing.FieldInternalUserID:
+		return m.InternalUserID()
+	case listing.FieldCategoryID:
+		return m.CategoryID()
+	case listing.FieldPrimaryLocalityID:
+		return m.PrimaryLocalityID()
+	case listing.FieldTitle:
+		return m.Title()
+	case listing.FieldDescription:
+		return m.Description()
+	case listing.FieldPriceType:
+		return m.PriceType()
+	case listing.FieldPriceMinor:
+		return m.PriceMinor()
+	case listing.FieldCurrency:
+		return m.Currency()
+	case listing.FieldTravelsToCustomer:
+		return m.TravelsToCustomer()
+	case listing.FieldReceivesCustomer:
+		return m.ReceivesCustomer()
+	case listing.FieldRemoteServices:
+		return m.RemoteServices()
+	case listing.FieldState:
+		return m.State()
+	case listing.FieldRevision:
+		return m.Revision()
+	case listing.FieldCreatedAt:
+		return m.CreatedAt()
+	case listing.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ListingMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case listing.FieldInternalUserID:
+		return m.OldInternalUserID(ctx)
+	case listing.FieldCategoryID:
+		return m.OldCategoryID(ctx)
+	case listing.FieldPrimaryLocalityID:
+		return m.OldPrimaryLocalityID(ctx)
+	case listing.FieldTitle:
+		return m.OldTitle(ctx)
+	case listing.FieldDescription:
+		return m.OldDescription(ctx)
+	case listing.FieldPriceType:
+		return m.OldPriceType(ctx)
+	case listing.FieldPriceMinor:
+		return m.OldPriceMinor(ctx)
+	case listing.FieldCurrency:
+		return m.OldCurrency(ctx)
+	case listing.FieldTravelsToCustomer:
+		return m.OldTravelsToCustomer(ctx)
+	case listing.FieldReceivesCustomer:
+		return m.OldReceivesCustomer(ctx)
+	case listing.FieldRemoteServices:
+		return m.OldRemoteServices(ctx)
+	case listing.FieldState:
+		return m.OldState(ctx)
+	case listing.FieldRevision:
+		return m.OldRevision(ctx)
+	case listing.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case listing.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown Listing field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ListingMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case listing.FieldInternalUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInternalUserID(v)
+		return nil
+	case listing.FieldCategoryID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCategoryID(v)
+		return nil
+	case listing.FieldPrimaryLocalityID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPrimaryLocalityID(v)
+		return nil
+	case listing.FieldTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitle(v)
+		return nil
+	case listing.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
+		return nil
+	case listing.FieldPriceType:
+		v, ok := value.(listing.PriceType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPriceType(v)
+		return nil
+	case listing.FieldPriceMinor:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPriceMinor(v)
+		return nil
+	case listing.FieldCurrency:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCurrency(v)
+		return nil
+	case listing.FieldTravelsToCustomer:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTravelsToCustomer(v)
+		return nil
+	case listing.FieldReceivesCustomer:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReceivesCustomer(v)
+		return nil
+	case listing.FieldRemoteServices:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoteServices(v)
+		return nil
+	case listing.FieldState:
+		v, ok := value.(listing.State)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case listing.FieldRevision:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRevision(v)
+		return nil
+	case listing.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case listing.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Listing field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ListingMutation) AddedFields() []string {
+	var fields []string
+	if m.addprice_minor != nil {
+		fields = append(fields, listing.FieldPriceMinor)
+	}
+	if m.addrevision != nil {
+		fields = append(fields, listing.FieldRevision)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ListingMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case listing.FieldPriceMinor:
+		return m.AddedPriceMinor()
+	case listing.FieldRevision:
+		return m.AddedRevision()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ListingMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case listing.FieldPriceMinor:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPriceMinor(v)
+		return nil
+	case listing.FieldRevision:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRevision(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Listing numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ListingMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(listing.FieldPriceMinor) {
+		fields = append(fields, listing.FieldPriceMinor)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ListingMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ListingMutation) ClearField(name string) error {
+	switch name {
+	case listing.FieldPriceMinor:
+		m.ClearPriceMinor()
+		return nil
+	}
+	return fmt.Errorf("unknown Listing nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ListingMutation) ResetField(name string) error {
+	switch name {
+	case listing.FieldInternalUserID:
+		m.ResetInternalUserID()
+		return nil
+	case listing.FieldCategoryID:
+		m.ResetCategoryID()
+		return nil
+	case listing.FieldPrimaryLocalityID:
+		m.ResetPrimaryLocalityID()
+		return nil
+	case listing.FieldTitle:
+		m.ResetTitle()
+		return nil
+	case listing.FieldDescription:
+		m.ResetDescription()
+		return nil
+	case listing.FieldPriceType:
+		m.ResetPriceType()
+		return nil
+	case listing.FieldPriceMinor:
+		m.ResetPriceMinor()
+		return nil
+	case listing.FieldCurrency:
+		m.ResetCurrency()
+		return nil
+	case listing.FieldTravelsToCustomer:
+		m.ResetTravelsToCustomer()
+		return nil
+	case listing.FieldReceivesCustomer:
+		m.ResetReceivesCustomer()
+		return nil
+	case listing.FieldRemoteServices:
+		m.ResetRemoteServices()
+		return nil
+	case listing.FieldState:
+		m.ResetState()
+		return nil
+	case listing.FieldRevision:
+		m.ResetRevision()
+		return nil
+	case listing.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case listing.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown Listing field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ListingMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ListingMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ListingMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ListingMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ListingMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ListingMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ListingMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Listing unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ListingMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Listing edge %s", name)
+}
+
+// ListingEventMutation represents an operation that mutates the ListingEvent nodes in the graph.
+type ListingEventMutation struct {
+	config
+	op                     Op
+	typ                    string
+	id                     *uuid.UUID
+	listing_id             *uuid.UUID
+	actor_internal_user_id *uuid.UUID
+	event_type             *listingevent.EventType
+	from_state             *string
+	to_state               *string
+	revision               *int
+	addrevision            *int
+	reason                 *string
+	created_at             *time.Time
+	clearedFields          map[string]struct{}
+	done                   bool
+	oldValue               func(context.Context) (*ListingEvent, error)
+	predicates             []predicate.ListingEvent
+}
+
+var _ ent.Mutation = (*ListingEventMutation)(nil)
+
+// listingeventOption allows management of the mutation configuration using functional options.
+type listingeventOption func(*ListingEventMutation)
+
+// newListingEventMutation creates new mutation for the ListingEvent entity.
+func newListingEventMutation(c config, op Op, opts ...listingeventOption) *ListingEventMutation {
+	m := &ListingEventMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeListingEvent,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withListingEventID sets the ID field of the mutation.
+func withListingEventID(id uuid.UUID) listingeventOption {
+	return func(m *ListingEventMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ListingEvent
+		)
+		m.oldValue = func(ctx context.Context) (*ListingEvent, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ListingEvent.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withListingEvent sets the old ListingEvent of the mutation.
+func withListingEvent(node *ListingEvent) listingeventOption {
+	return func(m *ListingEventMutation) {
+		m.oldValue = func(context.Context) (*ListingEvent, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ListingEventMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ListingEventMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ListingEvent entities.
+func (m *ListingEventMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ListingEventMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ListingEventMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ListingEvent.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetListingID sets the "listing_id" field.
+func (m *ListingEventMutation) SetListingID(u uuid.UUID) {
+	m.listing_id = &u
+}
+
+// ListingID returns the value of the "listing_id" field in the mutation.
+func (m *ListingEventMutation) ListingID() (r uuid.UUID, exists bool) {
+	v := m.listing_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldListingID returns the old "listing_id" field's value of the ListingEvent entity.
+// If the ListingEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingEventMutation) OldListingID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldListingID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldListingID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldListingID: %w", err)
+	}
+	return oldValue.ListingID, nil
+}
+
+// ResetListingID resets all changes to the "listing_id" field.
+func (m *ListingEventMutation) ResetListingID() {
+	m.listing_id = nil
+}
+
+// SetActorInternalUserID sets the "actor_internal_user_id" field.
+func (m *ListingEventMutation) SetActorInternalUserID(u uuid.UUID) {
+	m.actor_internal_user_id = &u
+}
+
+// ActorInternalUserID returns the value of the "actor_internal_user_id" field in the mutation.
+func (m *ListingEventMutation) ActorInternalUserID() (r uuid.UUID, exists bool) {
+	v := m.actor_internal_user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActorInternalUserID returns the old "actor_internal_user_id" field's value of the ListingEvent entity.
+// If the ListingEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingEventMutation) OldActorInternalUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActorInternalUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActorInternalUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActorInternalUserID: %w", err)
+	}
+	return oldValue.ActorInternalUserID, nil
+}
+
+// ResetActorInternalUserID resets all changes to the "actor_internal_user_id" field.
+func (m *ListingEventMutation) ResetActorInternalUserID() {
+	m.actor_internal_user_id = nil
+}
+
+// SetEventType sets the "event_type" field.
+func (m *ListingEventMutation) SetEventType(lt listingevent.EventType) {
+	m.event_type = &lt
+}
+
+// EventType returns the value of the "event_type" field in the mutation.
+func (m *ListingEventMutation) EventType() (r listingevent.EventType, exists bool) {
+	v := m.event_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEventType returns the old "event_type" field's value of the ListingEvent entity.
+// If the ListingEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingEventMutation) OldEventType(ctx context.Context) (v listingevent.EventType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEventType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEventType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEventType: %w", err)
+	}
+	return oldValue.EventType, nil
+}
+
+// ResetEventType resets all changes to the "event_type" field.
+func (m *ListingEventMutation) ResetEventType() {
+	m.event_type = nil
+}
+
+// SetFromState sets the "from_state" field.
+func (m *ListingEventMutation) SetFromState(s string) {
+	m.from_state = &s
+}
+
+// FromState returns the value of the "from_state" field in the mutation.
+func (m *ListingEventMutation) FromState() (r string, exists bool) {
+	v := m.from_state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFromState returns the old "from_state" field's value of the ListingEvent entity.
+// If the ListingEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingEventMutation) OldFromState(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFromState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFromState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFromState: %w", err)
+	}
+	return oldValue.FromState, nil
+}
+
+// ClearFromState clears the value of the "from_state" field.
+func (m *ListingEventMutation) ClearFromState() {
+	m.from_state = nil
+	m.clearedFields[listingevent.FieldFromState] = struct{}{}
+}
+
+// FromStateCleared returns if the "from_state" field was cleared in this mutation.
+func (m *ListingEventMutation) FromStateCleared() bool {
+	_, ok := m.clearedFields[listingevent.FieldFromState]
+	return ok
+}
+
+// ResetFromState resets all changes to the "from_state" field.
+func (m *ListingEventMutation) ResetFromState() {
+	m.from_state = nil
+	delete(m.clearedFields, listingevent.FieldFromState)
+}
+
+// SetToState sets the "to_state" field.
+func (m *ListingEventMutation) SetToState(s string) {
+	m.to_state = &s
+}
+
+// ToState returns the value of the "to_state" field in the mutation.
+func (m *ListingEventMutation) ToState() (r string, exists bool) {
+	v := m.to_state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldToState returns the old "to_state" field's value of the ListingEvent entity.
+// If the ListingEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingEventMutation) OldToState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldToState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldToState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldToState: %w", err)
+	}
+	return oldValue.ToState, nil
+}
+
+// ResetToState resets all changes to the "to_state" field.
+func (m *ListingEventMutation) ResetToState() {
+	m.to_state = nil
+}
+
+// SetRevision sets the "revision" field.
+func (m *ListingEventMutation) SetRevision(i int) {
+	m.revision = &i
+	m.addrevision = nil
+}
+
+// Revision returns the value of the "revision" field in the mutation.
+func (m *ListingEventMutation) Revision() (r int, exists bool) {
+	v := m.revision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRevision returns the old "revision" field's value of the ListingEvent entity.
+// If the ListingEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingEventMutation) OldRevision(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRevision is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRevision requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRevision: %w", err)
+	}
+	return oldValue.Revision, nil
+}
+
+// AddRevision adds i to the "revision" field.
+func (m *ListingEventMutation) AddRevision(i int) {
+	if m.addrevision != nil {
+		*m.addrevision += i
+	} else {
+		m.addrevision = &i
+	}
+}
+
+// AddedRevision returns the value that was added to the "revision" field in this mutation.
+func (m *ListingEventMutation) AddedRevision() (r int, exists bool) {
+	v := m.addrevision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRevision resets all changes to the "revision" field.
+func (m *ListingEventMutation) ResetRevision() {
+	m.revision = nil
+	m.addrevision = nil
+}
+
+// SetReason sets the "reason" field.
+func (m *ListingEventMutation) SetReason(s string) {
+	m.reason = &s
+}
+
+// Reason returns the value of the "reason" field in the mutation.
+func (m *ListingEventMutation) Reason() (r string, exists bool) {
+	v := m.reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReason returns the old "reason" field's value of the ListingEvent entity.
+// If the ListingEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingEventMutation) OldReason(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReason: %w", err)
+	}
+	return oldValue.Reason, nil
+}
+
+// ClearReason clears the value of the "reason" field.
+func (m *ListingEventMutation) ClearReason() {
+	m.reason = nil
+	m.clearedFields[listingevent.FieldReason] = struct{}{}
+}
+
+// ReasonCleared returns if the "reason" field was cleared in this mutation.
+func (m *ListingEventMutation) ReasonCleared() bool {
+	_, ok := m.clearedFields[listingevent.FieldReason]
+	return ok
+}
+
+// ResetReason resets all changes to the "reason" field.
+func (m *ListingEventMutation) ResetReason() {
+	m.reason = nil
+	delete(m.clearedFields, listingevent.FieldReason)
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ListingEventMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ListingEventMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ListingEvent entity.
+// If the ListingEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingEventMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ListingEventMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// Where appends a list predicates to the ListingEventMutation builder.
+func (m *ListingEventMutation) Where(ps ...predicate.ListingEvent) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ListingEventMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ListingEventMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ListingEvent, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ListingEventMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ListingEventMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ListingEvent).
+func (m *ListingEventMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ListingEventMutation) Fields() []string {
+	fields := make([]string, 0, 8)
+	if m.listing_id != nil {
+		fields = append(fields, listingevent.FieldListingID)
+	}
+	if m.actor_internal_user_id != nil {
+		fields = append(fields, listingevent.FieldActorInternalUserID)
+	}
+	if m.event_type != nil {
+		fields = append(fields, listingevent.FieldEventType)
+	}
+	if m.from_state != nil {
+		fields = append(fields, listingevent.FieldFromState)
+	}
+	if m.to_state != nil {
+		fields = append(fields, listingevent.FieldToState)
+	}
+	if m.revision != nil {
+		fields = append(fields, listingevent.FieldRevision)
+	}
+	if m.reason != nil {
+		fields = append(fields, listingevent.FieldReason)
+	}
+	if m.created_at != nil {
+		fields = append(fields, listingevent.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ListingEventMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case listingevent.FieldListingID:
+		return m.ListingID()
+	case listingevent.FieldActorInternalUserID:
+		return m.ActorInternalUserID()
+	case listingevent.FieldEventType:
+		return m.EventType()
+	case listingevent.FieldFromState:
+		return m.FromState()
+	case listingevent.FieldToState:
+		return m.ToState()
+	case listingevent.FieldRevision:
+		return m.Revision()
+	case listingevent.FieldReason:
+		return m.Reason()
+	case listingevent.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ListingEventMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case listingevent.FieldListingID:
+		return m.OldListingID(ctx)
+	case listingevent.FieldActorInternalUserID:
+		return m.OldActorInternalUserID(ctx)
+	case listingevent.FieldEventType:
+		return m.OldEventType(ctx)
+	case listingevent.FieldFromState:
+		return m.OldFromState(ctx)
+	case listingevent.FieldToState:
+		return m.OldToState(ctx)
+	case listingevent.FieldRevision:
+		return m.OldRevision(ctx)
+	case listingevent.FieldReason:
+		return m.OldReason(ctx)
+	case listingevent.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ListingEvent field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ListingEventMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case listingevent.FieldListingID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetListingID(v)
+		return nil
+	case listingevent.FieldActorInternalUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActorInternalUserID(v)
+		return nil
+	case listingevent.FieldEventType:
+		v, ok := value.(listingevent.EventType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEventType(v)
+		return nil
+	case listingevent.FieldFromState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFromState(v)
+		return nil
+	case listingevent.FieldToState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetToState(v)
+		return nil
+	case listingevent.FieldRevision:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRevision(v)
+		return nil
+	case listingevent.FieldReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReason(v)
+		return nil
+	case listingevent.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ListingEvent field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ListingEventMutation) AddedFields() []string {
+	var fields []string
+	if m.addrevision != nil {
+		fields = append(fields, listingevent.FieldRevision)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ListingEventMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case listingevent.FieldRevision:
+		return m.AddedRevision()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ListingEventMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case listingevent.FieldRevision:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRevision(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ListingEvent numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ListingEventMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(listingevent.FieldFromState) {
+		fields = append(fields, listingevent.FieldFromState)
+	}
+	if m.FieldCleared(listingevent.FieldReason) {
+		fields = append(fields, listingevent.FieldReason)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ListingEventMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ListingEventMutation) ClearField(name string) error {
+	switch name {
+	case listingevent.FieldFromState:
+		m.ClearFromState()
+		return nil
+	case listingevent.FieldReason:
+		m.ClearReason()
+		return nil
+	}
+	return fmt.Errorf("unknown ListingEvent nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ListingEventMutation) ResetField(name string) error {
+	switch name {
+	case listingevent.FieldListingID:
+		m.ResetListingID()
+		return nil
+	case listingevent.FieldActorInternalUserID:
+		m.ResetActorInternalUserID()
+		return nil
+	case listingevent.FieldEventType:
+		m.ResetEventType()
+		return nil
+	case listingevent.FieldFromState:
+		m.ResetFromState()
+		return nil
+	case listingevent.FieldToState:
+		m.ResetToState()
+		return nil
+	case listingevent.FieldRevision:
+		m.ResetRevision()
+		return nil
+	case listingevent.FieldReason:
+		m.ResetReason()
+		return nil
+	case listingevent.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ListingEvent field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ListingEventMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ListingEventMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ListingEventMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ListingEventMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ListingEventMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ListingEventMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ListingEventMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ListingEvent unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ListingEventMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ListingEvent edge %s", name)
+}
+
+// ListingMediaMutation represents an operation that mutates the ListingMedia nodes in the graph.
+type ListingMediaMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *uuid.UUID
+	listing_id       *uuid.UUID
+	ordinal          *int
+	addordinal       *int
+	content_type     *string
+	byte_size        *int64
+	addbyte_size     *int64
+	checksum_sha256  *string
+	object_reference *string
+	state            *listingmedia.State
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	done             bool
+	oldValue         func(context.Context) (*ListingMedia, error)
+	predicates       []predicate.ListingMedia
+}
+
+var _ ent.Mutation = (*ListingMediaMutation)(nil)
+
+// listingmediaOption allows management of the mutation configuration using functional options.
+type listingmediaOption func(*ListingMediaMutation)
+
+// newListingMediaMutation creates new mutation for the ListingMedia entity.
+func newListingMediaMutation(c config, op Op, opts ...listingmediaOption) *ListingMediaMutation {
+	m := &ListingMediaMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeListingMedia,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withListingMediaID sets the ID field of the mutation.
+func withListingMediaID(id uuid.UUID) listingmediaOption {
+	return func(m *ListingMediaMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ListingMedia
+		)
+		m.oldValue = func(ctx context.Context) (*ListingMedia, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ListingMedia.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withListingMedia sets the old ListingMedia of the mutation.
+func withListingMedia(node *ListingMedia) listingmediaOption {
+	return func(m *ListingMediaMutation) {
+		m.oldValue = func(context.Context) (*ListingMedia, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ListingMediaMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ListingMediaMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ListingMedia entities.
+func (m *ListingMediaMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ListingMediaMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ListingMediaMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ListingMedia.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetListingID sets the "listing_id" field.
+func (m *ListingMediaMutation) SetListingID(u uuid.UUID) {
+	m.listing_id = &u
+}
+
+// ListingID returns the value of the "listing_id" field in the mutation.
+func (m *ListingMediaMutation) ListingID() (r uuid.UUID, exists bool) {
+	v := m.listing_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldListingID returns the old "listing_id" field's value of the ListingMedia entity.
+// If the ListingMedia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMediaMutation) OldListingID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldListingID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldListingID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldListingID: %w", err)
+	}
+	return oldValue.ListingID, nil
+}
+
+// ResetListingID resets all changes to the "listing_id" field.
+func (m *ListingMediaMutation) ResetListingID() {
+	m.listing_id = nil
+}
+
+// SetOrdinal sets the "ordinal" field.
+func (m *ListingMediaMutation) SetOrdinal(i int) {
+	m.ordinal = &i
+	m.addordinal = nil
+}
+
+// Ordinal returns the value of the "ordinal" field in the mutation.
+func (m *ListingMediaMutation) Ordinal() (r int, exists bool) {
+	v := m.ordinal
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrdinal returns the old "ordinal" field's value of the ListingMedia entity.
+// If the ListingMedia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMediaMutation) OldOrdinal(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrdinal is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrdinal requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrdinal: %w", err)
+	}
+	return oldValue.Ordinal, nil
+}
+
+// AddOrdinal adds i to the "ordinal" field.
+func (m *ListingMediaMutation) AddOrdinal(i int) {
+	if m.addordinal != nil {
+		*m.addordinal += i
+	} else {
+		m.addordinal = &i
+	}
+}
+
+// AddedOrdinal returns the value that was added to the "ordinal" field in this mutation.
+func (m *ListingMediaMutation) AddedOrdinal() (r int, exists bool) {
+	v := m.addordinal
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetOrdinal resets all changes to the "ordinal" field.
+func (m *ListingMediaMutation) ResetOrdinal() {
+	m.ordinal = nil
+	m.addordinal = nil
+}
+
+// SetContentType sets the "content_type" field.
+func (m *ListingMediaMutation) SetContentType(s string) {
+	m.content_type = &s
+}
+
+// ContentType returns the value of the "content_type" field in the mutation.
+func (m *ListingMediaMutation) ContentType() (r string, exists bool) {
+	v := m.content_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContentType returns the old "content_type" field's value of the ListingMedia entity.
+// If the ListingMedia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMediaMutation) OldContentType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldContentType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldContentType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContentType: %w", err)
+	}
+	return oldValue.ContentType, nil
+}
+
+// ResetContentType resets all changes to the "content_type" field.
+func (m *ListingMediaMutation) ResetContentType() {
+	m.content_type = nil
+}
+
+// SetByteSize sets the "byte_size" field.
+func (m *ListingMediaMutation) SetByteSize(i int64) {
+	m.byte_size = &i
+	m.addbyte_size = nil
+}
+
+// ByteSize returns the value of the "byte_size" field in the mutation.
+func (m *ListingMediaMutation) ByteSize() (r int64, exists bool) {
+	v := m.byte_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldByteSize returns the old "byte_size" field's value of the ListingMedia entity.
+// If the ListingMedia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMediaMutation) OldByteSize(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldByteSize is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldByteSize requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldByteSize: %w", err)
+	}
+	return oldValue.ByteSize, nil
+}
+
+// AddByteSize adds i to the "byte_size" field.
+func (m *ListingMediaMutation) AddByteSize(i int64) {
+	if m.addbyte_size != nil {
+		*m.addbyte_size += i
+	} else {
+		m.addbyte_size = &i
+	}
+}
+
+// AddedByteSize returns the value that was added to the "byte_size" field in this mutation.
+func (m *ListingMediaMutation) AddedByteSize() (r int64, exists bool) {
+	v := m.addbyte_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetByteSize resets all changes to the "byte_size" field.
+func (m *ListingMediaMutation) ResetByteSize() {
+	m.byte_size = nil
+	m.addbyte_size = nil
+}
+
+// SetChecksumSha256 sets the "checksum_sha256" field.
+func (m *ListingMediaMutation) SetChecksumSha256(s string) {
+	m.checksum_sha256 = &s
+}
+
+// ChecksumSha256 returns the value of the "checksum_sha256" field in the mutation.
+func (m *ListingMediaMutation) ChecksumSha256() (r string, exists bool) {
+	v := m.checksum_sha256
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChecksumSha256 returns the old "checksum_sha256" field's value of the ListingMedia entity.
+// If the ListingMedia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMediaMutation) OldChecksumSha256(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChecksumSha256 is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChecksumSha256 requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChecksumSha256: %w", err)
+	}
+	return oldValue.ChecksumSha256, nil
+}
+
+// ResetChecksumSha256 resets all changes to the "checksum_sha256" field.
+func (m *ListingMediaMutation) ResetChecksumSha256() {
+	m.checksum_sha256 = nil
+}
+
+// SetObjectReference sets the "object_reference" field.
+func (m *ListingMediaMutation) SetObjectReference(s string) {
+	m.object_reference = &s
+}
+
+// ObjectReference returns the value of the "object_reference" field in the mutation.
+func (m *ListingMediaMutation) ObjectReference() (r string, exists bool) {
+	v := m.object_reference
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldObjectReference returns the old "object_reference" field's value of the ListingMedia entity.
+// If the ListingMedia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMediaMutation) OldObjectReference(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldObjectReference is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldObjectReference requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldObjectReference: %w", err)
+	}
+	return oldValue.ObjectReference, nil
+}
+
+// ResetObjectReference resets all changes to the "object_reference" field.
+func (m *ListingMediaMutation) ResetObjectReference() {
+	m.object_reference = nil
+}
+
+// SetState sets the "state" field.
+func (m *ListingMediaMutation) SetState(l listingmedia.State) {
+	m.state = &l
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *ListingMediaMutation) State() (r listingmedia.State, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the ListingMedia entity.
+// If the ListingMedia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMediaMutation) OldState(ctx context.Context) (v listingmedia.State, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *ListingMediaMutation) ResetState() {
+	m.state = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ListingMediaMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ListingMediaMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ListingMedia entity.
+// If the ListingMedia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMediaMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ListingMediaMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ListingMediaMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ListingMediaMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ListingMedia entity.
+// If the ListingMedia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMediaMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ListingMediaMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the ListingMediaMutation builder.
+func (m *ListingMediaMutation) Where(ps ...predicate.ListingMedia) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ListingMediaMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ListingMediaMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ListingMedia, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ListingMediaMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ListingMediaMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ListingMedia).
+func (m *ListingMediaMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ListingMediaMutation) Fields() []string {
+	fields := make([]string, 0, 9)
+	if m.listing_id != nil {
+		fields = append(fields, listingmedia.FieldListingID)
+	}
+	if m.ordinal != nil {
+		fields = append(fields, listingmedia.FieldOrdinal)
+	}
+	if m.content_type != nil {
+		fields = append(fields, listingmedia.FieldContentType)
+	}
+	if m.byte_size != nil {
+		fields = append(fields, listingmedia.FieldByteSize)
+	}
+	if m.checksum_sha256 != nil {
+		fields = append(fields, listingmedia.FieldChecksumSha256)
+	}
+	if m.object_reference != nil {
+		fields = append(fields, listingmedia.FieldObjectReference)
+	}
+	if m.state != nil {
+		fields = append(fields, listingmedia.FieldState)
+	}
+	if m.created_at != nil {
+		fields = append(fields, listingmedia.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, listingmedia.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ListingMediaMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case listingmedia.FieldListingID:
+		return m.ListingID()
+	case listingmedia.FieldOrdinal:
+		return m.Ordinal()
+	case listingmedia.FieldContentType:
+		return m.ContentType()
+	case listingmedia.FieldByteSize:
+		return m.ByteSize()
+	case listingmedia.FieldChecksumSha256:
+		return m.ChecksumSha256()
+	case listingmedia.FieldObjectReference:
+		return m.ObjectReference()
+	case listingmedia.FieldState:
+		return m.State()
+	case listingmedia.FieldCreatedAt:
+		return m.CreatedAt()
+	case listingmedia.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ListingMediaMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case listingmedia.FieldListingID:
+		return m.OldListingID(ctx)
+	case listingmedia.FieldOrdinal:
+		return m.OldOrdinal(ctx)
+	case listingmedia.FieldContentType:
+		return m.OldContentType(ctx)
+	case listingmedia.FieldByteSize:
+		return m.OldByteSize(ctx)
+	case listingmedia.FieldChecksumSha256:
+		return m.OldChecksumSha256(ctx)
+	case listingmedia.FieldObjectReference:
+		return m.OldObjectReference(ctx)
+	case listingmedia.FieldState:
+		return m.OldState(ctx)
+	case listingmedia.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case listingmedia.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ListingMedia field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ListingMediaMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case listingmedia.FieldListingID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetListingID(v)
+		return nil
+	case listingmedia.FieldOrdinal:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrdinal(v)
+		return nil
+	case listingmedia.FieldContentType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContentType(v)
+		return nil
+	case listingmedia.FieldByteSize:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetByteSize(v)
+		return nil
+	case listingmedia.FieldChecksumSha256:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChecksumSha256(v)
+		return nil
+	case listingmedia.FieldObjectReference:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetObjectReference(v)
+		return nil
+	case listingmedia.FieldState:
+		v, ok := value.(listingmedia.State)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case listingmedia.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case listingmedia.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ListingMedia field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ListingMediaMutation) AddedFields() []string {
+	var fields []string
+	if m.addordinal != nil {
+		fields = append(fields, listingmedia.FieldOrdinal)
+	}
+	if m.addbyte_size != nil {
+		fields = append(fields, listingmedia.FieldByteSize)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ListingMediaMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case listingmedia.FieldOrdinal:
+		return m.AddedOrdinal()
+	case listingmedia.FieldByteSize:
+		return m.AddedByteSize()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ListingMediaMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case listingmedia.FieldOrdinal:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOrdinal(v)
+		return nil
+	case listingmedia.FieldByteSize:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddByteSize(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ListingMedia numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ListingMediaMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ListingMediaMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ListingMediaMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ListingMedia nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ListingMediaMutation) ResetField(name string) error {
+	switch name {
+	case listingmedia.FieldListingID:
+		m.ResetListingID()
+		return nil
+	case listingmedia.FieldOrdinal:
+		m.ResetOrdinal()
+		return nil
+	case listingmedia.FieldContentType:
+		m.ResetContentType()
+		return nil
+	case listingmedia.FieldByteSize:
+		m.ResetByteSize()
+		return nil
+	case listingmedia.FieldChecksumSha256:
+		m.ResetChecksumSha256()
+		return nil
+	case listingmedia.FieldObjectReference:
+		m.ResetObjectReference()
+		return nil
+	case listingmedia.FieldState:
+		m.ResetState()
+		return nil
+	case listingmedia.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case listingmedia.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ListingMedia field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ListingMediaMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ListingMediaMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ListingMediaMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ListingMediaMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ListingMediaMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ListingMediaMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ListingMediaMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ListingMedia unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ListingMediaMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ListingMedia edge %s", name)
+}
+
 // LocalityMutation represents an operation that mutates the Locality nodes in the graph.
 type LocalityMutation struct {
 	config
@@ -2630,6 +5438,446 @@ func (m *LocalityMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Locality edge %s", name)
+}
+
+// PlatformRoleMutation represents an operation that mutates the PlatformRole nodes in the graph.
+type PlatformRoleMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *uuid.UUID
+	internal_user_id *uuid.UUID
+	role             *string
+	granted_at       *time.Time
+	clearedFields    map[string]struct{}
+	done             bool
+	oldValue         func(context.Context) (*PlatformRole, error)
+	predicates       []predicate.PlatformRole
+}
+
+var _ ent.Mutation = (*PlatformRoleMutation)(nil)
+
+// platformroleOption allows management of the mutation configuration using functional options.
+type platformroleOption func(*PlatformRoleMutation)
+
+// newPlatformRoleMutation creates new mutation for the PlatformRole entity.
+func newPlatformRoleMutation(c config, op Op, opts ...platformroleOption) *PlatformRoleMutation {
+	m := &PlatformRoleMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePlatformRole,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPlatformRoleID sets the ID field of the mutation.
+func withPlatformRoleID(id uuid.UUID) platformroleOption {
+	return func(m *PlatformRoleMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *PlatformRole
+		)
+		m.oldValue = func(ctx context.Context) (*PlatformRole, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().PlatformRole.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPlatformRole sets the old PlatformRole of the mutation.
+func withPlatformRole(node *PlatformRole) platformroleOption {
+	return func(m *PlatformRoleMutation) {
+		m.oldValue = func(context.Context) (*PlatformRole, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PlatformRoleMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PlatformRoleMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of PlatformRole entities.
+func (m *PlatformRoleMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PlatformRoleMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PlatformRoleMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().PlatformRole.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetInternalUserID sets the "internal_user_id" field.
+func (m *PlatformRoleMutation) SetInternalUserID(u uuid.UUID) {
+	m.internal_user_id = &u
+}
+
+// InternalUserID returns the value of the "internal_user_id" field in the mutation.
+func (m *PlatformRoleMutation) InternalUserID() (r uuid.UUID, exists bool) {
+	v := m.internal_user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInternalUserID returns the old "internal_user_id" field's value of the PlatformRole entity.
+// If the PlatformRole object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlatformRoleMutation) OldInternalUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInternalUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInternalUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInternalUserID: %w", err)
+	}
+	return oldValue.InternalUserID, nil
+}
+
+// ResetInternalUserID resets all changes to the "internal_user_id" field.
+func (m *PlatformRoleMutation) ResetInternalUserID() {
+	m.internal_user_id = nil
+}
+
+// SetRole sets the "role" field.
+func (m *PlatformRoleMutation) SetRole(s string) {
+	m.role = &s
+}
+
+// Role returns the value of the "role" field in the mutation.
+func (m *PlatformRoleMutation) Role() (r string, exists bool) {
+	v := m.role
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRole returns the old "role" field's value of the PlatformRole entity.
+// If the PlatformRole object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlatformRoleMutation) OldRole(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRole is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRole requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRole: %w", err)
+	}
+	return oldValue.Role, nil
+}
+
+// ResetRole resets all changes to the "role" field.
+func (m *PlatformRoleMutation) ResetRole() {
+	m.role = nil
+}
+
+// SetGrantedAt sets the "granted_at" field.
+func (m *PlatformRoleMutation) SetGrantedAt(t time.Time) {
+	m.granted_at = &t
+}
+
+// GrantedAt returns the value of the "granted_at" field in the mutation.
+func (m *PlatformRoleMutation) GrantedAt() (r time.Time, exists bool) {
+	v := m.granted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGrantedAt returns the old "granted_at" field's value of the PlatformRole entity.
+// If the PlatformRole object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlatformRoleMutation) OldGrantedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGrantedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGrantedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGrantedAt: %w", err)
+	}
+	return oldValue.GrantedAt, nil
+}
+
+// ResetGrantedAt resets all changes to the "granted_at" field.
+func (m *PlatformRoleMutation) ResetGrantedAt() {
+	m.granted_at = nil
+}
+
+// Where appends a list predicates to the PlatformRoleMutation builder.
+func (m *PlatformRoleMutation) Where(ps ...predicate.PlatformRole) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the PlatformRoleMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PlatformRoleMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.PlatformRole, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *PlatformRoleMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PlatformRoleMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (PlatformRole).
+func (m *PlatformRoleMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PlatformRoleMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.internal_user_id != nil {
+		fields = append(fields, platformrole.FieldInternalUserID)
+	}
+	if m.role != nil {
+		fields = append(fields, platformrole.FieldRole)
+	}
+	if m.granted_at != nil {
+		fields = append(fields, platformrole.FieldGrantedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PlatformRoleMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case platformrole.FieldInternalUserID:
+		return m.InternalUserID()
+	case platformrole.FieldRole:
+		return m.Role()
+	case platformrole.FieldGrantedAt:
+		return m.GrantedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PlatformRoleMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case platformrole.FieldInternalUserID:
+		return m.OldInternalUserID(ctx)
+	case platformrole.FieldRole:
+		return m.OldRole(ctx)
+	case platformrole.FieldGrantedAt:
+		return m.OldGrantedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown PlatformRole field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PlatformRoleMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case platformrole.FieldInternalUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInternalUserID(v)
+		return nil
+	case platformrole.FieldRole:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRole(v)
+		return nil
+	case platformrole.FieldGrantedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGrantedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PlatformRole field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PlatformRoleMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PlatformRoleMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PlatformRoleMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown PlatformRole numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PlatformRoleMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PlatformRoleMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PlatformRoleMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown PlatformRole nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PlatformRoleMutation) ResetField(name string) error {
+	switch name {
+	case platformrole.FieldInternalUserID:
+		m.ResetInternalUserID()
+		return nil
+	case platformrole.FieldRole:
+		m.ResetRole()
+		return nil
+	case platformrole.FieldGrantedAt:
+		m.ResetGrantedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown PlatformRole field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PlatformRoleMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PlatformRoleMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PlatformRoleMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PlatformRoleMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PlatformRoleMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PlatformRoleMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PlatformRoleMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown PlatformRole unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PlatformRoleMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown PlatformRole edge %s", name)
 }
 
 // ProviderProfileMutation represents an operation that mutates the ProviderProfile nodes in the graph.

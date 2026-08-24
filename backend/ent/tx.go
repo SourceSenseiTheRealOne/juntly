@@ -16,8 +16,16 @@ type Tx struct {
 	AdministrativeArea *AdministrativeAreaClient
 	// InternalUser is the client for interacting with the InternalUser builders.
 	InternalUser *InternalUserClient
+	// Listing is the client for interacting with the Listing builders.
+	Listing *ListingClient
+	// ListingEvent is the client for interacting with the ListingEvent builders.
+	ListingEvent *ListingEventClient
+	// ListingMedia is the client for interacting with the ListingMedia builders.
+	ListingMedia *ListingMediaClient
 	// Locality is the client for interacting with the Locality builders.
 	Locality *LocalityClient
+	// PlatformRole is the client for interacting with the PlatformRole builders.
+	PlatformRole *PlatformRoleClient
 	// ProviderProfile is the client for interacting with the ProviderProfile builders.
 	ProviderProfile *ProviderProfileClient
 	// ProviderServiceLocality is the client for interacting with the ProviderServiceLocality builders.
@@ -169,7 +177,11 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.AdministrativeArea = NewAdministrativeAreaClient(tx.config)
 	tx.InternalUser = NewInternalUserClient(tx.config)
+	tx.Listing = NewListingClient(tx.config)
+	tx.ListingEvent = NewListingEventClient(tx.config)
+	tx.ListingMedia = NewListingMediaClient(tx.config)
 	tx.Locality = NewLocalityClient(tx.config)
+	tx.PlatformRole = NewPlatformRoleClient(tx.config)
 	tx.ProviderProfile = NewProviderProfileClient(tx.config)
 	tx.ProviderServiceLocality = NewProviderServiceLocalityClient(tx.config)
 	tx.ProviderSpokenLanguage = NewProviderSpokenLanguageClient(tx.config)
