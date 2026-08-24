@@ -195,6 +195,68 @@ paths:
           $ref: "#/components/responses/InvalidRequest"
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
+  /api/v1/discovery/listings:
+    get:
+      operationId: searchPublicListings
+      summary: Search active public listings without authentication.
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+        - $ref: "#/components/parameters/LocaleQuery"
+        - name: categoryId
+          in: query
+          required: false
+          schema: { type: string, format: uuid }
+        - name: q
+          in: query
+          required: false
+          schema: { type: string, minLength: 2, maxLength: 80 }
+        - name: nearLocalityId
+          in: query
+          required: false
+          schema: { type: string, format: uuid }
+        - name: radiusKm
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 200 }
+        - name: priceType
+          in: query
+          required: false
+          schema: { $ref: "#/components/schemas/ListingPriceType" }
+        - name: serviceMode
+          in: query
+          required: false
+          schema: { $ref: "#/components/schemas/PublicServiceMode" }
+      responses:
+        "200":
+          description: Active public listing projections in deterministic relevance order.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PublicListingsResponse" }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/public/listings/{listingId}:
+    get:
+      operationId: getPublicListing
+      summary: Read one active public listing without authentication.
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+        - $ref: "#/components/parameters/LocaleQuery"
+        - $ref: "#/components/parameters/ListingIdPath"
+      responses:
+        "200":
+          description: Active public listing projection.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PublicListingResponse" }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
   /api/v1/me/provider-profile:
     get:
       operationId: getProviderProfile
@@ -496,6 +558,15 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: The requested public resource is not available.
+      headers:
+        X-Request-ID:
+          $ref: "#/components/headers/RequestIdHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
     Conflict:
       description: The requested listing state or revision is stale.
       headers:
@@ -549,6 +620,7 @@ components:
         - UNAUTHORIZED
         - FORBIDDEN
         - CONFLICT
+        - NOT_FOUND
         - SERVICE_UNAVAILABLE
     ErrorDetail:
       type: object
@@ -742,6 +814,9 @@ components:
     ListingPriceType:
       type: string
       enum: [fixed, hourly, daily, quote, negotiable]
+    PublicServiceMode:
+      type: string
+      enum: [travels_to_customer, receives_customer, remote_services]
     ListingState:
       type: string
       enum: [draft, pending_review, active, rejected, paused, archived]
@@ -796,6 +871,37 @@ components:
         listings:
           type: array
           items: { $ref: "#/components/schemas/ListingResponse" }
+    PublicListingResponse:
+      type: object
+      additionalProperties: false
+      required: [id, title, description, categoryId, categorySlug, categoryName, primaryLocalityId, localitySlug, localityName, priceType, priceMinor, currency, travelsToCustomer, receivesCustomer, remoteServices, providerDisplayName, providerType, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string, minLength: 2, maxLength: 140 }
+        description: { type: string, minLength: 20, maxLength: 4000 }
+        categoryId: { type: string, format: uuid }
+        categorySlug: { type: string, minLength: 1, maxLength: 100 }
+        categoryName: { type: string, minLength: 1, maxLength: 120 }
+        primaryLocalityId: { type: string, format: uuid }
+        localitySlug: { type: string, minLength: 1, maxLength: 100 }
+        localityName: { type: string, minLength: 1, maxLength: 160 }
+        priceType: { $ref: "#/components/schemas/ListingPriceType" }
+        priceMinor: { type: [integer, "null"], minimum: 1 }
+        currency: { type: string, const: EUR }
+        travelsToCustomer: { type: boolean }
+        receivesCustomer: { type: boolean }
+        remoteServices: { type: boolean }
+        providerDisplayName: { type: string, minLength: 2, maxLength: 100 }
+        providerType: { $ref: "#/components/schemas/ProviderType" }
+        updatedAt: { type: string, format: date-time }
+    PublicListingsResponse:
+      type: object
+      additionalProperties: false
+      required: [listings]
+      properties:
+        listings:
+          type: array
+          items: { $ref: "#/components/schemas/PublicListingResponse" }
     RevisionRequest:
       type: object
       additionalProperties: false

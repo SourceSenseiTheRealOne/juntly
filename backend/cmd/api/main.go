@@ -16,6 +16,7 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/accounts"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/discovery"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/health"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/httpapi"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/listingmedia"
@@ -102,6 +103,7 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	accountService := accounts.NewService(userService, accounts.NewEntRepository(client))
 	referenceRepository := reference.NewSQLRepository(database)
 	referenceService := reference.NewService(referenceRepository)
+	publicDiscovery := discovery.NewService(discovery.NewSQLRepository(database))
 	providerAuthorizer := provideraccess.NewService(userService, accountService)
 	providerService := providers.NewService(providerAuthorizer, providers.NewEntRepository(client), referenceRepository)
 	listingRepository := listings.NewEntRepository(client)
@@ -112,5 +114,5 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	ownerListings := listings.NewOwnerService(listingDrafts, listingLifecycle, listingMedia)
 	moderationQueue := moderation.NewQueueService(moderatorAuthorizer, listingRepository)
 	moderationReview := moderation.NewReviewService(moderationQueue, listingLifecycle)
-	return httpapi.NewRouter(healthService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview), client, nil
+	return httpapi.NewRouter(healthService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery), client, nil
 }

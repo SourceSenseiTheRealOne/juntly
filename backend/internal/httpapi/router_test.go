@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/accounts"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/discovery"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/health"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/httpapi"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/users"
@@ -32,7 +33,8 @@ func TestRouterLeavesHealthPublicAndProtectsReconciliation(t *testing.T) {
 	}}
 	referenceService := &recordingReferenceService{}
 	providerProfileService := &recordingProviderProfileService{}
-	router := httpapi.NewRouter(healthService, verifier, reconcileService, accountService, referenceService, providerProfileService, &recordingListingService{created: sampleListing()}, &recordingModerationReview{listing: sampleListing()})
+	discoveryService := &recordingPublicDiscoveryService{}
+	router := httpapi.NewRouter(healthService, verifier, reconcileService, accountService, referenceService, providerProfileService, &recordingListingService{created: sampleListing()}, &recordingModerationReview{listing: sampleListing()}, discoveryService)
 
 	healthResponse := httptest.NewRecorder()
 	router.ServeHTTP(healthResponse, httptest.NewRequest(http.MethodGet, "/api/v1/health", nil))
@@ -41,6 +43,12 @@ func TestRouterLeavesHealthPublicAndProtectsReconciliation(t *testing.T) {
 	}
 	if verifier.calls != 0 {
 		t.Fatalf("verifier calls after health = %d, want 0", verifier.calls)
+	}
+
+	publicDiscoveryResponse := httptest.NewRecorder()
+	router.ServeHTTP(publicDiscoveryResponse, httptest.NewRequest(http.MethodGet, "/api/v1/discovery/listings?locale=pt-PT", nil))
+	if publicDiscoveryResponse.Code != http.StatusOK || verifier.calls != 0 || discoveryService.calls != 1 {
+		t.Fatalf("public discovery status/verifier/service = %d/%d/%d", publicDiscoveryResponse.Code, verifier.calls, discoveryService.calls)
 	}
 
 	unauthorizedResponse := httptest.NewRecorder()
@@ -85,6 +93,17 @@ func TestRouterLeavesHealthPublicAndProtectsReconciliation(t *testing.T) {
 	if accountService.calls != 1 {
 		t.Fatalf("account service calls = %d, want 1", accountService.calls)
 	}
+}
+
+type recordingPublicDiscoveryService struct{ calls int }
+
+func (s *recordingPublicDiscoveryService) Search(context.Context, discovery.Request) ([]discovery.Listing, error) {
+	s.calls++
+	return nil, nil
+}
+
+func (*recordingPublicDiscoveryService) Get(context.Context, string, string) (*discovery.Listing, error) {
+	return nil, discovery.ErrNotFound
 }
 
 type routerVerifier struct {

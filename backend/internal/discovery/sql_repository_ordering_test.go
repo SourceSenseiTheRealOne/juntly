@@ -39,7 +39,7 @@ func TestSQLRepositoryOrdersRadiusThenUpdatedThenStableID(t *testing.T) {
 		if _, err := tx.ExecContext(ctx, `
 			insert into public.localities
 			  (id, slug, name, parent_parish_id, source, source_element_id, source_version, source_retrieved_at, latitude, longitude, active)
-			values ($1, $2, $2, $3, 'synthetic-test', $4, '1', '2026-08-24T00:00:00Z', 39.8, $5, true)
+			values ($1, $2, $2, $3, 'synthetic-test', $4, '1', '2026-08-24T00:00:00Z', 40.8, $5, true)
 		`, locality.id, locality.slug, parishID, "D:"+locality.slug, locality.longitude); err != nil {
 			t.Fatalf("seed radius locality: %v", err)
 		}

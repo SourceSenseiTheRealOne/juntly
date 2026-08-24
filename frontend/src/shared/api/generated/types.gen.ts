@@ -16,7 +16,7 @@ export type HealthResponse = {
     requestId: RequestId;
 };
 
-export type ErrorCode = 'INVALID_REQUEST' | 'UNAUTHORIZED' | 'FORBIDDEN' | 'CONFLICT' | 'SERVICE_UNAVAILABLE';
+export type ErrorCode = 'INVALID_REQUEST' | 'UNAUTHORIZED' | 'FORBIDDEN' | 'CONFLICT' | 'NOT_FOUND' | 'SERVICE_UNAVAILABLE';
 
 export type ErrorDetail = {
     code: ErrorCode;
@@ -119,6 +119,8 @@ export type ProviderProfileEnvelope = {
 
 export type ListingPriceType = 'fixed' | 'hourly' | 'daily' | 'quote' | 'negotiable';
 
+export type PublicServiceMode = 'travels_to_customer' | 'receives_customer' | 'remote_services';
+
 export type ListingState = 'draft' | 'pending_review' | 'active' | 'rejected' | 'paused' | 'archived';
 
 export type CreateListingRequest = {
@@ -158,6 +160,31 @@ export type ListingResponse = {
 
 export type ListingsResponse = {
     listings: Array<ListingResponse>;
+};
+
+export type PublicListingResponse = {
+    id: string;
+    title: string;
+    description: string;
+    categoryId: string;
+    categorySlug: string;
+    categoryName: string;
+    primaryLocalityId: string;
+    localitySlug: string;
+    localityName: string;
+    priceType: ListingPriceType;
+    priceMinor: number | null;
+    currency: 'EUR';
+    travelsToCustomer: boolean;
+    receivesCustomer: boolean;
+    remoteServices: boolean;
+    providerDisplayName: string;
+    providerType: ProviderType;
+    updatedAt: string;
+};
+
+export type PublicListingsResponse = {
+    listings: Array<PublicListingResponse>;
 };
 
 export type RevisionRequest = {
@@ -419,6 +446,92 @@ export type ListLocalitiesResponses = {
 };
 
 export type ListLocalitiesResponse = ListLocalitiesResponses[keyof ListLocalitiesResponses];
+
+export type SearchPublicListingsData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path?: never;
+    query: {
+        locale: 'pt-PT' | 'en' | 'es';
+        categoryId?: string;
+        q?: string;
+        nearLocalityId?: string;
+        radiusKm?: number;
+        priceType?: ListingPriceType;
+        serviceMode?: PublicServiceMode;
+    };
+    url: '/api/v1/discovery/listings';
+};
+
+export type SearchPublicListingsErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type SearchPublicListingsError = SearchPublicListingsErrors[keyof SearchPublicListingsErrors];
+
+export type SearchPublicListingsResponses = {
+    /**
+     * Active public listing projections in deterministic relevance order.
+     */
+    200: PublicListingsResponse;
+};
+
+export type SearchPublicListingsResponse = SearchPublicListingsResponses[keyof SearchPublicListingsResponses];
+
+export type GetPublicListingData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+    };
+    query: {
+        locale: 'pt-PT' | 'en' | 'es';
+    };
+    url: '/api/v1/public/listings/{listingId}';
+};
+
+export type GetPublicListingErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * The requested public resource is not available.
+     */
+    404: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetPublicListingError = GetPublicListingErrors[keyof GetPublicListingErrors];
+
+export type GetPublicListingResponses = {
+    /**
+     * Active public listing projection.
+     */
+    200: PublicListingResponse;
+};
+
+export type GetPublicListingResponse = GetPublicListingResponses[keyof GetPublicListingResponses];
 
 export type GetProviderProfileData = {
     body?: never;
