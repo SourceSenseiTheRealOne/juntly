@@ -16,9 +16,11 @@ type ProviderAuthorizer interface {
 
 type ChannelStore interface {
 	Replace(context.Context, uuid.UUID, EncryptedChannel) (ChannelStatus, error)
+	Statuses(context.Context, uuid.UUID) ([]ChannelStatus, error)
 }
 
 type ProviderChannelService interface {
+	Get(context.Context, users.VerifiedIdentity) ([]ChannelStatus, error)
 	Put(context.Context, users.VerifiedIdentity, ReplaceChannel) (ChannelStatus, error)
 }
 
@@ -52,6 +54,27 @@ type providerChannelService struct {
 
 func NewProviderChannelService(authorizer ProviderAuthorizer, store ChannelStore, cipher Cipher) ProviderChannelService {
 	return providerChannelService{authorizer: authorizer, store: store, cipher: cipher}
+}
+
+func (s providerChannelService) Get(ctx context.Context, identity users.VerifiedIdentity) ([]ChannelStatus, error) {
+	if s.authorizer == nil || s.store == nil {
+		return nil, ErrUnavailable
+	}
+	owner, err := s.authorizer.RequireProvider(ctx, identity)
+	if err != nil {
+		if errors.Is(err, provideraccess.ErrUnauthorized) {
+			return nil, ErrUnauthorized
+		}
+		if errors.Is(err, provideraccess.ErrForbidden) {
+			return nil, ErrForbidden
+		}
+		return nil, ErrUnavailable
+	}
+	values, err := s.store.Statuses(ctx, owner.ID)
+	if err != nil {
+		return nil, ErrUnavailable
+	}
+	return append([]ChannelStatus(nil), values...), nil
 }
 
 func (s providerChannelService) Put(ctx context.Context, identity users.VerifiedIdentity, input ReplaceChannel) (ChannelStatus, error) {

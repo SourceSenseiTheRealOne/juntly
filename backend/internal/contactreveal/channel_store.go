@@ -34,3 +34,32 @@ func (s sqlChannelStore) Replace(ctx context.Context, ownerID uuid.UUID, value E
 	}
 	return ChannelStatus{Channel: value.Channel, Configured: true, Enabled: value.Enabled, RevealConsent: value.RevealConsent}, nil
 }
+
+func (s sqlChannelStore) Statuses(ctx context.Context, ownerID uuid.UUID) ([]ChannelStatus, error) {
+	if s.database == nil || ownerID == uuid.Nil {
+		return nil, ErrUnavailable
+	}
+	rows, err := s.database.QueryContext(ctx, `
+		select channel, enabled, reveal_consent
+		from public.provider_contact_channels
+		where internal_user_id = $1
+		order by channel
+	`, ownerID)
+	if err != nil {
+		return nil, ErrUnavailable
+	}
+	defer rows.Close()
+	values := make([]ChannelStatus, 0)
+	for rows.Next() {
+		var value ChannelStatus
+		if err := rows.Scan(&value.Channel, &value.Enabled, &value.RevealConsent); err != nil {
+			return nil, ErrUnavailable
+		}
+		value.Configured = true
+		values = append(values, value)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, ErrUnavailable
+	}
+	return values, nil
+}

@@ -37,6 +37,18 @@ func TestProviderChannelServiceEncryptsValidatedContactBeforeStore(t *testing.T)
 	}
 }
 
+func TestProviderChannelServiceReadsStatusWithoutDecrypting(t *testing.T) {
+	t.Parallel()
+	owner := users.InternalUser{ID: uuid.New()}
+	cipher := &providerCountingCipher{}
+	store := &recordingChannelStore{statuses: []ChannelStatus{{Channel: ChannelPhone, Configured: true, Enabled: true, RevealConsent: true}}}
+	service := NewProviderChannelService(&recordingProviderAuthorizer{owner: owner}, store, cipher)
+	statuses, err := service.Get(context.Background(), users.VerifiedIdentity{Subject: "provider"})
+	if err != nil || len(statuses) != 1 || statuses[0].Channel != ChannelPhone || cipher.decryptCalls != 0 || store.statusCalls != 1 {
+		t.Fatalf("statuses/error/decrypt/store = %#v/%v/%d/%d", statuses, err, cipher.decryptCalls, store.statusCalls)
+	}
+}
+
 type recordingProviderAuthorizer struct {
 	owner users.InternalUser
 	err   error
@@ -47,9 +59,11 @@ func (a *recordingProviderAuthorizer) RequireProvider(context.Context, users.Ver
 }
 
 type recordingChannelStore struct {
-	calls int
-	owner uuid.UUID
-	value EncryptedChannel
+	calls       int
+	owner       uuid.UUID
+	value       EncryptedChannel
+	statuses    []ChannelStatus
+	statusCalls int
 }
 
 func (s *recordingChannelStore) Replace(_ context.Context, owner uuid.UUID, value EncryptedChannel) (ChannelStatus, error) {
@@ -57,6 +71,11 @@ func (s *recordingChannelStore) Replace(_ context.Context, owner uuid.UUID, valu
 	s.owner = owner
 	s.value = value
 	return ChannelStatus{Channel: value.Channel, Configured: true, Enabled: value.Enabled, RevealConsent: value.RevealConsent}, nil
+}
+
+func (s *recordingChannelStore) Statuses(context.Context, uuid.UUID) ([]ChannelStatus, error) {
+	s.statusCalls++
+	return s.statuses, nil
 }
 
 type providerCountingCipher struct {
