@@ -35,6 +35,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
     loadError: t("capabilities.loadError"),
     retry: t("capabilities.retry"),
     manageProvider: t("capabilities.manageProvider"),
+    manageListings: t("capabilities.manageListings"),
   };
 
   return (
@@ -50,6 +51,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
         <AccountCapabilitiesCard
           copy={capabilityCopy}
           providerProfileUrl={`/${locale}/account/provider-profile`}
+          listingsUrl={`/${locale}/account/listings`}
         />
       </section>
     </main>

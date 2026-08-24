@@ -39,7 +39,8 @@
       "saving": "Guardando…",
       "loadError": "No hemos podido cargar las capacidades de tu cuenta.",
       "retry": "Intentar de nuevo",
-      "manageProvider": "Gestionar perfil profesional"
+      "manageProvider": "Gestionar perfil profesional",
+      "manageListings": "Gestionar anuncios"
     }
   },
   "ProviderProfile": {
@@ -64,6 +65,32 @@
     "error": "No hemos podido cargar o guardar el perfil.",
     "retry": "Intentar de nuevo",
     "saved": "Perfil guardado."
+  },
+  "Listings": {
+    "title": "Mis anuncios",
+    "description": "Crea y sigue anuncios privados antes de publicarlos.",
+    "newListing": "Nuevo anuncio",
+    "create": "Guardar borrador",
+    "submit": "Enviar a revisión",
+    "loading": "Cargando anuncios…",
+    "error": "No hemos podido cargar o guardar los anuncios.",
+    "retry": "Intentar de nuevo",
+    "empty": "Todavía no tienes anuncios.",
+    "saved": "Borrador guardado.",
+    "titleLabel": "Título",
+    "descriptionLabel": "Descripción",
+    "categoryLabel": "Categoría",
+    "localityLabel": "Localidad",
+    "priceLabel": "Precio en céntimos"
+  },
+  "Moderation": {
+    "title": "Revisión de anuncios",
+    "loading": "Cargando revisión…",
+    "empty": "No hay anuncios pendientes.",
+    "error": "No hemos podido cargar la cola de revisión.",
+    "retry": "Intentar de nuevo",
+    "approve": "Aprobar",
+    "reject": "Rechazar"
   },
   "Errors": {
     "title": "Algo salió mal",

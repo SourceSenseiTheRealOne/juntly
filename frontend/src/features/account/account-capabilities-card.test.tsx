@@ -18,6 +18,7 @@ const copy = {
   loadError: "Não foi possível carregar as capacidades da conta.",
   retry: "Tentar novamente",
   manageProvider: "Gerir perfil de prestador",
+  manageListings: "Gerir anúncios",
 };
 
 afterEach(() => {

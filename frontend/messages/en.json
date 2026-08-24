@@ -39,7 +39,8 @@
       "saving": "Saving…",
       "loadError": "We could not load your account capabilities.",
       "retry": "Try again",
-      "manageProvider": "Manage provider profile"
+      "manageProvider": "Manage provider profile",
+      "manageListings": "Manage listings"
     }
   },
   "ProviderProfile": {
@@ -64,6 +65,32 @@
     "error": "We could not load or save the profile.",
     "retry": "Try again",
     "saved": "Profile saved."
+  },
+  "Listings": {
+    "title": "My listings",
+    "description": "Create and track private listings before publication.",
+    "newListing": "New listing",
+    "create": "Save draft",
+    "submit": "Submit for review",
+    "loading": "Loading listings…",
+    "error": "We could not load or save listings.",
+    "retry": "Try again",
+    "empty": "You do not have listings yet.",
+    "saved": "Draft saved.",
+    "titleLabel": "Title",
+    "descriptionLabel": "Description",
+    "categoryLabel": "Category",
+    "localityLabel": "Locality",
+    "priceLabel": "Price in cents"
+  },
+  "Moderation": {
+    "title": "Listing review",
+    "loading": "Loading review…",
+    "empty": "There are no pending listings.",
+    "error": "We could not load the review queue.",
+    "retry": "Try again",
+    "approve": "Approve",
+    "reject": "Reject"
   },
   "Errors": {
     "title": "Something went wrong",

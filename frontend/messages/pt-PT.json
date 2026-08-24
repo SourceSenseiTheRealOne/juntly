@@ -39,7 +39,8 @@
       "saving": "A guardar…",
       "loadError": "Não foi possível carregar as capacidades da conta.",
       "retry": "Tentar novamente",
-      "manageProvider": "Gerir perfil de prestador"
+      "manageProvider": "Gerir perfil de prestador",
+      "manageListings": "Gerir anúncios"
     }
   },
   "ProviderProfile": {
@@ -64,6 +65,32 @@
     "error": "Não foi possível carregar ou guardar o perfil.",
     "retry": "Tentar novamente",
     "saved": "Perfil guardado."
+  },
+  "Listings": {
+    "title": "Os meus anúncios",
+    "description": "Crie e acompanhe anúncios privados antes da publicação.",
+    "newListing": "Novo anúncio",
+    "create": "Guardar rascunho",
+    "submit": "Enviar para revisão",
+    "loading": "A carregar anúncios…",
+    "error": "Não foi possível carregar ou guardar os anúncios.",
+    "retry": "Tentar novamente",
+    "empty": "Ainda não tem anúncios.",
+    "saved": "Rascunho guardado.",
+    "titleLabel": "Título",
+    "descriptionLabel": "Descrição",
+    "categoryLabel": "Categoria",
+    "localityLabel": "Localidade",
+    "priceLabel": "Preço em cêntimos"
+  },
+  "Moderation": {
+    "title": "Revisão de anúncios",
+    "loading": "A carregar revisão…",
+    "empty": "Não há anúncios pendentes.",
+    "error": "Não foi possível carregar a revisão.",
+    "retry": "Tentar novamente",
+    "approve": "Aprovar",
+    "reject": "Rejeitar"
   },
   "Errors": {
     "title": "Algo não correu bem",

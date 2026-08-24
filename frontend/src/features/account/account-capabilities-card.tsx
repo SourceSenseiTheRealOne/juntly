@@ -22,16 +22,19 @@ export type AccountCapabilitiesCopy = {
   loadError: string;
   retry: string;
   manageProvider: string;
+  manageListings: string;
 };
 
 type AccountCapabilitiesCardProps = {
   copy: AccountCapabilitiesCopy;
   providerProfileUrl?: string;
+  listingsUrl?: string;
 };
 
 export function AccountCapabilitiesCard({
   copy,
   providerProfileUrl,
+  listingsUrl,
 }: AccountCapabilitiesCardProps) {
   const [account, setAccount] = useState<AccountCapabilities | null>(null);
   const [loading, setLoading] = useState(true);
@@ -209,6 +212,14 @@ export function AccountCapabilitiesCard({
                   className="mt-3 inline-flex min-h-11 items-center rounded-full border border-line px-4 text-sm font-semibold text-ink outline-none focus-visible:ring-2 focus-visible:ring-focus"
                 >
                   {copy.manageProvider}
+                </a>
+              ) : null}
+              {account.providerEnabled && listingsUrl ? (
+                <a
+                  href={listingsUrl}
+                  className="mt-3 inline-flex min-h-11 items-center rounded-full border border-line px-4 text-sm font-semibold text-ink outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                >
+                  {copy.manageListings}
                 </a>
               ) : null}
             </div>
