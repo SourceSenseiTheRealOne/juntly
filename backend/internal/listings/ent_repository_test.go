@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"os"
+	"sync"
 	"testing"
 
 	"entgo.io/ent/dialect"
@@ -90,6 +91,97 @@ func TestEntRepositoryReplacesDraftWithCASAndOneUpdatedEvent(t *testing.T) {
 	}
 }
 
+func TestEntRepositoryTransitionsWithCASAndOneEvent(t *testing.T) {
+	client := openListingClient(t)
+	ctx := context.Background()
+	owner, localityIDs, categoryID := createListingProvider(t, client)
+	repository := NewEntRepository(client)
+	created, err := repository.Create(ctx, owner.ID, integrationCreate(categoryID, localityIDs[0]))
+	if err != nil {
+		t.Fatalf("create draft: %v", err)
+	}
+	transitioned, err := repository.TransitionOwned(ctx, owner.ID, created.ID, StateDraft, StatePendingReview, created.Revision, nil)
+	if err != nil || transitioned.State != StatePendingReview || transitioned.Revision != 2 {
+		t.Fatalf("transitioned = %#v, err = %v", transitioned, err)
+	}
+	if _, err := repository.TransitionOwned(ctx, owner.ID, created.ID, StateDraft, StatePendingReview, created.Revision, nil); !errors.Is(err, ErrConflict) {
+		t.Fatalf("stale transition error = %v, want ErrConflict", err)
+	}
+	events, err := client.ListingEvent.Query().Where(listingevent.ListingIDEQ(created.ID)).Order(ent.Asc(listingevent.FieldRevision)).All(ctx)
+	if err != nil || len(events) != 2 || string(events[1].EventType) != "submitted" || events[1].Revision != 2 {
+		t.Fatalf("events = %#v, err = %v", events, err)
+	}
+}
+
+func TestEntRepositoryOwnerTransitionRejectsAnotherProvidersDraft(t *testing.T) {
+	client := openListingClient(t)
+	ctx := context.Background()
+	owner, localityIDs, categoryID := createListingProvider(t, client)
+	other, _, _ := createListingProvider(t, client)
+	repository := NewEntRepository(client)
+	created, err := repository.Create(ctx, owner.ID, integrationCreate(categoryID, localityIDs[0]))
+	if err != nil {
+		t.Fatalf("create draft: %v", err)
+	}
+	if _, err := repository.TransitionOwned(ctx, other.ID, created.ID, StateDraft, StatePendingReview, created.Revision, nil); !errors.Is(err, ErrConflict) {
+		t.Fatalf("cross-owner transition error = %v, want ErrConflict", err)
+	}
+	found, err := repository.FindByOwner(ctx, owner.ID, created.ID)
+	if err != nil || found == nil || found.State != StateDraft || found.Revision != created.Revision {
+		t.Fatalf("listing after cross-owner transition = %#v, err = %v", found, err)
+	}
+}
+
+func TestEntRepositoryConcurrentModeratorOutcomesHaveOneWinner(t *testing.T) {
+	client := openListingClient(t)
+	ctx := context.Background()
+	owner, localityIDs, categoryID := createListingProvider(t, client)
+	other, _, _ := createListingProvider(t, client)
+	repository := NewEntRepository(client)
+	created, err := repository.Create(ctx, owner.ID, integrationCreate(categoryID, localityIDs[0]))
+	if err != nil {
+		t.Fatalf("create: %v", err)
+	}
+	pending, err := repository.TransitionOwned(ctx, owner.ID, created.ID, StateDraft, StatePendingReview, created.Revision, nil)
+	if err != nil {
+		t.Fatalf("submit: %v", err)
+	}
+	start := make(chan struct{})
+	results := make(chan error, 2)
+	var workers sync.WaitGroup
+	for _, outcome := range []State{StateActive, StateRejected} {
+		actor, outcome := owner.ID, outcome
+		if outcome == StateRejected {
+			actor = other.ID
+		}
+		workers.Add(1)
+		go func() {
+			defer workers.Done()
+			<-start
+			_, err := repository.TransitionModerated(ctx, actor, created.ID, StatePendingReview, outcome, pending.Revision, nil)
+			results <- err
+		}()
+	}
+	close(start)
+	workers.Wait()
+	close(results)
+	successes := 0
+	for err := range results {
+		if err == nil {
+			successes++
+		} else if !errors.Is(err, ErrConflict) {
+			t.Fatalf("moderation outcome: %v", err)
+		}
+	}
+	if successes != 1 {
+		t.Fatalf("successful outcomes = %d, want 1", successes)
+	}
+	events, err := client.ListingEvent.Query().Where(listingevent.ListingIDEQ(created.ID)).All(ctx)
+	if err != nil || len(events) != 3 {
+		t.Fatalf("events = %#v, err = %v", events, err)
+	}
+}
+
 func openListingClient(t *testing.T) *ent.Client {
 	t.Helper()
 	url := os.Getenv("TEST_DATABASE_URL")
@@ -140,6 +232,9 @@ func createListingProvider(t *testing.T, client *ent.Client) (users.InternalUser
 		t.Fatalf("create provider profile: %v", err)
 	}
 	t.Cleanup(func() {
+		if _, err := client.ListingEvent.Delete().Where(listingevent.ActorInternalUserIDEQ(owner.ID)).Exec(ctx); err != nil {
+			t.Errorf("cleanup actor events: %v", err)
+		}
 		if _, err := client.Listing.Delete().Where(listing.InternalUserIDEQ(owner.ID)).Exec(ctx); err != nil {
 			t.Errorf("cleanup listings: %v", err)
 		}

@@ -25,7 +25,14 @@ const (
 
 type State string
 
-const StateDraft State = "draft"
+const (
+	StateDraft         State = "draft"
+	StatePendingReview State = "pending_review"
+	StateActive        State = "active"
+	StateRejected      State = "rejected"
+	StatePaused        State = "paused"
+	StateArchived      State = "archived"
+)
 
 type CreateListing struct {
 	CategoryID        uuid.UUID

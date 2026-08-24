@@ -128,6 +128,62 @@ func (r entRepository) ReplaceDraft(ctx context.Context, owner, id uuid.UUID, re
 	return listingFromEnt(entity), nil
 }
 
+func (r entRepository) TransitionOwned(ctx context.Context, owner, id uuid.UUID, from, to State, revision int, reason *string) (Listing, error) {
+	return r.transition(ctx, owner, id, from, to, revision, reason, true)
+}
+
+func (r entRepository) TransitionModerated(ctx context.Context, moderator, id uuid.UUID, from, to State, revision int, reason *string) (Listing, error) {
+	return r.transition(ctx, moderator, id, from, to, revision, reason, false)
+}
+
+func (r entRepository) transition(ctx context.Context, actor, id uuid.UUID, from, to State, revision int, reason *string, ownerScoped bool) (Listing, error) {
+	if r.client == nil || actor == uuid.Nil || id == uuid.Nil || revision < 1 {
+		return Listing{}, ErrInvalidListing
+	}
+	eventType, ok := transitionEventType(from, to)
+	if !ok {
+		return Listing{}, ErrInvalidListing
+	}
+	tx, err := r.client.Tx(ctx)
+	if err != nil {
+		return Listing{}, err
+	}
+	committed := false
+	defer func() {
+		if !committed {
+			_ = tx.Rollback()
+		}
+	}()
+	client := tx.Client()
+	update := client.Listing.Update().Where(
+		listing.IDEQ(id), listing.StateEQ(listing.State(from)), listing.RevisionEQ(revision),
+	)
+	if ownerScoped {
+		update.Where(listing.InternalUserIDEQ(actor))
+	}
+	affected, err := update.SetState(listing.State(to)).SetRevision(revision + 1).Save(ctx)
+	if err != nil {
+		return Listing{}, err
+	}
+	if affected != 1 {
+		return Listing{}, ErrConflict
+	}
+	if err := client.ListingEvent.Create().SetListingID(id).SetActorInternalUserID(actor).
+		SetEventType(listingevent.EventType(eventType)).SetFromState(string(from)).SetToState(string(to)).
+		SetRevision(revision + 1).SetNillableReason(reason).Exec(ctx); err != nil {
+		return Listing{}, err
+	}
+	entity, err := client.Listing.Get(ctx, id)
+	if err != nil {
+		return Listing{}, err
+	}
+	if err := tx.Commit(); err != nil {
+		return Listing{}, err
+	}
+	committed = true
+	return listingFromEnt(entity), nil
+}
+
 func (r entRepository) FindByOwner(ctx context.Context, owner, id uuid.UUID) (*Listing, error) {
 	if r.client == nil {
 		return nil, errors.New("Ent client is nil")
@@ -199,3 +255,20 @@ func listingFromEnt(entity *jent.Listing) Listing {
 }
 
 func normalizeTime(value time.Time) time.Time { return value.UTC().Truncate(time.Microsecond) }
+
+func transitionEventType(from, to State) (string, bool) {
+	switch {
+	case from == StateDraft && to == StatePendingReview:
+		return "submitted", true
+	case from == StatePendingReview && to == StateActive:
+		return "approved", true
+	case from == StatePendingReview && to == StateRejected:
+		return "rejected", true
+	case from == StateActive && to == StatePaused:
+		return "paused", true
+	case to == StateArchived && from != StateArchived:
+		return "archived", true
+	default:
+		return "", false
+	}
+}

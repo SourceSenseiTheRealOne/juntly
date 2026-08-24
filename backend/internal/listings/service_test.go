@@ -169,3 +169,13 @@ func (r *recordingRepository) ReplaceDraft(_ context.Context, owner, id uuid.UUI
 	r.owner, r.id, r.revision, r.input = owner, id, revision, input
 	return r.updated, r.err
 }
+func (r *recordingRepository) TransitionOwned(_ context.Context, actor, id uuid.UUID, from, to State, revision int, reason *string) (Listing, error) {
+	r.calls++
+	r.owner, r.id, r.revision = actor, id, revision
+	return Listing{ID: id, State: to, Revision: revision + 1}, r.err
+}
+func (r *recordingRepository) TransitionModerated(_ context.Context, actor, id uuid.UUID, from, to State, revision int, reason *string) (Listing, error) {
+	r.calls++
+	r.owner, r.id, r.revision = actor, id, revision
+	return Listing{ID: id, State: to, Revision: revision + 1}, r.err
+}
