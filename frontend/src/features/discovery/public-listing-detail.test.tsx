@@ -10,6 +10,9 @@ const copy = {
   provider: "Prestador",
   locality: "Localidade",
   category: "Categoria",
+  phone: "Revelar telefone",
+  whatsapp: "Revelar WhatsApp",
+  revealError: "Não foi possível revelar o contacto.",
 };
 
 afterEach(() => vi.restoreAllMocks());

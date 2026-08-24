@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ContactRevealControl } from "@/features/contact/contact-reveal-control";
 
 type Listing = {
   id: string;
@@ -30,6 +31,9 @@ export type PublicListingDetailCopy = {
   provider: string;
   locality: string;
   category: string;
+  phone: string;
+  whatsapp: string;
+  revealError: string;
 };
 
 export function PublicListingDetail({
@@ -101,6 +105,14 @@ export function PublicListingDetail({
           <dd>{listing.localityName}</dd>
         </div>
       </dl>
+      <ContactRevealControl
+        listingId={listing.id}
+        copy={{
+          phone: copy.phone,
+          whatsapp: copy.whatsapp,
+          error: copy.revealError,
+        }}
+      />
     </article>
   );
 }

@@ -116,7 +116,24 @@
     "retry": "Tentar novamente",
     "provider": "Prestador",
     "locality": "Localidade",
-    "category": "Categoria"
+    "category": "Categoria",
+    "phone": "Revelar telefone",
+    "whatsapp": "Revelar WhatsApp",
+    "revealError": "Não foi possível revelar o contacto."
+  },
+  "ContactChannels": {
+    "title": "Canais de contacto",
+    "description": "Controle como os clientes autenticados o podem contactar.",
+    "loading": "A carregar canais…",
+    "error": "Não foi possível carregar ou guardar os canais.",
+    "retry": "Tentar novamente",
+    "phone": "Telefone",
+    "whatsapp": "WhatsApp",
+    "contact": "Contacto",
+    "enabled": "Ativo",
+    "consent": "Autorizar revelação",
+    "save": "Guardar canal",
+    "saved": "Canal guardado."
   },
   "Errors": {
     "title": "Algo não correu bem",

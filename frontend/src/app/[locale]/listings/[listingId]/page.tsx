@@ -25,6 +25,9 @@ export default async function PublicListingPage({
           provider: t("provider"),
           locality: t("locality"),
           category: t("category"),
+          phone: t("phone"),
+          whatsapp: t("whatsapp"),
+          revealError: t("revealError"),
         }}
       />
     </main>

@@ -116,7 +116,24 @@
     "retry": "Try again",
     "provider": "Provider",
     "locality": "Locality",
-    "category": "Category"
+    "category": "Category",
+    "phone": "Reveal phone",
+    "whatsapp": "Reveal WhatsApp",
+    "revealError": "We could not reveal this contact."
+  },
+  "ContactChannels": {
+    "title": "Contact channels",
+    "description": "Control how authenticated customers can contact you.",
+    "loading": "Loading channels…",
+    "error": "We could not load or save contact channels.",
+    "retry": "Try again",
+    "phone": "Phone",
+    "whatsapp": "WhatsApp",
+    "contact": "Contact",
+    "enabled": "Enabled",
+    "consent": "Allow reveal",
+    "save": "Save channel",
+    "saved": "Channel saved."
   },
   "Errors": {
     "title": "Something went wrong",
