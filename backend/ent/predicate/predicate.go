@@ -9,6 +9,12 @@ import (
 // AdministrativeArea is the predicate function for administrativearea builders.
 type AdministrativeArea func(*sql.Selector)
 
+// ContactRevealDailyLimit is the predicate function for contactrevealdailylimit builders.
+type ContactRevealDailyLimit func(*sql.Selector)
+
+// ContactRevealEvent is the predicate function for contactrevealevent builders.
+type ContactRevealEvent func(*sql.Selector)
+
 // InternalUser is the predicate function for internaluser builders.
 type InternalUser func(*sql.Selector)
 
@@ -26,6 +32,9 @@ type Locality func(*sql.Selector)
 
 // PlatformRole is the predicate function for platformrole builders.
 type PlatformRole func(*sql.Selector)
+
+// ProviderContactChannel is the predicate function for providercontactchannel builders.
+type ProviderContactChannel func(*sql.Selector)
 
 // ProviderProfile is the predicate function for providerprofile builders.
 type ProviderProfile func(*sql.Selector)

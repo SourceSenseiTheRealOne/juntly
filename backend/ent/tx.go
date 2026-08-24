@@ -14,6 +14,10 @@ type Tx struct {
 	config
 	// AdministrativeArea is the client for interacting with the AdministrativeArea builders.
 	AdministrativeArea *AdministrativeAreaClient
+	// ContactRevealDailyLimit is the client for interacting with the ContactRevealDailyLimit builders.
+	ContactRevealDailyLimit *ContactRevealDailyLimitClient
+	// ContactRevealEvent is the client for interacting with the ContactRevealEvent builders.
+	ContactRevealEvent *ContactRevealEventClient
 	// InternalUser is the client for interacting with the InternalUser builders.
 	InternalUser *InternalUserClient
 	// Listing is the client for interacting with the Listing builders.
@@ -26,6 +30,8 @@ type Tx struct {
 	Locality *LocalityClient
 	// PlatformRole is the client for interacting with the PlatformRole builders.
 	PlatformRole *PlatformRoleClient
+	// ProviderContactChannel is the client for interacting with the ProviderContactChannel builders.
+	ProviderContactChannel *ProviderContactChannelClient
 	// ProviderProfile is the client for interacting with the ProviderProfile builders.
 	ProviderProfile *ProviderProfileClient
 	// ProviderServiceLocality is the client for interacting with the ProviderServiceLocality builders.
@@ -176,12 +182,15 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.AdministrativeArea = NewAdministrativeAreaClient(tx.config)
+	tx.ContactRevealDailyLimit = NewContactRevealDailyLimitClient(tx.config)
+	tx.ContactRevealEvent = NewContactRevealEventClient(tx.config)
 	tx.InternalUser = NewInternalUserClient(tx.config)
 	tx.Listing = NewListingClient(tx.config)
 	tx.ListingEvent = NewListingEventClient(tx.config)
 	tx.ListingMedia = NewListingMediaClient(tx.config)
 	tx.Locality = NewLocalityClient(tx.config)
 	tx.PlatformRole = NewPlatformRoleClient(tx.config)
+	tx.ProviderContactChannel = NewProviderContactChannelClient(tx.config)
 	tx.ProviderProfile = NewProviderProfileClient(tx.config)
 	tx.ProviderServiceLocality = NewProviderServiceLocalityClient(tx.config)
 	tx.ProviderSpokenLanguage = NewProviderSpokenLanguageClient(tx.config)

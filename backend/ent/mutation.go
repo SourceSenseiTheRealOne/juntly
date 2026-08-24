@@ -12,6 +12,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/administrativearea"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/contactrevealdailylimit"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/contactrevealevent"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/internaluser"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listing"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listingevent"
@@ -19,6 +21,7 @@ import (
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/locality"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/platformrole"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/predicate"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providercontactchannel"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerprofile"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerservicelocality"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerspokenlanguage"
@@ -41,12 +44,15 @@ const (
 
 	// Node types.
 	TypeAdministrativeArea         = "AdministrativeArea"
+	TypeContactRevealDailyLimit    = "ContactRevealDailyLimit"
+	TypeContactRevealEvent         = "ContactRevealEvent"
 	TypeInternalUser               = "InternalUser"
 	TypeListing                    = "Listing"
 	TypeListingEvent               = "ListingEvent"
 	TypeListingMedia               = "ListingMedia"
 	TypeLocality                   = "Locality"
 	TypePlatformRole               = "PlatformRole"
+	TypeProviderContactChannel     = "ProviderContactChannel"
 	TypeProviderProfile            = "ProviderProfile"
 	TypeProviderServiceLocality    = "ProviderServiceLocality"
 	TypeProviderSpokenLanguage     = "ProviderSpokenLanguage"
@@ -1064,6 +1070,1192 @@ func (m *AdministrativeAreaMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown AdministrativeArea edge %s", name)
+}
+
+// ContactRevealDailyLimitMutation represents an operation that mutates the ContactRevealDailyLimit nodes in the graph.
+type ContactRevealDailyLimitMutation struct {
+	config
+	op                        Op
+	typ                       string
+	id                        *uuid.UUID
+	customer_internal_user_id *uuid.UUID
+	utc_day                   *time.Time
+	successful_count          *int
+	addsuccessful_count       *int
+	created_at                *time.Time
+	updated_at                *time.Time
+	clearedFields             map[string]struct{}
+	done                      bool
+	oldValue                  func(context.Context) (*ContactRevealDailyLimit, error)
+	predicates                []predicate.ContactRevealDailyLimit
+}
+
+var _ ent.Mutation = (*ContactRevealDailyLimitMutation)(nil)
+
+// contactrevealdailylimitOption allows management of the mutation configuration using functional options.
+type contactrevealdailylimitOption func(*ContactRevealDailyLimitMutation)
+
+// newContactRevealDailyLimitMutation creates new mutation for the ContactRevealDailyLimit entity.
+func newContactRevealDailyLimitMutation(c config, op Op, opts ...contactrevealdailylimitOption) *ContactRevealDailyLimitMutation {
+	m := &ContactRevealDailyLimitMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeContactRevealDailyLimit,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withContactRevealDailyLimitID sets the ID field of the mutation.
+func withContactRevealDailyLimitID(id uuid.UUID) contactrevealdailylimitOption {
+	return func(m *ContactRevealDailyLimitMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ContactRevealDailyLimit
+		)
+		m.oldValue = func(ctx context.Context) (*ContactRevealDailyLimit, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ContactRevealDailyLimit.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withContactRevealDailyLimit sets the old ContactRevealDailyLimit of the mutation.
+func withContactRevealDailyLimit(node *ContactRevealDailyLimit) contactrevealdailylimitOption {
+	return func(m *ContactRevealDailyLimitMutation) {
+		m.oldValue = func(context.Context) (*ContactRevealDailyLimit, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ContactRevealDailyLimitMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ContactRevealDailyLimitMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ContactRevealDailyLimit entities.
+func (m *ContactRevealDailyLimitMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ContactRevealDailyLimitMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ContactRevealDailyLimitMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ContactRevealDailyLimit.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCustomerInternalUserID sets the "customer_internal_user_id" field.
+func (m *ContactRevealDailyLimitMutation) SetCustomerInternalUserID(u uuid.UUID) {
+	m.customer_internal_user_id = &u
+}
+
+// CustomerInternalUserID returns the value of the "customer_internal_user_id" field in the mutation.
+func (m *ContactRevealDailyLimitMutation) CustomerInternalUserID() (r uuid.UUID, exists bool) {
+	v := m.customer_internal_user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCustomerInternalUserID returns the old "customer_internal_user_id" field's value of the ContactRevealDailyLimit entity.
+// If the ContactRevealDailyLimit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContactRevealDailyLimitMutation) OldCustomerInternalUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCustomerInternalUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCustomerInternalUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCustomerInternalUserID: %w", err)
+	}
+	return oldValue.CustomerInternalUserID, nil
+}
+
+// ResetCustomerInternalUserID resets all changes to the "customer_internal_user_id" field.
+func (m *ContactRevealDailyLimitMutation) ResetCustomerInternalUserID() {
+	m.customer_internal_user_id = nil
+}
+
+// SetUtcDay sets the "utc_day" field.
+func (m *ContactRevealDailyLimitMutation) SetUtcDay(t time.Time) {
+	m.utc_day = &t
+}
+
+// UtcDay returns the value of the "utc_day" field in the mutation.
+func (m *ContactRevealDailyLimitMutation) UtcDay() (r time.Time, exists bool) {
+	v := m.utc_day
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUtcDay returns the old "utc_day" field's value of the ContactRevealDailyLimit entity.
+// If the ContactRevealDailyLimit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContactRevealDailyLimitMutation) OldUtcDay(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUtcDay is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUtcDay requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUtcDay: %w", err)
+	}
+	return oldValue.UtcDay, nil
+}
+
+// ResetUtcDay resets all changes to the "utc_day" field.
+func (m *ContactRevealDailyLimitMutation) ResetUtcDay() {
+	m.utc_day = nil
+}
+
+// SetSuccessfulCount sets the "successful_count" field.
+func (m *ContactRevealDailyLimitMutation) SetSuccessfulCount(i int) {
+	m.successful_count = &i
+	m.addsuccessful_count = nil
+}
+
+// SuccessfulCount returns the value of the "successful_count" field in the mutation.
+func (m *ContactRevealDailyLimitMutation) SuccessfulCount() (r int, exists bool) {
+	v := m.successful_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSuccessfulCount returns the old "successful_count" field's value of the ContactRevealDailyLimit entity.
+// If the ContactRevealDailyLimit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContactRevealDailyLimitMutation) OldSuccessfulCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSuccessfulCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSuccessfulCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSuccessfulCount: %w", err)
+	}
+	return oldValue.SuccessfulCount, nil
+}
+
+// AddSuccessfulCount adds i to the "successful_count" field.
+func (m *ContactRevealDailyLimitMutation) AddSuccessfulCount(i int) {
+	if m.addsuccessful_count != nil {
+		*m.addsuccessful_count += i
+	} else {
+		m.addsuccessful_count = &i
+	}
+}
+
+// AddedSuccessfulCount returns the value that was added to the "successful_count" field in this mutation.
+func (m *ContactRevealDailyLimitMutation) AddedSuccessfulCount() (r int, exists bool) {
+	v := m.addsuccessful_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSuccessfulCount resets all changes to the "successful_count" field.
+func (m *ContactRevealDailyLimitMutation) ResetSuccessfulCount() {
+	m.successful_count = nil
+	m.addsuccessful_count = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ContactRevealDailyLimitMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ContactRevealDailyLimitMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ContactRevealDailyLimit entity.
+// If the ContactRevealDailyLimit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContactRevealDailyLimitMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ContactRevealDailyLimitMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ContactRevealDailyLimitMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ContactRevealDailyLimitMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ContactRevealDailyLimit entity.
+// If the ContactRevealDailyLimit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContactRevealDailyLimitMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ContactRevealDailyLimitMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the ContactRevealDailyLimitMutation builder.
+func (m *ContactRevealDailyLimitMutation) Where(ps ...predicate.ContactRevealDailyLimit) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ContactRevealDailyLimitMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ContactRevealDailyLimitMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ContactRevealDailyLimit, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ContactRevealDailyLimitMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ContactRevealDailyLimitMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ContactRevealDailyLimit).
+func (m *ContactRevealDailyLimitMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ContactRevealDailyLimitMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.customer_internal_user_id != nil {
+		fields = append(fields, contactrevealdailylimit.FieldCustomerInternalUserID)
+	}
+	if m.utc_day != nil {
+		fields = append(fields, contactrevealdailylimit.FieldUtcDay)
+	}
+	if m.successful_count != nil {
+		fields = append(fields, contactrevealdailylimit.FieldSuccessfulCount)
+	}
+	if m.created_at != nil {
+		fields = append(fields, contactrevealdailylimit.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, contactrevealdailylimit.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ContactRevealDailyLimitMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case contactrevealdailylimit.FieldCustomerInternalUserID:
+		return m.CustomerInternalUserID()
+	case contactrevealdailylimit.FieldUtcDay:
+		return m.UtcDay()
+	case contactrevealdailylimit.FieldSuccessfulCount:
+		return m.SuccessfulCount()
+	case contactrevealdailylimit.FieldCreatedAt:
+		return m.CreatedAt()
+	case contactrevealdailylimit.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ContactRevealDailyLimitMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case contactrevealdailylimit.FieldCustomerInternalUserID:
+		return m.OldCustomerInternalUserID(ctx)
+	case contactrevealdailylimit.FieldUtcDay:
+		return m.OldUtcDay(ctx)
+	case contactrevealdailylimit.FieldSuccessfulCount:
+		return m.OldSuccessfulCount(ctx)
+	case contactrevealdailylimit.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case contactrevealdailylimit.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ContactRevealDailyLimit field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ContactRevealDailyLimitMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case contactrevealdailylimit.FieldCustomerInternalUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCustomerInternalUserID(v)
+		return nil
+	case contactrevealdailylimit.FieldUtcDay:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUtcDay(v)
+		return nil
+	case contactrevealdailylimit.FieldSuccessfulCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSuccessfulCount(v)
+		return nil
+	case contactrevealdailylimit.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case contactrevealdailylimit.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ContactRevealDailyLimit field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ContactRevealDailyLimitMutation) AddedFields() []string {
+	var fields []string
+	if m.addsuccessful_count != nil {
+		fields = append(fields, contactrevealdailylimit.FieldSuccessfulCount)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ContactRevealDailyLimitMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case contactrevealdailylimit.FieldSuccessfulCount:
+		return m.AddedSuccessfulCount()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ContactRevealDailyLimitMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case contactrevealdailylimit.FieldSuccessfulCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSuccessfulCount(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ContactRevealDailyLimit numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ContactRevealDailyLimitMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ContactRevealDailyLimitMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ContactRevealDailyLimitMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ContactRevealDailyLimit nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ContactRevealDailyLimitMutation) ResetField(name string) error {
+	switch name {
+	case contactrevealdailylimit.FieldCustomerInternalUserID:
+		m.ResetCustomerInternalUserID()
+		return nil
+	case contactrevealdailylimit.FieldUtcDay:
+		m.ResetUtcDay()
+		return nil
+	case contactrevealdailylimit.FieldSuccessfulCount:
+		m.ResetSuccessfulCount()
+		return nil
+	case contactrevealdailylimit.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case contactrevealdailylimit.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ContactRevealDailyLimit field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ContactRevealDailyLimitMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ContactRevealDailyLimitMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ContactRevealDailyLimitMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ContactRevealDailyLimitMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ContactRevealDailyLimitMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ContactRevealDailyLimitMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ContactRevealDailyLimitMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ContactRevealDailyLimit unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ContactRevealDailyLimitMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ContactRevealDailyLimit edge %s", name)
+}
+
+// ContactRevealEventMutation represents an operation that mutates the ContactRevealEvent nodes in the graph.
+type ContactRevealEventMutation struct {
+	config
+	op                        Op
+	typ                       string
+	id                        *uuid.UUID
+	customer_internal_user_id *uuid.UUID
+	provider_internal_user_id *uuid.UUID
+	listing_id                *uuid.UUID
+	channel                   *contactrevealevent.Channel
+	utc_day                   *time.Time
+	revealed_at               *time.Time
+	clearedFields             map[string]struct{}
+	done                      bool
+	oldValue                  func(context.Context) (*ContactRevealEvent, error)
+	predicates                []predicate.ContactRevealEvent
+}
+
+var _ ent.Mutation = (*ContactRevealEventMutation)(nil)
+
+// contactrevealeventOption allows management of the mutation configuration using functional options.
+type contactrevealeventOption func(*ContactRevealEventMutation)
+
+// newContactRevealEventMutation creates new mutation for the ContactRevealEvent entity.
+func newContactRevealEventMutation(c config, op Op, opts ...contactrevealeventOption) *ContactRevealEventMutation {
+	m := &ContactRevealEventMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeContactRevealEvent,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withContactRevealEventID sets the ID field of the mutation.
+func withContactRevealEventID(id uuid.UUID) contactrevealeventOption {
+	return func(m *ContactRevealEventMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ContactRevealEvent
+		)
+		m.oldValue = func(ctx context.Context) (*ContactRevealEvent, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ContactRevealEvent.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withContactRevealEvent sets the old ContactRevealEvent of the mutation.
+func withContactRevealEvent(node *ContactRevealEvent) contactrevealeventOption {
+	return func(m *ContactRevealEventMutation) {
+		m.oldValue = func(context.Context) (*ContactRevealEvent, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ContactRevealEventMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ContactRevealEventMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ContactRevealEvent entities.
+func (m *ContactRevealEventMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ContactRevealEventMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ContactRevealEventMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ContactRevealEvent.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCustomerInternalUserID sets the "customer_internal_user_id" field.
+func (m *ContactRevealEventMutation) SetCustomerInternalUserID(u uuid.UUID) {
+	m.customer_internal_user_id = &u
+}
+
+// CustomerInternalUserID returns the value of the "customer_internal_user_id" field in the mutation.
+func (m *ContactRevealEventMutation) CustomerInternalUserID() (r uuid.UUID, exists bool) {
+	v := m.customer_internal_user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCustomerInternalUserID returns the old "customer_internal_user_id" field's value of the ContactRevealEvent entity.
+// If the ContactRevealEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContactRevealEventMutation) OldCustomerInternalUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCustomerInternalUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCustomerInternalUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCustomerInternalUserID: %w", err)
+	}
+	return oldValue.CustomerInternalUserID, nil
+}
+
+// ResetCustomerInternalUserID resets all changes to the "customer_internal_user_id" field.
+func (m *ContactRevealEventMutation) ResetCustomerInternalUserID() {
+	m.customer_internal_user_id = nil
+}
+
+// SetProviderInternalUserID sets the "provider_internal_user_id" field.
+func (m *ContactRevealEventMutation) SetProviderInternalUserID(u uuid.UUID) {
+	m.provider_internal_user_id = &u
+}
+
+// ProviderInternalUserID returns the value of the "provider_internal_user_id" field in the mutation.
+func (m *ContactRevealEventMutation) ProviderInternalUserID() (r uuid.UUID, exists bool) {
+	v := m.provider_internal_user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProviderInternalUserID returns the old "provider_internal_user_id" field's value of the ContactRevealEvent entity.
+// If the ContactRevealEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContactRevealEventMutation) OldProviderInternalUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProviderInternalUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProviderInternalUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProviderInternalUserID: %w", err)
+	}
+	return oldValue.ProviderInternalUserID, nil
+}
+
+// ResetProviderInternalUserID resets all changes to the "provider_internal_user_id" field.
+func (m *ContactRevealEventMutation) ResetProviderInternalUserID() {
+	m.provider_internal_user_id = nil
+}
+
+// SetListingID sets the "listing_id" field.
+func (m *ContactRevealEventMutation) SetListingID(u uuid.UUID) {
+	m.listing_id = &u
+}
+
+// ListingID returns the value of the "listing_id" field in the mutation.
+func (m *ContactRevealEventMutation) ListingID() (r uuid.UUID, exists bool) {
+	v := m.listing_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldListingID returns the old "listing_id" field's value of the ContactRevealEvent entity.
+// If the ContactRevealEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContactRevealEventMutation) OldListingID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldListingID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldListingID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldListingID: %w", err)
+	}
+	return oldValue.ListingID, nil
+}
+
+// ResetListingID resets all changes to the "listing_id" field.
+func (m *ContactRevealEventMutation) ResetListingID() {
+	m.listing_id = nil
+}
+
+// SetChannel sets the "channel" field.
+func (m *ContactRevealEventMutation) SetChannel(c contactrevealevent.Channel) {
+	m.channel = &c
+}
+
+// Channel returns the value of the "channel" field in the mutation.
+func (m *ContactRevealEventMutation) Channel() (r contactrevealevent.Channel, exists bool) {
+	v := m.channel
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChannel returns the old "channel" field's value of the ContactRevealEvent entity.
+// If the ContactRevealEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContactRevealEventMutation) OldChannel(ctx context.Context) (v contactrevealevent.Channel, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChannel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChannel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChannel: %w", err)
+	}
+	return oldValue.Channel, nil
+}
+
+// ResetChannel resets all changes to the "channel" field.
+func (m *ContactRevealEventMutation) ResetChannel() {
+	m.channel = nil
+}
+
+// SetUtcDay sets the "utc_day" field.
+func (m *ContactRevealEventMutation) SetUtcDay(t time.Time) {
+	m.utc_day = &t
+}
+
+// UtcDay returns the value of the "utc_day" field in the mutation.
+func (m *ContactRevealEventMutation) UtcDay() (r time.Time, exists bool) {
+	v := m.utc_day
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUtcDay returns the old "utc_day" field's value of the ContactRevealEvent entity.
+// If the ContactRevealEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContactRevealEventMutation) OldUtcDay(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUtcDay is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUtcDay requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUtcDay: %w", err)
+	}
+	return oldValue.UtcDay, nil
+}
+
+// ResetUtcDay resets all changes to the "utc_day" field.
+func (m *ContactRevealEventMutation) ResetUtcDay() {
+	m.utc_day = nil
+}
+
+// SetRevealedAt sets the "revealed_at" field.
+func (m *ContactRevealEventMutation) SetRevealedAt(t time.Time) {
+	m.revealed_at = &t
+}
+
+// RevealedAt returns the value of the "revealed_at" field in the mutation.
+func (m *ContactRevealEventMutation) RevealedAt() (r time.Time, exists bool) {
+	v := m.revealed_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRevealedAt returns the old "revealed_at" field's value of the ContactRevealEvent entity.
+// If the ContactRevealEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContactRevealEventMutation) OldRevealedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRevealedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRevealedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRevealedAt: %w", err)
+	}
+	return oldValue.RevealedAt, nil
+}
+
+// ResetRevealedAt resets all changes to the "revealed_at" field.
+func (m *ContactRevealEventMutation) ResetRevealedAt() {
+	m.revealed_at = nil
+}
+
+// Where appends a list predicates to the ContactRevealEventMutation builder.
+func (m *ContactRevealEventMutation) Where(ps ...predicate.ContactRevealEvent) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ContactRevealEventMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ContactRevealEventMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ContactRevealEvent, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ContactRevealEventMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ContactRevealEventMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ContactRevealEvent).
+func (m *ContactRevealEventMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ContactRevealEventMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.customer_internal_user_id != nil {
+		fields = append(fields, contactrevealevent.FieldCustomerInternalUserID)
+	}
+	if m.provider_internal_user_id != nil {
+		fields = append(fields, contactrevealevent.FieldProviderInternalUserID)
+	}
+	if m.listing_id != nil {
+		fields = append(fields, contactrevealevent.FieldListingID)
+	}
+	if m.channel != nil {
+		fields = append(fields, contactrevealevent.FieldChannel)
+	}
+	if m.utc_day != nil {
+		fields = append(fields, contactrevealevent.FieldUtcDay)
+	}
+	if m.revealed_at != nil {
+		fields = append(fields, contactrevealevent.FieldRevealedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ContactRevealEventMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case contactrevealevent.FieldCustomerInternalUserID:
+		return m.CustomerInternalUserID()
+	case contactrevealevent.FieldProviderInternalUserID:
+		return m.ProviderInternalUserID()
+	case contactrevealevent.FieldListingID:
+		return m.ListingID()
+	case contactrevealevent.FieldChannel:
+		return m.Channel()
+	case contactrevealevent.FieldUtcDay:
+		return m.UtcDay()
+	case contactrevealevent.FieldRevealedAt:
+		return m.RevealedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ContactRevealEventMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case contactrevealevent.FieldCustomerInternalUserID:
+		return m.OldCustomerInternalUserID(ctx)
+	case contactrevealevent.FieldProviderInternalUserID:
+		return m.OldProviderInternalUserID(ctx)
+	case contactrevealevent.FieldListingID:
+		return m.OldListingID(ctx)
+	case contactrevealevent.FieldChannel:
+		return m.OldChannel(ctx)
+	case contactrevealevent.FieldUtcDay:
+		return m.OldUtcDay(ctx)
+	case contactrevealevent.FieldRevealedAt:
+		return m.OldRevealedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ContactRevealEvent field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ContactRevealEventMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case contactrevealevent.FieldCustomerInternalUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCustomerInternalUserID(v)
+		return nil
+	case contactrevealevent.FieldProviderInternalUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProviderInternalUserID(v)
+		return nil
+	case contactrevealevent.FieldListingID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetListingID(v)
+		return nil
+	case contactrevealevent.FieldChannel:
+		v, ok := value.(contactrevealevent.Channel)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChannel(v)
+		return nil
+	case contactrevealevent.FieldUtcDay:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUtcDay(v)
+		return nil
+	case contactrevealevent.FieldRevealedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRevealedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ContactRevealEvent field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ContactRevealEventMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ContactRevealEventMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ContactRevealEventMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ContactRevealEvent numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ContactRevealEventMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ContactRevealEventMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ContactRevealEventMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ContactRevealEvent nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ContactRevealEventMutation) ResetField(name string) error {
+	switch name {
+	case contactrevealevent.FieldCustomerInternalUserID:
+		m.ResetCustomerInternalUserID()
+		return nil
+	case contactrevealevent.FieldProviderInternalUserID:
+		m.ResetProviderInternalUserID()
+		return nil
+	case contactrevealevent.FieldListingID:
+		m.ResetListingID()
+		return nil
+	case contactrevealevent.FieldChannel:
+		m.ResetChannel()
+		return nil
+	case contactrevealevent.FieldUtcDay:
+		m.ResetUtcDay()
+		return nil
+	case contactrevealevent.FieldRevealedAt:
+		m.ResetRevealedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ContactRevealEvent field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ContactRevealEventMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ContactRevealEventMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ContactRevealEventMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ContactRevealEventMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ContactRevealEventMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ContactRevealEventMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ContactRevealEventMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ContactRevealEvent unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ContactRevealEventMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ContactRevealEvent edge %s", name)
 }
 
 // InternalUserMutation represents an operation that mutates the InternalUser nodes in the graph.
@@ -5878,6 +7070,770 @@ func (m *PlatformRoleMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *PlatformRoleMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown PlatformRole edge %s", name)
+}
+
+// ProviderContactChannelMutation represents an operation that mutates the ProviderContactChannel nodes in the graph.
+type ProviderContactChannelMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *uuid.UUID
+	internal_user_id *uuid.UUID
+	channel          *providercontactchannel.Channel
+	ciphertext       *[]byte
+	nonce            *[]byte
+	key_version      *string
+	enabled          *bool
+	reveal_consent   *bool
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	done             bool
+	oldValue         func(context.Context) (*ProviderContactChannel, error)
+	predicates       []predicate.ProviderContactChannel
+}
+
+var _ ent.Mutation = (*ProviderContactChannelMutation)(nil)
+
+// providercontactchannelOption allows management of the mutation configuration using functional options.
+type providercontactchannelOption func(*ProviderContactChannelMutation)
+
+// newProviderContactChannelMutation creates new mutation for the ProviderContactChannel entity.
+func newProviderContactChannelMutation(c config, op Op, opts ...providercontactchannelOption) *ProviderContactChannelMutation {
+	m := &ProviderContactChannelMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeProviderContactChannel,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withProviderContactChannelID sets the ID field of the mutation.
+func withProviderContactChannelID(id uuid.UUID) providercontactchannelOption {
+	return func(m *ProviderContactChannelMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ProviderContactChannel
+		)
+		m.oldValue = func(ctx context.Context) (*ProviderContactChannel, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ProviderContactChannel.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withProviderContactChannel sets the old ProviderContactChannel of the mutation.
+func withProviderContactChannel(node *ProviderContactChannel) providercontactchannelOption {
+	return func(m *ProviderContactChannelMutation) {
+		m.oldValue = func(context.Context) (*ProviderContactChannel, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ProviderContactChannelMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ProviderContactChannelMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ProviderContactChannel entities.
+func (m *ProviderContactChannelMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ProviderContactChannelMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ProviderContactChannelMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ProviderContactChannel.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetInternalUserID sets the "internal_user_id" field.
+func (m *ProviderContactChannelMutation) SetInternalUserID(u uuid.UUID) {
+	m.internal_user_id = &u
+}
+
+// InternalUserID returns the value of the "internal_user_id" field in the mutation.
+func (m *ProviderContactChannelMutation) InternalUserID() (r uuid.UUID, exists bool) {
+	v := m.internal_user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInternalUserID returns the old "internal_user_id" field's value of the ProviderContactChannel entity.
+// If the ProviderContactChannel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderContactChannelMutation) OldInternalUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInternalUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInternalUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInternalUserID: %w", err)
+	}
+	return oldValue.InternalUserID, nil
+}
+
+// ResetInternalUserID resets all changes to the "internal_user_id" field.
+func (m *ProviderContactChannelMutation) ResetInternalUserID() {
+	m.internal_user_id = nil
+}
+
+// SetChannel sets the "channel" field.
+func (m *ProviderContactChannelMutation) SetChannel(pr providercontactchannel.Channel) {
+	m.channel = &pr
+}
+
+// Channel returns the value of the "channel" field in the mutation.
+func (m *ProviderContactChannelMutation) Channel() (r providercontactchannel.Channel, exists bool) {
+	v := m.channel
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChannel returns the old "channel" field's value of the ProviderContactChannel entity.
+// If the ProviderContactChannel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderContactChannelMutation) OldChannel(ctx context.Context) (v providercontactchannel.Channel, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChannel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChannel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChannel: %w", err)
+	}
+	return oldValue.Channel, nil
+}
+
+// ResetChannel resets all changes to the "channel" field.
+func (m *ProviderContactChannelMutation) ResetChannel() {
+	m.channel = nil
+}
+
+// SetCiphertext sets the "ciphertext" field.
+func (m *ProviderContactChannelMutation) SetCiphertext(b []byte) {
+	m.ciphertext = &b
+}
+
+// Ciphertext returns the value of the "ciphertext" field in the mutation.
+func (m *ProviderContactChannelMutation) Ciphertext() (r []byte, exists bool) {
+	v := m.ciphertext
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCiphertext returns the old "ciphertext" field's value of the ProviderContactChannel entity.
+// If the ProviderContactChannel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderContactChannelMutation) OldCiphertext(ctx context.Context) (v []byte, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCiphertext is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCiphertext requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCiphertext: %w", err)
+	}
+	return oldValue.Ciphertext, nil
+}
+
+// ResetCiphertext resets all changes to the "ciphertext" field.
+func (m *ProviderContactChannelMutation) ResetCiphertext() {
+	m.ciphertext = nil
+}
+
+// SetNonce sets the "nonce" field.
+func (m *ProviderContactChannelMutation) SetNonce(b []byte) {
+	m.nonce = &b
+}
+
+// Nonce returns the value of the "nonce" field in the mutation.
+func (m *ProviderContactChannelMutation) Nonce() (r []byte, exists bool) {
+	v := m.nonce
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNonce returns the old "nonce" field's value of the ProviderContactChannel entity.
+// If the ProviderContactChannel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderContactChannelMutation) OldNonce(ctx context.Context) (v []byte, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNonce is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNonce requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNonce: %w", err)
+	}
+	return oldValue.Nonce, nil
+}
+
+// ResetNonce resets all changes to the "nonce" field.
+func (m *ProviderContactChannelMutation) ResetNonce() {
+	m.nonce = nil
+}
+
+// SetKeyVersion sets the "key_version" field.
+func (m *ProviderContactChannelMutation) SetKeyVersion(s string) {
+	m.key_version = &s
+}
+
+// KeyVersion returns the value of the "key_version" field in the mutation.
+func (m *ProviderContactChannelMutation) KeyVersion() (r string, exists bool) {
+	v := m.key_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKeyVersion returns the old "key_version" field's value of the ProviderContactChannel entity.
+// If the ProviderContactChannel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderContactChannelMutation) OldKeyVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKeyVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKeyVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKeyVersion: %w", err)
+	}
+	return oldValue.KeyVersion, nil
+}
+
+// ResetKeyVersion resets all changes to the "key_version" field.
+func (m *ProviderContactChannelMutation) ResetKeyVersion() {
+	m.key_version = nil
+}
+
+// SetEnabled sets the "enabled" field.
+func (m *ProviderContactChannelMutation) SetEnabled(b bool) {
+	m.enabled = &b
+}
+
+// Enabled returns the value of the "enabled" field in the mutation.
+func (m *ProviderContactChannelMutation) Enabled() (r bool, exists bool) {
+	v := m.enabled
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnabled returns the old "enabled" field's value of the ProviderContactChannel entity.
+// If the ProviderContactChannel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderContactChannelMutation) OldEnabled(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnabled is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnabled requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnabled: %w", err)
+	}
+	return oldValue.Enabled, nil
+}
+
+// ResetEnabled resets all changes to the "enabled" field.
+func (m *ProviderContactChannelMutation) ResetEnabled() {
+	m.enabled = nil
+}
+
+// SetRevealConsent sets the "reveal_consent" field.
+func (m *ProviderContactChannelMutation) SetRevealConsent(b bool) {
+	m.reveal_consent = &b
+}
+
+// RevealConsent returns the value of the "reveal_consent" field in the mutation.
+func (m *ProviderContactChannelMutation) RevealConsent() (r bool, exists bool) {
+	v := m.reveal_consent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRevealConsent returns the old "reveal_consent" field's value of the ProviderContactChannel entity.
+// If the ProviderContactChannel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderContactChannelMutation) OldRevealConsent(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRevealConsent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRevealConsent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRevealConsent: %w", err)
+	}
+	return oldValue.RevealConsent, nil
+}
+
+// ResetRevealConsent resets all changes to the "reveal_consent" field.
+func (m *ProviderContactChannelMutation) ResetRevealConsent() {
+	m.reveal_consent = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ProviderContactChannelMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ProviderContactChannelMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ProviderContactChannel entity.
+// If the ProviderContactChannel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderContactChannelMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ProviderContactChannelMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ProviderContactChannelMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ProviderContactChannelMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ProviderContactChannel entity.
+// If the ProviderContactChannel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProviderContactChannelMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ProviderContactChannelMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the ProviderContactChannelMutation builder.
+func (m *ProviderContactChannelMutation) Where(ps ...predicate.ProviderContactChannel) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ProviderContactChannelMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ProviderContactChannelMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ProviderContactChannel, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ProviderContactChannelMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ProviderContactChannelMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ProviderContactChannel).
+func (m *ProviderContactChannelMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ProviderContactChannelMutation) Fields() []string {
+	fields := make([]string, 0, 9)
+	if m.internal_user_id != nil {
+		fields = append(fields, providercontactchannel.FieldInternalUserID)
+	}
+	if m.channel != nil {
+		fields = append(fields, providercontactchannel.FieldChannel)
+	}
+	if m.ciphertext != nil {
+		fields = append(fields, providercontactchannel.FieldCiphertext)
+	}
+	if m.nonce != nil {
+		fields = append(fields, providercontactchannel.FieldNonce)
+	}
+	if m.key_version != nil {
+		fields = append(fields, providercontactchannel.FieldKeyVersion)
+	}
+	if m.enabled != nil {
+		fields = append(fields, providercontactchannel.FieldEnabled)
+	}
+	if m.reveal_consent != nil {
+		fields = append(fields, providercontactchannel.FieldRevealConsent)
+	}
+	if m.created_at != nil {
+		fields = append(fields, providercontactchannel.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, providercontactchannel.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ProviderContactChannelMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case providercontactchannel.FieldInternalUserID:
+		return m.InternalUserID()
+	case providercontactchannel.FieldChannel:
+		return m.Channel()
+	case providercontactchannel.FieldCiphertext:
+		return m.Ciphertext()
+	case providercontactchannel.FieldNonce:
+		return m.Nonce()
+	case providercontactchannel.FieldKeyVersion:
+		return m.KeyVersion()
+	case providercontactchannel.FieldEnabled:
+		return m.Enabled()
+	case providercontactchannel.FieldRevealConsent:
+		return m.RevealConsent()
+	case providercontactchannel.FieldCreatedAt:
+		return m.CreatedAt()
+	case providercontactchannel.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ProviderContactChannelMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case providercontactchannel.FieldInternalUserID:
+		return m.OldInternalUserID(ctx)
+	case providercontactchannel.FieldChannel:
+		return m.OldChannel(ctx)
+	case providercontactchannel.FieldCiphertext:
+		return m.OldCiphertext(ctx)
+	case providercontactchannel.FieldNonce:
+		return m.OldNonce(ctx)
+	case providercontactchannel.FieldKeyVersion:
+		return m.OldKeyVersion(ctx)
+	case providercontactchannel.FieldEnabled:
+		return m.OldEnabled(ctx)
+	case providercontactchannel.FieldRevealConsent:
+		return m.OldRevealConsent(ctx)
+	case providercontactchannel.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case providercontactchannel.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ProviderContactChannel field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProviderContactChannelMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case providercontactchannel.FieldInternalUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInternalUserID(v)
+		return nil
+	case providercontactchannel.FieldChannel:
+		v, ok := value.(providercontactchannel.Channel)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChannel(v)
+		return nil
+	case providercontactchannel.FieldCiphertext:
+		v, ok := value.([]byte)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCiphertext(v)
+		return nil
+	case providercontactchannel.FieldNonce:
+		v, ok := value.([]byte)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNonce(v)
+		return nil
+	case providercontactchannel.FieldKeyVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKeyVersion(v)
+		return nil
+	case providercontactchannel.FieldEnabled:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnabled(v)
+		return nil
+	case providercontactchannel.FieldRevealConsent:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRevealConsent(v)
+		return nil
+	case providercontactchannel.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case providercontactchannel.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProviderContactChannel field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ProviderContactChannelMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ProviderContactChannelMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProviderContactChannelMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ProviderContactChannel numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ProviderContactChannelMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ProviderContactChannelMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ProviderContactChannelMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ProviderContactChannel nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ProviderContactChannelMutation) ResetField(name string) error {
+	switch name {
+	case providercontactchannel.FieldInternalUserID:
+		m.ResetInternalUserID()
+		return nil
+	case providercontactchannel.FieldChannel:
+		m.ResetChannel()
+		return nil
+	case providercontactchannel.FieldCiphertext:
+		m.ResetCiphertext()
+		return nil
+	case providercontactchannel.FieldNonce:
+		m.ResetNonce()
+		return nil
+	case providercontactchannel.FieldKeyVersion:
+		m.ResetKeyVersion()
+		return nil
+	case providercontactchannel.FieldEnabled:
+		m.ResetEnabled()
+		return nil
+	case providercontactchannel.FieldRevealConsent:
+		m.ResetRevealConsent()
+		return nil
+	case providercontactchannel.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case providercontactchannel.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ProviderContactChannel field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ProviderContactChannelMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ProviderContactChannelMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ProviderContactChannelMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ProviderContactChannelMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ProviderContactChannelMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ProviderContactChannelMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ProviderContactChannelMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ProviderContactChannel unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ProviderContactChannelMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ProviderContactChannel edge %s", name)
 }
 
 // ProviderProfileMutation represents an operation that mutates the ProviderProfile nodes in the graph.

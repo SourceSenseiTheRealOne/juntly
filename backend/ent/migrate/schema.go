@@ -48,6 +48,51 @@ var (
 			},
 		},
 	}
+	// ContactRevealDailyLimitsColumns holds the columns for the "contact_reveal_daily_limits" table.
+	ContactRevealDailyLimitsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "customer_internal_user_id", Type: field.TypeUUID},
+		{Name: "utc_day", Type: field.TypeTime},
+		{Name: "successful_count", Type: field.TypeInt, Default: 0},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ContactRevealDailyLimitsTable holds the schema information for the "contact_reveal_daily_limits" table.
+	ContactRevealDailyLimitsTable = &schema.Table{
+		Name:       "contact_reveal_daily_limits",
+		Columns:    ContactRevealDailyLimitsColumns,
+		PrimaryKey: []*schema.Column{ContactRevealDailyLimitsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "contactrevealdailylimit_customer_internal_user_id_utc_day",
+				Unique:  true,
+				Columns: []*schema.Column{ContactRevealDailyLimitsColumns[1], ContactRevealDailyLimitsColumns[2]},
+			},
+		},
+	}
+	// ContactRevealEventsColumns holds the columns for the "contact_reveal_events" table.
+	ContactRevealEventsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "customer_internal_user_id", Type: field.TypeUUID},
+		{Name: "provider_internal_user_id", Type: field.TypeUUID},
+		{Name: "listing_id", Type: field.TypeUUID},
+		{Name: "channel", Type: field.TypeEnum, Enums: []string{"phone", "whatsapp"}},
+		{Name: "utc_day", Type: field.TypeTime},
+		{Name: "revealed_at", Type: field.TypeTime},
+	}
+	// ContactRevealEventsTable holds the schema information for the "contact_reveal_events" table.
+	ContactRevealEventsTable = &schema.Table{
+		Name:       "contact_reveal_events",
+		Columns:    ContactRevealEventsColumns,
+		PrimaryKey: []*schema.Column{ContactRevealEventsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "contactrevealevent_customer_internal_user_id_listing_id_channel_utc_day",
+				Unique:  true,
+				Columns: []*schema.Column{ContactRevealEventsColumns[1], ContactRevealEventsColumns[3], ContactRevealEventsColumns[4], ContactRevealEventsColumns[5]},
+			},
+		},
+	}
 	// InternalUsersColumns holds the columns for the "internal_users" table.
 	InternalUsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -170,6 +215,32 @@ var (
 				Name:    "platformrole_internal_user_id_role",
 				Unique:  true,
 				Columns: []*schema.Column{PlatformRolesColumns[1], PlatformRolesColumns[2]},
+			},
+		},
+	}
+	// ProviderContactChannelsColumns holds the columns for the "provider_contact_channels" table.
+	ProviderContactChannelsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "internal_user_id", Type: field.TypeUUID},
+		{Name: "channel", Type: field.TypeEnum, Enums: []string{"phone", "whatsapp"}},
+		{Name: "ciphertext", Type: field.TypeBytes},
+		{Name: "nonce", Type: field.TypeBytes},
+		{Name: "key_version", Type: field.TypeString, Size: 32},
+		{Name: "enabled", Type: field.TypeBool, Default: false},
+		{Name: "reveal_consent", Type: field.TypeBool, Default: false},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ProviderContactChannelsTable holds the schema information for the "provider_contact_channels" table.
+	ProviderContactChannelsTable = &schema.Table{
+		Name:       "provider_contact_channels",
+		Columns:    ProviderContactChannelsColumns,
+		PrimaryKey: []*schema.Column{ProviderContactChannelsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "providercontactchannel_internal_user_id_channel",
+				Unique:  true,
+				Columns: []*schema.Column{ProviderContactChannelsColumns[1], ProviderContactChannelsColumns[2]},
 			},
 		},
 	}
@@ -368,12 +439,15 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AdministrativeAreasTable,
+		ContactRevealDailyLimitsTable,
+		ContactRevealEventsTable,
 		InternalUsersTable,
 		ListingsTable,
 		ListingEventsTable,
 		ListingMediaTable,
 		LocalitiesTable,
 		PlatformRolesTable,
+		ProviderContactChannelsTable,
 		ProviderProfilesTable,
 		ProviderServiceLocalitiesTable,
 		ProviderSpokenLanguagesTable,
@@ -390,6 +464,12 @@ func init() {
 	AdministrativeAreasTable.ForeignKeys[0].RefTable = AdministrativeAreasTable
 	AdministrativeAreasTable.Annotation = &entsql.Annotation{
 		Table: "administrative_areas",
+	}
+	ContactRevealDailyLimitsTable.Annotation = &entsql.Annotation{
+		Table: "contact_reveal_daily_limits",
+	}
+	ContactRevealEventsTable.Annotation = &entsql.Annotation{
+		Table: "contact_reveal_events",
 	}
 	InternalUsersTable.Annotation = &entsql.Annotation{
 		Table: "internal_users",
@@ -409,6 +489,9 @@ func init() {
 	}
 	PlatformRolesTable.Annotation = &entsql.Annotation{
 		Table: "platform_roles",
+	}
+	ProviderContactChannelsTable.Annotation = &entsql.Annotation{
+		Table: "provider_contact_channels",
 	}
 	ProviderProfilesTable.Annotation = &entsql.Annotation{
 		Table: "provider_profiles",

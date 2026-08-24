@@ -17,12 +17,15 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/administrativearea"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/contactrevealdailylimit"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/contactrevealevent"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/internaluser"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listing"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listingevent"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listingmedia"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/locality"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/platformrole"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providercontactchannel"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerprofile"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerservicelocality"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerspokenlanguage"
@@ -41,6 +44,10 @@ type Client struct {
 	Schema *migrate.Schema
 	// AdministrativeArea is the client for interacting with the AdministrativeArea builders.
 	AdministrativeArea *AdministrativeAreaClient
+	// ContactRevealDailyLimit is the client for interacting with the ContactRevealDailyLimit builders.
+	ContactRevealDailyLimit *ContactRevealDailyLimitClient
+	// ContactRevealEvent is the client for interacting with the ContactRevealEvent builders.
+	ContactRevealEvent *ContactRevealEventClient
 	// InternalUser is the client for interacting with the InternalUser builders.
 	InternalUser *InternalUserClient
 	// Listing is the client for interacting with the Listing builders.
@@ -53,6 +60,8 @@ type Client struct {
 	Locality *LocalityClient
 	// PlatformRole is the client for interacting with the PlatformRole builders.
 	PlatformRole *PlatformRoleClient
+	// ProviderContactChannel is the client for interacting with the ProviderContactChannel builders.
+	ProviderContactChannel *ProviderContactChannelClient
 	// ProviderProfile is the client for interacting with the ProviderProfile builders.
 	ProviderProfile *ProviderProfileClient
 	// ProviderServiceLocality is the client for interacting with the ProviderServiceLocality builders.
@@ -83,12 +92,15 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.AdministrativeArea = NewAdministrativeAreaClient(c.config)
+	c.ContactRevealDailyLimit = NewContactRevealDailyLimitClient(c.config)
+	c.ContactRevealEvent = NewContactRevealEventClient(c.config)
 	c.InternalUser = NewInternalUserClient(c.config)
 	c.Listing = NewListingClient(c.config)
 	c.ListingEvent = NewListingEventClient(c.config)
 	c.ListingMedia = NewListingMediaClient(c.config)
 	c.Locality = NewLocalityClient(c.config)
 	c.PlatformRole = NewPlatformRoleClient(c.config)
+	c.ProviderContactChannel = NewProviderContactChannelClient(c.config)
 	c.ProviderProfile = NewProviderProfileClient(c.config)
 	c.ProviderServiceLocality = NewProviderServiceLocalityClient(c.config)
 	c.ProviderSpokenLanguage = NewProviderSpokenLanguageClient(c.config)
@@ -191,12 +203,15 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                        ctx,
 		config:                     cfg,
 		AdministrativeArea:         NewAdministrativeAreaClient(cfg),
+		ContactRevealDailyLimit:    NewContactRevealDailyLimitClient(cfg),
+		ContactRevealEvent:         NewContactRevealEventClient(cfg),
 		InternalUser:               NewInternalUserClient(cfg),
 		Listing:                    NewListingClient(cfg),
 		ListingEvent:               NewListingEventClient(cfg),
 		ListingMedia:               NewListingMediaClient(cfg),
 		Locality:                   NewLocalityClient(cfg),
 		PlatformRole:               NewPlatformRoleClient(cfg),
+		ProviderContactChannel:     NewProviderContactChannelClient(cfg),
 		ProviderProfile:            NewProviderProfileClient(cfg),
 		ProviderServiceLocality:    NewProviderServiceLocalityClient(cfg),
 		ProviderSpokenLanguage:     NewProviderSpokenLanguageClient(cfg),
@@ -226,12 +241,15 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:                        ctx,
 		config:                     cfg,
 		AdministrativeArea:         NewAdministrativeAreaClient(cfg),
+		ContactRevealDailyLimit:    NewContactRevealDailyLimitClient(cfg),
+		ContactRevealEvent:         NewContactRevealEventClient(cfg),
 		InternalUser:               NewInternalUserClient(cfg),
 		Listing:                    NewListingClient(cfg),
 		ListingEvent:               NewListingEventClient(cfg),
 		ListingMedia:               NewListingMediaClient(cfg),
 		Locality:                   NewLocalityClient(cfg),
 		PlatformRole:               NewPlatformRoleClient(cfg),
+		ProviderContactChannel:     NewProviderContactChannelClient(cfg),
 		ProviderProfile:            NewProviderProfileClient(cfg),
 		ProviderServiceLocality:    NewProviderServiceLocalityClient(cfg),
 		ProviderSpokenLanguage:     NewProviderSpokenLanguageClient(cfg),
@@ -270,11 +288,12 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.AdministrativeArea, c.InternalUser, c.Listing, c.ListingEvent, c.ListingMedia,
-		c.Locality, c.PlatformRole, c.ProviderProfile, c.ProviderServiceLocality,
-		c.ProviderSpokenLanguage, c.ServiceCategory, c.ServiceCategoryTranslation,
-		c.SpokenLanguage, c.SpokenLanguageTranslation, c.SupportedLocale,
-		c.UserAccount,
+		c.AdministrativeArea, c.ContactRevealDailyLimit, c.ContactRevealEvent,
+		c.InternalUser, c.Listing, c.ListingEvent, c.ListingMedia, c.Locality,
+		c.PlatformRole, c.ProviderContactChannel, c.ProviderProfile,
+		c.ProviderServiceLocality, c.ProviderSpokenLanguage, c.ServiceCategory,
+		c.ServiceCategoryTranslation, c.SpokenLanguage, c.SpokenLanguageTranslation,
+		c.SupportedLocale, c.UserAccount,
 	} {
 		n.Use(hooks...)
 	}
@@ -284,11 +303,12 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.AdministrativeArea, c.InternalUser, c.Listing, c.ListingEvent, c.ListingMedia,
-		c.Locality, c.PlatformRole, c.ProviderProfile, c.ProviderServiceLocality,
-		c.ProviderSpokenLanguage, c.ServiceCategory, c.ServiceCategoryTranslation,
-		c.SpokenLanguage, c.SpokenLanguageTranslation, c.SupportedLocale,
-		c.UserAccount,
+		c.AdministrativeArea, c.ContactRevealDailyLimit, c.ContactRevealEvent,
+		c.InternalUser, c.Listing, c.ListingEvent, c.ListingMedia, c.Locality,
+		c.PlatformRole, c.ProviderContactChannel, c.ProviderProfile,
+		c.ProviderServiceLocality, c.ProviderSpokenLanguage, c.ServiceCategory,
+		c.ServiceCategoryTranslation, c.SpokenLanguage, c.SpokenLanguageTranslation,
+		c.SupportedLocale, c.UserAccount,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -299,6 +319,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AdministrativeAreaMutation:
 		return c.AdministrativeArea.mutate(ctx, m)
+	case *ContactRevealDailyLimitMutation:
+		return c.ContactRevealDailyLimit.mutate(ctx, m)
+	case *ContactRevealEventMutation:
+		return c.ContactRevealEvent.mutate(ctx, m)
 	case *InternalUserMutation:
 		return c.InternalUser.mutate(ctx, m)
 	case *ListingMutation:
@@ -311,6 +335,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Locality.mutate(ctx, m)
 	case *PlatformRoleMutation:
 		return c.PlatformRole.mutate(ctx, m)
+	case *ProviderContactChannelMutation:
+		return c.ProviderContactChannel.mutate(ctx, m)
 	case *ProviderProfileMutation:
 		return c.ProviderProfile.mutate(ctx, m)
 	case *ProviderServiceLocalityMutation:
@@ -512,6 +538,272 @@ func (c *AdministrativeAreaClient) mutate(ctx context.Context, m *Administrative
 		return (&AdministrativeAreaDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown AdministrativeArea mutation op: %q", m.Op())
+	}
+}
+
+// ContactRevealDailyLimitClient is a client for the ContactRevealDailyLimit schema.
+type ContactRevealDailyLimitClient struct {
+	config
+}
+
+// NewContactRevealDailyLimitClient returns a client for the ContactRevealDailyLimit from the given config.
+func NewContactRevealDailyLimitClient(c config) *ContactRevealDailyLimitClient {
+	return &ContactRevealDailyLimitClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `contactrevealdailylimit.Hooks(f(g(h())))`.
+func (c *ContactRevealDailyLimitClient) Use(hooks ...Hook) {
+	c.hooks.ContactRevealDailyLimit = append(c.hooks.ContactRevealDailyLimit, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `contactrevealdailylimit.Intercept(f(g(h())))`.
+func (c *ContactRevealDailyLimitClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ContactRevealDailyLimit = append(c.inters.ContactRevealDailyLimit, interceptors...)
+}
+
+// Create returns a builder for creating a ContactRevealDailyLimit entity.
+func (c *ContactRevealDailyLimitClient) Create() *ContactRevealDailyLimitCreate {
+	mutation := newContactRevealDailyLimitMutation(c.config, OpCreate)
+	return &ContactRevealDailyLimitCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ContactRevealDailyLimit entities.
+func (c *ContactRevealDailyLimitClient) CreateBulk(builders ...*ContactRevealDailyLimitCreate) *ContactRevealDailyLimitCreateBulk {
+	return &ContactRevealDailyLimitCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ContactRevealDailyLimitClient) MapCreateBulk(slice any, setFunc func(*ContactRevealDailyLimitCreate, int)) *ContactRevealDailyLimitCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ContactRevealDailyLimitCreateBulk{err: fmt.Errorf("calling to ContactRevealDailyLimitClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ContactRevealDailyLimitCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ContactRevealDailyLimitCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ContactRevealDailyLimit.
+func (c *ContactRevealDailyLimitClient) Update() *ContactRevealDailyLimitUpdate {
+	mutation := newContactRevealDailyLimitMutation(c.config, OpUpdate)
+	return &ContactRevealDailyLimitUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ContactRevealDailyLimitClient) UpdateOne(_m *ContactRevealDailyLimit) *ContactRevealDailyLimitUpdateOne {
+	mutation := newContactRevealDailyLimitMutation(c.config, OpUpdateOne, withContactRevealDailyLimit(_m))
+	return &ContactRevealDailyLimitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ContactRevealDailyLimitClient) UpdateOneID(id uuid.UUID) *ContactRevealDailyLimitUpdateOne {
+	mutation := newContactRevealDailyLimitMutation(c.config, OpUpdateOne, withContactRevealDailyLimitID(id))
+	return &ContactRevealDailyLimitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ContactRevealDailyLimit.
+func (c *ContactRevealDailyLimitClient) Delete() *ContactRevealDailyLimitDelete {
+	mutation := newContactRevealDailyLimitMutation(c.config, OpDelete)
+	return &ContactRevealDailyLimitDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ContactRevealDailyLimitClient) DeleteOne(_m *ContactRevealDailyLimit) *ContactRevealDailyLimitDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ContactRevealDailyLimitClient) DeleteOneID(id uuid.UUID) *ContactRevealDailyLimitDeleteOne {
+	builder := c.Delete().Where(contactrevealdailylimit.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ContactRevealDailyLimitDeleteOne{builder}
+}
+
+// Query returns a query builder for ContactRevealDailyLimit.
+func (c *ContactRevealDailyLimitClient) Query() *ContactRevealDailyLimitQuery {
+	return &ContactRevealDailyLimitQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeContactRevealDailyLimit},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ContactRevealDailyLimit entity by its id.
+func (c *ContactRevealDailyLimitClient) Get(ctx context.Context, id uuid.UUID) (*ContactRevealDailyLimit, error) {
+	return c.Query().Where(contactrevealdailylimit.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ContactRevealDailyLimitClient) GetX(ctx context.Context, id uuid.UUID) *ContactRevealDailyLimit {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ContactRevealDailyLimitClient) Hooks() []Hook {
+	return c.hooks.ContactRevealDailyLimit
+}
+
+// Interceptors returns the client interceptors.
+func (c *ContactRevealDailyLimitClient) Interceptors() []Interceptor {
+	return c.inters.ContactRevealDailyLimit
+}
+
+func (c *ContactRevealDailyLimitClient) mutate(ctx context.Context, m *ContactRevealDailyLimitMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ContactRevealDailyLimitCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ContactRevealDailyLimitUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ContactRevealDailyLimitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ContactRevealDailyLimitDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ContactRevealDailyLimit mutation op: %q", m.Op())
+	}
+}
+
+// ContactRevealEventClient is a client for the ContactRevealEvent schema.
+type ContactRevealEventClient struct {
+	config
+}
+
+// NewContactRevealEventClient returns a client for the ContactRevealEvent from the given config.
+func NewContactRevealEventClient(c config) *ContactRevealEventClient {
+	return &ContactRevealEventClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `contactrevealevent.Hooks(f(g(h())))`.
+func (c *ContactRevealEventClient) Use(hooks ...Hook) {
+	c.hooks.ContactRevealEvent = append(c.hooks.ContactRevealEvent, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `contactrevealevent.Intercept(f(g(h())))`.
+func (c *ContactRevealEventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ContactRevealEvent = append(c.inters.ContactRevealEvent, interceptors...)
+}
+
+// Create returns a builder for creating a ContactRevealEvent entity.
+func (c *ContactRevealEventClient) Create() *ContactRevealEventCreate {
+	mutation := newContactRevealEventMutation(c.config, OpCreate)
+	return &ContactRevealEventCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ContactRevealEvent entities.
+func (c *ContactRevealEventClient) CreateBulk(builders ...*ContactRevealEventCreate) *ContactRevealEventCreateBulk {
+	return &ContactRevealEventCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ContactRevealEventClient) MapCreateBulk(slice any, setFunc func(*ContactRevealEventCreate, int)) *ContactRevealEventCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ContactRevealEventCreateBulk{err: fmt.Errorf("calling to ContactRevealEventClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ContactRevealEventCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ContactRevealEventCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ContactRevealEvent.
+func (c *ContactRevealEventClient) Update() *ContactRevealEventUpdate {
+	mutation := newContactRevealEventMutation(c.config, OpUpdate)
+	return &ContactRevealEventUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ContactRevealEventClient) UpdateOne(_m *ContactRevealEvent) *ContactRevealEventUpdateOne {
+	mutation := newContactRevealEventMutation(c.config, OpUpdateOne, withContactRevealEvent(_m))
+	return &ContactRevealEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ContactRevealEventClient) UpdateOneID(id uuid.UUID) *ContactRevealEventUpdateOne {
+	mutation := newContactRevealEventMutation(c.config, OpUpdateOne, withContactRevealEventID(id))
+	return &ContactRevealEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ContactRevealEvent.
+func (c *ContactRevealEventClient) Delete() *ContactRevealEventDelete {
+	mutation := newContactRevealEventMutation(c.config, OpDelete)
+	return &ContactRevealEventDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ContactRevealEventClient) DeleteOne(_m *ContactRevealEvent) *ContactRevealEventDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ContactRevealEventClient) DeleteOneID(id uuid.UUID) *ContactRevealEventDeleteOne {
+	builder := c.Delete().Where(contactrevealevent.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ContactRevealEventDeleteOne{builder}
+}
+
+// Query returns a query builder for ContactRevealEvent.
+func (c *ContactRevealEventClient) Query() *ContactRevealEventQuery {
+	return &ContactRevealEventQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeContactRevealEvent},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ContactRevealEvent entity by its id.
+func (c *ContactRevealEventClient) Get(ctx context.Context, id uuid.UUID) (*ContactRevealEvent, error) {
+	return c.Query().Where(contactrevealevent.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ContactRevealEventClient) GetX(ctx context.Context, id uuid.UUID) *ContactRevealEvent {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ContactRevealEventClient) Hooks() []Hook {
+	return c.hooks.ContactRevealEvent
+}
+
+// Interceptors returns the client interceptors.
+func (c *ContactRevealEventClient) Interceptors() []Interceptor {
+	return c.inters.ContactRevealEvent
+}
+
+func (c *ContactRevealEventClient) mutate(ctx context.Context, m *ContactRevealEventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ContactRevealEventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ContactRevealEventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ContactRevealEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ContactRevealEventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ContactRevealEvent mutation op: %q", m.Op())
 	}
 }
 
@@ -1342,6 +1634,139 @@ func (c *PlatformRoleClient) mutate(ctx context.Context, m *PlatformRoleMutation
 		return (&PlatformRoleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown PlatformRole mutation op: %q", m.Op())
+	}
+}
+
+// ProviderContactChannelClient is a client for the ProviderContactChannel schema.
+type ProviderContactChannelClient struct {
+	config
+}
+
+// NewProviderContactChannelClient returns a client for the ProviderContactChannel from the given config.
+func NewProviderContactChannelClient(c config) *ProviderContactChannelClient {
+	return &ProviderContactChannelClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `providercontactchannel.Hooks(f(g(h())))`.
+func (c *ProviderContactChannelClient) Use(hooks ...Hook) {
+	c.hooks.ProviderContactChannel = append(c.hooks.ProviderContactChannel, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `providercontactchannel.Intercept(f(g(h())))`.
+func (c *ProviderContactChannelClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ProviderContactChannel = append(c.inters.ProviderContactChannel, interceptors...)
+}
+
+// Create returns a builder for creating a ProviderContactChannel entity.
+func (c *ProviderContactChannelClient) Create() *ProviderContactChannelCreate {
+	mutation := newProviderContactChannelMutation(c.config, OpCreate)
+	return &ProviderContactChannelCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProviderContactChannel entities.
+func (c *ProviderContactChannelClient) CreateBulk(builders ...*ProviderContactChannelCreate) *ProviderContactChannelCreateBulk {
+	return &ProviderContactChannelCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ProviderContactChannelClient) MapCreateBulk(slice any, setFunc func(*ProviderContactChannelCreate, int)) *ProviderContactChannelCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ProviderContactChannelCreateBulk{err: fmt.Errorf("calling to ProviderContactChannelClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ProviderContactChannelCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ProviderContactChannelCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProviderContactChannel.
+func (c *ProviderContactChannelClient) Update() *ProviderContactChannelUpdate {
+	mutation := newProviderContactChannelMutation(c.config, OpUpdate)
+	return &ProviderContactChannelUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProviderContactChannelClient) UpdateOne(_m *ProviderContactChannel) *ProviderContactChannelUpdateOne {
+	mutation := newProviderContactChannelMutation(c.config, OpUpdateOne, withProviderContactChannel(_m))
+	return &ProviderContactChannelUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProviderContactChannelClient) UpdateOneID(id uuid.UUID) *ProviderContactChannelUpdateOne {
+	mutation := newProviderContactChannelMutation(c.config, OpUpdateOne, withProviderContactChannelID(id))
+	return &ProviderContactChannelUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProviderContactChannel.
+func (c *ProviderContactChannelClient) Delete() *ProviderContactChannelDelete {
+	mutation := newProviderContactChannelMutation(c.config, OpDelete)
+	return &ProviderContactChannelDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ProviderContactChannelClient) DeleteOne(_m *ProviderContactChannel) *ProviderContactChannelDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ProviderContactChannelClient) DeleteOneID(id uuid.UUID) *ProviderContactChannelDeleteOne {
+	builder := c.Delete().Where(providercontactchannel.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProviderContactChannelDeleteOne{builder}
+}
+
+// Query returns a query builder for ProviderContactChannel.
+func (c *ProviderContactChannelClient) Query() *ProviderContactChannelQuery {
+	return &ProviderContactChannelQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeProviderContactChannel},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ProviderContactChannel entity by its id.
+func (c *ProviderContactChannelClient) Get(ctx context.Context, id uuid.UUID) (*ProviderContactChannel, error) {
+	return c.Query().Where(providercontactchannel.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProviderContactChannelClient) GetX(ctx context.Context, id uuid.UUID) *ProviderContactChannel {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ProviderContactChannelClient) Hooks() []Hook {
+	return c.hooks.ProviderContactChannel
+}
+
+// Interceptors returns the client interceptors.
+func (c *ProviderContactChannelClient) Interceptors() []Interceptor {
+	return c.inters.ProviderContactChannel
+}
+
+func (c *ProviderContactChannelClient) mutate(ctx context.Context, m *ProviderContactChannelMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ProviderContactChannelCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ProviderContactChannelUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ProviderContactChannelUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ProviderContactChannelDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ProviderContactChannel mutation op: %q", m.Op())
 	}
 }
 
@@ -2685,15 +3110,19 @@ func (c *UserAccountClient) mutate(ctx context.Context, m *UserAccountMutation) 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AdministrativeArea, InternalUser, Listing, ListingEvent, ListingMedia, Locality,
-		PlatformRole, ProviderProfile, ProviderServiceLocality, ProviderSpokenLanguage,
-		ServiceCategory, ServiceCategoryTranslation, SpokenLanguage,
-		SpokenLanguageTranslation, SupportedLocale, UserAccount []ent.Hook
+		AdministrativeArea, ContactRevealDailyLimit, ContactRevealEvent, InternalUser,
+		Listing, ListingEvent, ListingMedia, Locality, PlatformRole,
+		ProviderContactChannel, ProviderProfile, ProviderServiceLocality,
+		ProviderSpokenLanguage, ServiceCategory, ServiceCategoryTranslation,
+		SpokenLanguage, SpokenLanguageTranslation, SupportedLocale,
+		UserAccount []ent.Hook
 	}
 	inters struct {
-		AdministrativeArea, InternalUser, Listing, ListingEvent, ListingMedia, Locality,
-		PlatformRole, ProviderProfile, ProviderServiceLocality, ProviderSpokenLanguage,
-		ServiceCategory, ServiceCategoryTranslation, SpokenLanguage,
-		SpokenLanguageTranslation, SupportedLocale, UserAccount []ent.Interceptor
+		AdministrativeArea, ContactRevealDailyLimit, ContactRevealEvent, InternalUser,
+		Listing, ListingEvent, ListingMedia, Locality, PlatformRole,
+		ProviderContactChannel, ProviderProfile, ProviderServiceLocality,
+		ProviderSpokenLanguage, ServiceCategory, ServiceCategoryTranslation,
+		SpokenLanguage, SpokenLanguageTranslation, SupportedLocale,
+		UserAccount []ent.Interceptor
 	}
 )

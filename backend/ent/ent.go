@@ -13,12 +13,15 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/administrativearea"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/contactrevealdailylimit"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/contactrevealevent"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/internaluser"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listing"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listingevent"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listingmedia"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/locality"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/platformrole"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providercontactchannel"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerprofile"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerservicelocality"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerspokenlanguage"
@@ -89,12 +92,15 @@ func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			administrativearea.Table:         administrativearea.ValidColumn,
+			contactrevealdailylimit.Table:    contactrevealdailylimit.ValidColumn,
+			contactrevealevent.Table:         contactrevealevent.ValidColumn,
 			internaluser.Table:               internaluser.ValidColumn,
 			listing.Table:                    listing.ValidColumn,
 			listingevent.Table:               listingevent.ValidColumn,
 			listingmedia.Table:               listingmedia.ValidColumn,
 			locality.Table:                   locality.ValidColumn,
 			platformrole.Table:               platformrole.ValidColumn,
+			providercontactchannel.Table:     providercontactchannel.ValidColumn,
 			providerprofile.Table:            providerprofile.ValidColumn,
 			providerservicelocality.Table:    providerservicelocality.ValidColumn,
 			providerspokenlanguage.Table:     providerspokenlanguage.ValidColumn,

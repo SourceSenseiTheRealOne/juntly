@@ -21,6 +21,30 @@ func (f AdministrativeAreaFunc) Mutate(ctx context.Context, m ent.Mutation) (ent
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AdministrativeAreaMutation", m)
 }
 
+// The ContactRevealDailyLimitFunc type is an adapter to allow the use of ordinary
+// function as ContactRevealDailyLimit mutator.
+type ContactRevealDailyLimitFunc func(context.Context, *ent.ContactRevealDailyLimitMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ContactRevealDailyLimitFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ContactRevealDailyLimitMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ContactRevealDailyLimitMutation", m)
+}
+
+// The ContactRevealEventFunc type is an adapter to allow the use of ordinary
+// function as ContactRevealEvent mutator.
+type ContactRevealEventFunc func(context.Context, *ent.ContactRevealEventMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ContactRevealEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ContactRevealEventMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ContactRevealEventMutation", m)
+}
+
 // The InternalUserFunc type is an adapter to allow the use of ordinary
 // function as InternalUser mutator.
 type InternalUserFunc func(context.Context, *ent.InternalUserMutation) (ent.Value, error)
@@ -91,6 +115,18 @@ func (f PlatformRoleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlatformRoleMutation", m)
+}
+
+// The ProviderContactChannelFunc type is an adapter to allow the use of ordinary
+// function as ProviderContactChannel mutator.
+type ProviderContactChannelFunc func(context.Context, *ent.ProviderContactChannelMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProviderContactChannelFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ProviderContactChannelMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProviderContactChannelMutation", m)
 }
 
 // The ProviderProfileFunc type is an adapter to allow the use of ordinary

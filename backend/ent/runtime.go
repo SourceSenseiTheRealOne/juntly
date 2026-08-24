@@ -6,12 +6,15 @@ import (
 	"time"
 
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/administrativearea"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/contactrevealdailylimit"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/contactrevealevent"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/internaluser"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listing"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listingevent"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/listingmedia"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/locality"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/platformrole"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providercontactchannel"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerprofile"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/providerspokenlanguage"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/ent/schema"
@@ -138,6 +141,38 @@ func init() {
 	administrativeareaDescID := administrativeareaFields[0].Descriptor()
 	// administrativearea.DefaultID holds the default value on creation for the id field.
 	administrativearea.DefaultID = administrativeareaDescID.Default.(func() uuid.UUID)
+	contactrevealdailylimitFields := schema.ContactRevealDailyLimit{}.Fields()
+	_ = contactrevealdailylimitFields
+	// contactrevealdailylimitDescSuccessfulCount is the schema descriptor for successful_count field.
+	contactrevealdailylimitDescSuccessfulCount := contactrevealdailylimitFields[3].Descriptor()
+	// contactrevealdailylimit.DefaultSuccessfulCount holds the default value on creation for the successful_count field.
+	contactrevealdailylimit.DefaultSuccessfulCount = contactrevealdailylimitDescSuccessfulCount.Default.(int)
+	// contactrevealdailylimit.SuccessfulCountValidator is a validator for the "successful_count" field. It is called by the builders before save.
+	contactrevealdailylimit.SuccessfulCountValidator = contactrevealdailylimitDescSuccessfulCount.Validators[0].(func(int) error)
+	// contactrevealdailylimitDescCreatedAt is the schema descriptor for created_at field.
+	contactrevealdailylimitDescCreatedAt := contactrevealdailylimitFields[4].Descriptor()
+	// contactrevealdailylimit.DefaultCreatedAt holds the default value on creation for the created_at field.
+	contactrevealdailylimit.DefaultCreatedAt = contactrevealdailylimitDescCreatedAt.Default.(func() time.Time)
+	// contactrevealdailylimitDescUpdatedAt is the schema descriptor for updated_at field.
+	contactrevealdailylimitDescUpdatedAt := contactrevealdailylimitFields[5].Descriptor()
+	// contactrevealdailylimit.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	contactrevealdailylimit.DefaultUpdatedAt = contactrevealdailylimitDescUpdatedAt.Default.(func() time.Time)
+	// contactrevealdailylimit.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	contactrevealdailylimit.UpdateDefaultUpdatedAt = contactrevealdailylimitDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// contactrevealdailylimitDescID is the schema descriptor for id field.
+	contactrevealdailylimitDescID := contactrevealdailylimitFields[0].Descriptor()
+	// contactrevealdailylimit.DefaultID holds the default value on creation for the id field.
+	contactrevealdailylimit.DefaultID = contactrevealdailylimitDescID.Default.(func() uuid.UUID)
+	contactrevealeventFields := schema.ContactRevealEvent{}.Fields()
+	_ = contactrevealeventFields
+	// contactrevealeventDescRevealedAt is the schema descriptor for revealed_at field.
+	contactrevealeventDescRevealedAt := contactrevealeventFields[6].Descriptor()
+	// contactrevealevent.DefaultRevealedAt holds the default value on creation for the revealed_at field.
+	contactrevealevent.DefaultRevealedAt = contactrevealeventDescRevealedAt.Default.(func() time.Time)
+	// contactrevealeventDescID is the schema descriptor for id field.
+	contactrevealeventDescID := contactrevealeventFields[0].Descriptor()
+	// contactrevealevent.DefaultID holds the default value on creation for the id field.
+	contactrevealevent.DefaultID = contactrevealeventDescID.Default.(func() uuid.UUID)
 	internaluserFields := schema.InternalUser{}.Fields()
 	_ = internaluserFields
 	// internaluserDescClerkSubject is the schema descriptor for clerk_subject field.
@@ -544,6 +579,48 @@ func init() {
 	platformroleDescID := platformroleFields[0].Descriptor()
 	// platformrole.DefaultID holds the default value on creation for the id field.
 	platformrole.DefaultID = platformroleDescID.Default.(func() uuid.UUID)
+	providercontactchannelFields := schema.ProviderContactChannel{}.Fields()
+	_ = providercontactchannelFields
+	// providercontactchannelDescKeyVersion is the schema descriptor for key_version field.
+	providercontactchannelDescKeyVersion := providercontactchannelFields[5].Descriptor()
+	// providercontactchannel.KeyVersionValidator is a validator for the "key_version" field. It is called by the builders before save.
+	providercontactchannel.KeyVersionValidator = func() func(string) error {
+		validators := providercontactchannelDescKeyVersion.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(key_version string) error {
+			for _, fn := range fns {
+				if err := fn(key_version); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// providercontactchannelDescEnabled is the schema descriptor for enabled field.
+	providercontactchannelDescEnabled := providercontactchannelFields[6].Descriptor()
+	// providercontactchannel.DefaultEnabled holds the default value on creation for the enabled field.
+	providercontactchannel.DefaultEnabled = providercontactchannelDescEnabled.Default.(bool)
+	// providercontactchannelDescRevealConsent is the schema descriptor for reveal_consent field.
+	providercontactchannelDescRevealConsent := providercontactchannelFields[7].Descriptor()
+	// providercontactchannel.DefaultRevealConsent holds the default value on creation for the reveal_consent field.
+	providercontactchannel.DefaultRevealConsent = providercontactchannelDescRevealConsent.Default.(bool)
+	// providercontactchannelDescCreatedAt is the schema descriptor for created_at field.
+	providercontactchannelDescCreatedAt := providercontactchannelFields[8].Descriptor()
+	// providercontactchannel.DefaultCreatedAt holds the default value on creation for the created_at field.
+	providercontactchannel.DefaultCreatedAt = providercontactchannelDescCreatedAt.Default.(func() time.Time)
+	// providercontactchannelDescUpdatedAt is the schema descriptor for updated_at field.
+	providercontactchannelDescUpdatedAt := providercontactchannelFields[9].Descriptor()
+	// providercontactchannel.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	providercontactchannel.DefaultUpdatedAt = providercontactchannelDescUpdatedAt.Default.(func() time.Time)
+	// providercontactchannel.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	providercontactchannel.UpdateDefaultUpdatedAt = providercontactchannelDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// providercontactchannelDescID is the schema descriptor for id field.
+	providercontactchannelDescID := providercontactchannelFields[0].Descriptor()
+	// providercontactchannel.DefaultID holds the default value on creation for the id field.
+	providercontactchannel.DefaultID = providercontactchannelDescID.Default.(func() uuid.UUID)
 	providerprofileFields := schema.ProviderProfile{}.Fields()
 	_ = providerprofileFields
 	// providerprofileDescDisplayName is the schema descriptor for display_name field.
