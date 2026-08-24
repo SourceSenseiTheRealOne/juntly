@@ -94,6 +94,30 @@
     "approve": "Approve",
     "reject": "Reject"
   },
+  "Discovery": {
+    "title": "Find services",
+    "description": "Browse active listings from local providers.",
+    "loading": "Searching for services…",
+    "empty": "We could not find services matching those filters.",
+    "error": "We could not search for services.",
+    "retry": "Try again",
+    "searchLabel": "Search",
+    "searchButton": "Search",
+    "categoryLabel": "Category",
+    "localityLabel": "Locality",
+    "radiusLabel": "Radius",
+    "priceLabel": "Price type",
+    "modeLabel": "Service mode",
+    "details": "View listing"
+  },
+  "PublicListing": {
+    "loading": "Loading listing…",
+    "error": "We could not load this listing.",
+    "retry": "Try again",
+    "provider": "Provider",
+    "locality": "Locality",
+    "category": "Category"
+  },
   "Errors": {
     "title": "Something went wrong",
     "description": "We could not load this page. Please try again.",

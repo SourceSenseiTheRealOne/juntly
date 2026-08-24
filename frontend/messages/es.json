@@ -94,6 +94,30 @@
     "approve": "Aprobar",
     "reject": "Rechazar"
   },
+  "Discovery": {
+    "title": "Encontrar servicios",
+    "description": "Explora anuncios activos de proveedores locales.",
+    "loading": "Buscando servicios…",
+    "empty": "No hemos encontrado servicios con esos filtros.",
+    "error": "No hemos podido buscar servicios.",
+    "retry": "Intentar de nuevo",
+    "searchLabel": "Buscar",
+    "searchButton": "Buscar",
+    "categoryLabel": "Categoría",
+    "localityLabel": "Localidad",
+    "radiusLabel": "Radio",
+    "priceLabel": "Tipo de precio",
+    "modeLabel": "Modo de servicio",
+    "details": "Ver anuncio"
+  },
+  "PublicListing": {
+    "loading": "Cargando anuncio…",
+    "error": "No hemos podido cargar este anuncio.",
+    "retry": "Intentar de nuevo",
+    "provider": "Proveedor",
+    "locality": "Localidad",
+    "category": "Categoría"
+  },
   "Errors": {
     "title": "Algo salió mal",
     "description": "No hemos podido cargar esta página. Inténtalo de nuevo.",

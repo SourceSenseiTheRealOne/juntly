@@ -94,6 +94,30 @@
     "approve": "Aprovar",
     "reject": "Rejeitar"
   },
+  "Discovery": {
+    "title": "Encontrar serviços",
+    "description": "Explore anúncios ativos de prestadores locais.",
+    "loading": "A procurar serviços…",
+    "empty": "Não encontrámos serviços com estes critérios.",
+    "error": "Não foi possível procurar serviços.",
+    "retry": "Tentar novamente",
+    "searchLabel": "Procurar",
+    "searchButton": "Procurar",
+    "categoryLabel": "Categoria",
+    "localityLabel": "Localidade",
+    "radiusLabel": "Raio",
+    "priceLabel": "Tipo de preço",
+    "modeLabel": "Modo de serviço",
+    "details": "Ver anúncio"
+  },
+  "PublicListing": {
+    "loading": "A carregar anúncio…",
+    "error": "Não foi possível carregar este anúncio.",
+    "retry": "Tentar novamente",
+    "provider": "Prestador",
+    "locality": "Localidade",
+    "category": "Categoria"
+  },
   "Errors": {
     "title": "Algo não correu bem",
     "description": "Não foi possível carregar esta página. Tente novamente.",
