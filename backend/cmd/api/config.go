@@ -1,0 +1,56 @@
+package main
+
+import (
+	"errors"
+	"strings"
+	"time"
+
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/authn"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/contactreveal"
+)
+
+var ErrInvalidRuntimeConfig = errors.New("invalid API runtime configuration")
+
+type runtimeConfig struct {
+	databaseURL   string
+	verifier      authn.Verifier
+	contactCipher contactreveal.Cipher
+}
+
+func loadRuntimeConfig(lookup func(string) string) (runtimeConfig, error) {
+	databaseURL := strings.TrimSpace(lookup("DATABASE_URL"))
+	if databaseURL == "" {
+		return runtimeConfig{}, ErrInvalidRuntimeConfig
+	}
+	clockSkew, err := parseOptionalDuration(lookup("CLERK_CLOCK_SKEW"))
+	if err != nil {
+		return runtimeConfig{}, ErrInvalidRuntimeConfig
+	}
+
+	verifier, err := authn.NewClerkVerifier(authn.ClerkVerifierConfig{
+		SecretKey:         lookup("CLERK_SECRET_KEY"),
+		JWTKey:            lookup("CLERK_JWT_KEY"),
+		AuthorizedParties: strings.Split(lookup("CLERK_AUTHORIZED_PARTIES"), ","),
+		ClockSkew:         clockSkew,
+	})
+	if err != nil {
+		return runtimeConfig{}, ErrInvalidRuntimeConfig
+	}
+	var contactCipher contactreveal.Cipher
+	if encodedKey := strings.TrimSpace(lookup("JUNTLY_CONTACT_ENCRYPTION_KEY")); encodedKey != "" {
+		contactCipher, err = contactreveal.NewCipher(encodedKey)
+		if err != nil {
+			return runtimeConfig{}, ErrInvalidRuntimeConfig
+		}
+	}
+
+	return runtimeConfig{databaseURL: databaseURL, verifier: verifier, contactCipher: contactCipher}, nil
+}
+
+func parseOptionalDuration(value string) (time.Duration, error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return 0, nil
+	}
+	return time.ParseDuration(value)
+}

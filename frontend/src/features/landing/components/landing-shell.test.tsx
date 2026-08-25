@@ -1,5 +1,24 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("@/features/auth/auth-navigation", () => ({
+  AuthNavigation: ({
+    signInLabel,
+    signInUrl,
+    signUpLabel,
+    signUpUrl,
+  }: {
+    signInLabel: string;
+    signInUrl: string;
+    signUpLabel: string;
+    signUpUrl: string;
+  }) => (
+    <nav aria-label="Account">
+      <a href={signInUrl}>{signInLabel}</a>
+      <a href={signUpUrl}>{signUpLabel}</a>
+    </nav>
+  ),
+}));
 
 import { LandingShell } from "./landing-shell";
 
@@ -9,6 +28,15 @@ const copy = {
   heading: "Serviços locais, mais perto de si.",
   description: "Uma forma simples de encontrar pessoas com competências reais.",
   statusLabel: "A plataforma está a nascer.",
+  healthStatusLabels: {
+    checking: "A verificar a API.",
+    available: "API disponível.",
+    unavailable: "API temporariamente indisponível.",
+  },
+  signInLabel: "Entrar",
+  signInUrl: "/pt-PT/sign-in",
+  signUpLabel: "Criar conta",
+  signUpUrl: "/pt-PT/sign-up",
   visionLinkLabel: "Conhecer a visão",
   visionTitle: "Criada para ligações locais reais",
   visionDescription:
@@ -41,12 +69,18 @@ describe("LandingShell", () => {
     ).toBeInTheDocument();
   });
 
-  it("does not advertise unavailable marketplace actions", () => {
+  it("offers localized account entry points without advertising marketplace actions", () => {
     render(<LandingShell {...copy} />);
 
     expect(
+      screen.getByRole("link", { name: copy.signInLabel }),
+    ).toHaveAttribute("href", copy.signInUrl);
+    expect(
+      screen.getByRole("link", { name: copy.signUpLabel }),
+    ).toHaveAttribute("href", copy.signUpUrl);
+    expect(
       screen.queryByRole("button", {
-        name: /sign in|register|publish|buy|checkout/i,
+        name: /publish|buy|checkout/i,
       }),
     ).not.toBeInTheDocument();
   });

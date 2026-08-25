@@ -10,7 +10,7 @@ juntly/
 └── supabase/   project-owned PostgreSQL/PostGIS configuration (later slice)
 ```
 
-Only `frontend/` is created during the initial bootstrap. Empty future-runtime directories are prohibited.
+The initial bootstrap created `frontend/`. The Clerk frontend identity foundation is implemented in that application, and the health-tracer foundation adds `backend/` plus the versioned OpenAPI contract because both now contain working code. `supabase/` remains absent until its approved persistence slice; empty future-runtime directories remain prohibited.
 
 ## Approved request path
 
@@ -41,7 +41,7 @@ Future modules use domain → application → ports → adapters dependency dire
 
 ## Authentication and authorization
 
-Clerk owns primary email/password identity and session lifecycle. The BFF verifies Clerk sessions. Go maps each verified Clerk subject uniquely to an opaque internal user and enforces platform role, provider/customer domain role, entitlement, ownership, resource membership, and administrative policy. UI visibility is presentation only.
+Clerk owns primary email/password identity and session lifecycle. The frontend provides localized Clerk entry routes and resource-local server session enforcement; UI visibility is presentation only. Local browser-facing Next.js routes use the canonical `localhost:4200` origin, because mixing loopback aliases can turn Clerk continuation rewrites into recursive external proxies. Once the API parent is integrated, Go will map each verified Clerk subject uniquely to an opaque internal user and enforce platform role, provider/customer domain role, entitlement, ownership, resource membership, and administrative policy. A real authenticated browser session remains a separate verification gate.
 
 ## Data and integration ownership
 
@@ -69,4 +69,9 @@ Local development uses a child-owned Supabase stack for PostgreSQL/PostGIS and m
 
 ## Vertical tracer for the next foundation slice
 
-The smallest full-stack proof will cross localized Next.js UI/shared generated client → same-origin BFF → Go `/api/v1/health` transport → framework-independent application service → response mapping. It must pass tests/builds, run in containers, and return matching correlation evidence. The current frontend-only bootstrap does not claim this tracer exists.
+The implemented smallest full-stack proof crosses a localized Next.js client
+island → same-origin BFF → generated OpenAPI client → Go `/api/v1/health`
+transport → framework-independent application service → response mapping. It
+returns one matching `X-Request-ID`/body correlation value, fails closed with a
+privacy-safe BFF error, and runs locally in frontend/API containers. It does
+not claim any Clerk, persistence, marketplace, or payment flow exists.

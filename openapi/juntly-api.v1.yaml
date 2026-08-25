@@ -1,0 +1,1027 @@
+openapi: 3.1.0
+info:
+  title: Juntly API
+  version: 0.1.0
+  summary: Versioned Juntly REST API contract.
+servers:
+  - url: http://localhost:8080
+    description: Local Go API
+paths:
+  /api/v1/health:
+    get:
+      operationId: getHealth
+      summary: Read API health.
+      description: Returns privacy-safe API health with correlation evidence.
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+      responses:
+        "200":
+          description: API is available.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "503":
+          description: API is unavailable.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/me/account:
+    get:
+      operationId: getAccountCapabilities
+      summary: Read the current user's account capabilities.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+      responses:
+        "200":
+          description: Account capabilities are available.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountCapabilitiesResponse"
+        "401":
+          description: Session authorization is missing or invalid.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: A required service dependency is unavailable.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateAccountCapabilities
+      summary: Update the current user's provider capability.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAccountCapabilitiesRequest"
+      responses:
+        "200":
+          description: Account capabilities were updated.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountCapabilitiesResponse"
+        "400":
+          description: The request body is invalid.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Session authorization is missing or invalid.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: A required service dependency is unavailable.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/me/contact-channels:
+    get:
+      operationId: getContactChannelStatuses
+      summary: Read provider-owned encrypted contact channel statuses.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }]
+      responses:
+        "200": { description: Status-only provider contact channels, content: { application/json: { schema: { $ref: "#/components/schemas/ContactChannelsResponse" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+    put:
+      operationId: replaceContactChannel
+      summary: Replace one provider-owned encrypted contact channel.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ReplaceContactChannelRequest" } } } }
+      responses:
+        "200": { description: Updated status-only channel, content: { application/json: { schema: { $ref: "#/components/schemas/ContactChannelStatus" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/listings/{listingId}/contact-reveals:
+    post:
+      operationId: revealListingContact
+      summary: Reveal one enabled, consented provider contact channel to an authenticated customer.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ContactRevealRequest" } } } }
+      responses:
+        "200": { description: Authenticated contact reveal, content: { application/json: { schema: { $ref: "#/components/schemas/ContactRevealResponse" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/catalog/categories:
+    get:
+      operationId: listServiceCategories
+      summary: List active service categories in one supported locale.
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+        - $ref: "#/components/parameters/LocaleQuery"
+      responses:
+        "200":
+          description: Active localized service categories.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoriesResponse"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /api/v1/reference/languages:
+    get:
+      operationId: listSpokenLanguages
+      summary: List active spoken languages in one supported locale.
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+        - $ref: "#/components/parameters/LocaleQuery"
+      responses:
+        "200":
+          description: Active localized spoken languages.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LanguagesResponse"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /api/v1/reference/localities:
+    get:
+      operationId: listLocalities
+      summary: List active launch localities, optionally within a radius.
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+        - $ref: "#/components/parameters/LocaleQuery"
+        - name: nearLocalityId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: radiusKm
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+      responses:
+        "200":
+          description: Active locality references with required attribution.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LocalitiesResponse"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /api/v1/discovery/listings:
+    get:
+      operationId: searchPublicListings
+      summary: Search active public listings without authentication.
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+        - $ref: "#/components/parameters/LocaleQuery"
+        - name: categoryId
+          in: query
+          required: false
+          schema: { type: string, format: uuid }
+        - name: q
+          in: query
+          required: false
+          schema: { type: string, minLength: 2, maxLength: 80 }
+        - name: nearLocalityId
+          in: query
+          required: false
+          schema: { type: string, format: uuid }
+        - name: radiusKm
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 200 }
+        - name: priceType
+          in: query
+          required: false
+          schema: { $ref: "#/components/schemas/ListingPriceType" }
+        - name: serviceMode
+          in: query
+          required: false
+          schema: { $ref: "#/components/schemas/PublicServiceMode" }
+      responses:
+        "200":
+          description: Active public listing projections in deterministic relevance order.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PublicListingsResponse" }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/public/listings/{listingId}:
+    get:
+      operationId: getPublicListing
+      summary: Read one active public listing without authentication.
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+        - $ref: "#/components/parameters/LocaleQuery"
+        - $ref: "#/components/parameters/ListingIdPath"
+      responses:
+        "200":
+          description: Active public listing projection.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PublicListingResponse" }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/provider-profile:
+    get:
+      operationId: getProviderProfile
+      summary: Read the current provider's owner-only profile.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+      responses:
+        "200":
+          description: Nullable owner-only provider profile.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderProfileEnvelope"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    put:
+      operationId: replaceProviderProfile
+      summary: Create or fully replace the current provider's owner-only profile.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplaceProviderProfileRequest"
+      responses:
+        "200":
+          description: Canonical owner-only provider profile.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderProfileEnvelope"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /api/v1/me/listings:
+    get:
+      operationId: listMyListings
+      summary: List the current provider's owner-only listings.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }]
+      responses:
+        "200": { description: Owner listings, content: { application/json: { schema: { $ref: "#/components/schemas/ListingsResponse" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+    post:
+      operationId: createListing
+      summary: Create a private provider listing draft.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateListingRequest" } } } }
+      responses:
+        "200": { description: Owner listing draft, content: { application/json: { schema: { $ref: "#/components/schemas/ListingResponse" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/listings/{listingId}:
+    get:
+      operationId: getMyListing
+      summary: Read one owner-only listing.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }]
+      responses:
+        "200": { description: Owner listing, content: { application/json: { schema: { $ref: "#/components/schemas/ListingResponse" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+    put:
+      operationId: replaceMyDraftListing
+      summary: Fully replace one owner draft listing.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ReplaceDraftListingRequest" } } } }
+      responses:
+        "200": { description: Updated owner draft, content: { application/json: { schema: { $ref: "#/components/schemas/ListingResponse" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/listings/{listingId}/submit:
+    post:
+      operationId: submitListingForReview
+      summary: Submit one owner draft for moderator review.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/RevisionRequest" } } } }
+      responses:
+        "200": { description: Pending-review listing, content: { application/json: { schema: { $ref: "#/components/schemas/ListingResponse" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/listings/{listingId}/pause:
+    post:
+      operationId: pauseListing
+      summary: Pause one active owner listing.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/RevisionRequest" } } } }
+      responses:
+        "200": { description: Paused listing, content: { application/json: { schema: { $ref: "#/components/schemas/ListingResponse" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/listings/{listingId}/archive:
+    post:
+      operationId: archiveListing
+      summary: Archive one owner listing from an allowed current state.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ArchiveListingRequest" } } } }
+      responses:
+        "200": { description: Archived listing, content: { application/json: { schema: { $ref: "#/components/schemas/ListingResponse" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/listings/{listingId}/media/upload-intents:
+    post:
+      operationId: createListingMediaUploadIntent
+      summary: Create an owner-only image upload capability.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateUploadIntentRequest" } } } }
+      responses:
+        "200": { description: Opaque upload capability, content: { application/json: { schema: { $ref: "#/components/schemas/UploadIntentResponse" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/moderation/listings:
+    get:
+      operationId: listPendingModerationListings
+      summary: List pending-review listings for persisted moderators.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }]
+      responses:
+        "200": { description: Pending-review listing queue, content: { application/json: { schema: { $ref: "#/components/schemas/ListingsResponse" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/moderation/listings/{listingId}/approve:
+    post:
+      operationId: approveListing
+      summary: Approve one pending-review listing.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/RevisionRequest" } } } }
+      responses:
+        "200": { description: Active listing, content: { application/json: { schema: { $ref: "#/components/schemas/ListingResponse" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/moderation/listings/{listingId}/reject:
+    post:
+      operationId: rejectListing
+      summary: Reject one pending-review listing with bounded reason.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/RejectListingRequest" } } } }
+      responses:
+        "200": { description: Rejected listing, content: { application/json: { schema: { $ref: "#/components/schemas/ListingResponse" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/auth/reconcile:
+    post:
+      operationId: reconcileInternalUser
+      summary: Reconcile the current verified session to an internal user.
+      description: Accepts no request body and returns only opaque internal mapping data.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+      responses:
+        "200":
+          description: Internal user mapping is available.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalUserResponse"
+        "401":
+          description: Session authorization is missing or invalid.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: A required service dependency is unavailable.
+          headers:
+            X-Request-ID:
+              $ref: "#/components/headers/RequestIdHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  securitySchemes:
+    clerkSession:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    RequestIdHeader:
+      name: X-Request-ID
+      in: header
+      required: false
+      description: Optional client-supplied correlation identifier.
+      schema:
+        $ref: "#/components/schemas/RequestId"
+    LocaleQuery:
+      name: locale
+      in: query
+      required: true
+      schema:
+        type: string
+        enum: [pt-PT, en, es]
+    ListingIdPath:
+      name: listingId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+  headers:
+    RequestIdHeader:
+      description: Correlation identifier attached to this response.
+      schema:
+        $ref: "#/components/schemas/RequestId"
+  responses:
+    InvalidRequest:
+      description: The request is invalid.
+      headers:
+        X-Request-ID:
+          $ref: "#/components/headers/RequestIdHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Unauthorized:
+      description: Session authorization is missing or invalid.
+      headers:
+        X-Request-ID:
+          $ref: "#/components/headers/RequestIdHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Forbidden:
+      description: Provider capability is required.
+      headers:
+        X-Request-ID:
+          $ref: "#/components/headers/RequestIdHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ServiceUnavailable:
+      description: A required dependency is unavailable.
+      headers:
+        X-Request-ID:
+          $ref: "#/components/headers/RequestIdHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: The requested public resource is not available.
+      headers:
+        X-Request-ID:
+          $ref: "#/components/headers/RequestIdHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Conflict:
+      description: The requested listing state or revision is stale.
+      headers:
+        X-Request-ID:
+          $ref: "#/components/headers/RequestIdHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  schemas:
+    RequestId:
+      type: string
+      minLength: 8
+      maxLength: 128
+      pattern: "^[A-Za-z0-9._:-]+$"
+      examples:
+        - req_01juntlyhealth
+    HealthStatus:
+      type: string
+      enum:
+        - ok
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - service
+        - version
+        - checkedAt
+        - requestId
+      properties:
+        status:
+          $ref: "#/components/schemas/HealthStatus"
+        service:
+          type: string
+          const: juntly-api
+        version:
+          type: string
+          minLength: 1
+          examples:
+            - 0.1.0
+        checkedAt:
+          type: string
+          format: date-time
+        requestId:
+          $ref: "#/components/schemas/RequestId"
+    ErrorCode:
+      type: string
+      enum:
+        - INVALID_REQUEST
+        - UNAUTHORIZED
+        - FORBIDDEN
+        - CONFLICT
+        - NOT_FOUND
+        - SERVICE_UNAVAILABLE
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - message
+        - requestId
+      properties:
+        code:
+          $ref: "#/components/schemas/ErrorCode"
+        message:
+          type: string
+          minLength: 1
+        requestId:
+          $ref: "#/components/schemas/RequestId"
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          $ref: "#/components/schemas/ErrorDetail"
+    InternalUserResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+    AccountCapabilitiesResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - customerEnabled
+        - providerEnabled
+        - onboardingCompletedAt
+      properties:
+        customerEnabled:
+          type: boolean
+          const: true
+        providerEnabled:
+          type: boolean
+        onboardingCompletedAt:
+          type: string
+          format: date-time
+    UpdateAccountCapabilitiesRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - providerEnabled
+      properties:
+        providerEnabled:
+          type: boolean
+    Category:
+      type: object
+      additionalProperties: false
+      required: [id, parentId, slug, name]
+      properties:
+        id: { type: string, format: uuid }
+        parentId: { type: [string, "null"], format: uuid }
+        slug: { type: string, minLength: 1, maxLength: 80 }
+        name: { type: string, minLength: 1, maxLength: 120 }
+    CategoriesResponse:
+      type: object
+      additionalProperties: false
+      required: [categories]
+      properties:
+        categories:
+          type: array
+          items: { $ref: "#/components/schemas/Category" }
+    SpokenLanguage:
+      type: object
+      additionalProperties: false
+      required: [code, name]
+      properties:
+        code: { type: string, minLength: 2, maxLength: 10 }
+        name: { type: string, minLength: 1, maxLength: 80 }
+    LanguagesResponse:
+      type: object
+      additionalProperties: false
+      required: [languages]
+      properties:
+        languages:
+          type: array
+          items: { $ref: "#/components/schemas/SpokenLanguage" }
+    Attribution:
+      type: object
+      additionalProperties: false
+      required: [text, url]
+      properties:
+        text:
+          type: string
+          const: © OpenStreetMap contributors
+        url:
+          type: string
+          format: uri
+          const: https://www.openstreetmap.org/copyright
+    Locality:
+      type: object
+      additionalProperties: false
+      required: [id, slug, name, parishName, municipalityName, districtName]
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string, minLength: 1, maxLength: 100 }
+        name: { type: string, minLength: 1, maxLength: 160 }
+        parishName: { type: string, minLength: 1 }
+        municipalityName: { type: string, minLength: 1 }
+        districtName: { type: string, minLength: 1 }
+        distanceMeters: { type: integer, minimum: 0 }
+    LocalitiesResponse:
+      type: object
+      additionalProperties: false
+      required: [localities, attribution]
+      properties:
+        localities:
+          type: array
+          items: { $ref: "#/components/schemas/Locality" }
+        attribution: { $ref: "#/components/schemas/Attribution" }
+    ProviderType:
+      type: string
+      enum: [individual, professional, business]
+    ContactChannel:
+      type: string
+      enum: [phone, whatsapp]
+    ContactChannelStatus:
+      type: object
+      additionalProperties: false
+      required: [channel, configured, enabled, revealConsent]
+      properties:
+        channel: { $ref: "#/components/schemas/ContactChannel" }
+        configured: { type: boolean }
+        enabled: { type: boolean }
+        revealConsent: { type: boolean }
+    ContactChannelsResponse:
+      type: object
+      additionalProperties: false
+      required: [channels]
+      properties:
+        channels:
+          type: array
+          items: { $ref: "#/components/schemas/ContactChannelStatus" }
+    ReplaceContactChannelRequest:
+      type: object
+      additionalProperties: false
+      required: [channel, contact, enabled, revealConsent]
+      properties:
+        channel: { $ref: "#/components/schemas/ContactChannel" }
+        contact: { type: string, minLength: 9, maxLength: 16, pattern: "^\\+[1-9][0-9]{7,14}$" }
+        enabled: { type: boolean }
+        revealConsent: { type: boolean }
+    ContactRevealRequest:
+      type: object
+      additionalProperties: false
+      required: [channel]
+      properties:
+        channel: { $ref: "#/components/schemas/ContactChannel" }
+    ContactRevealResponse:
+      type: object
+      additionalProperties: false
+      required: [channel, contact]
+      properties:
+        channel: { $ref: "#/components/schemas/ContactChannel" }
+        contact: { type: string, minLength: 9, maxLength: 16 }
+    ReplaceProviderProfileRequest:
+      type: object
+      additionalProperties: false
+      required: [displayName, providerType, bio, primaryLocalityId, serviceLocalityIds, maxTravelDistanceKm, travelsToCustomer, receivesCustomer, remoteServices, languageCodes]
+      properties:
+        displayName: { type: string, minLength: 2, maxLength: 100 }
+        providerType: { $ref: "#/components/schemas/ProviderType" }
+        bio: { type: string, maxLength: 1000 }
+        primaryLocalityId: { type: string, format: uuid }
+        serviceLocalityIds:
+          type: array
+          minItems: 1
+          maxItems: 20
+          uniqueItems: true
+          items: { type: string, format: uuid }
+        maxTravelDistanceKm: { type: integer, minimum: 0, maximum: 200 }
+        travelsToCustomer: { type: boolean }
+        receivesCustomer: { type: boolean }
+        remoteServices: { type: boolean }
+        languageCodes:
+          type: array
+          minItems: 1
+          maxItems: 10
+          uniqueItems: true
+          items: { type: string, minLength: 2, maxLength: 10 }
+    ProviderProfileResponse:
+      type: object
+      additionalProperties: false
+      required: [displayName, providerType, bio, primaryLocalityId, serviceLocalityIds, maxTravelDistanceKm, travelsToCustomer, receivesCustomer, remoteServices, languageCodes, createdAt, updatedAt]
+      properties:
+        displayName: { type: string, minLength: 2, maxLength: 100 }
+        providerType: { $ref: "#/components/schemas/ProviderType" }
+        bio: { type: string, maxLength: 1000 }
+        primaryLocalityId: { type: string, format: uuid }
+        serviceLocalityIds:
+          type: array
+          minItems: 1
+          maxItems: 20
+          uniqueItems: true
+          items: { type: string, format: uuid }
+        maxTravelDistanceKm: { type: integer, minimum: 0, maximum: 200 }
+        travelsToCustomer: { type: boolean }
+        receivesCustomer: { type: boolean }
+        remoteServices: { type: boolean }
+        languageCodes:
+          type: array
+          minItems: 1
+          maxItems: 10
+          uniqueItems: true
+          items: { type: string, minLength: 2, maxLength: 10 }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    ProviderProfileEnvelope:
+      type: object
+      additionalProperties: false
+      required: [profile]
+      properties:
+        profile:
+          oneOf:
+            - { $ref: "#/components/schemas/ProviderProfileResponse" }
+            - { type: "null" }
+    ListingPriceType:
+      type: string
+      enum: [fixed, hourly, daily, quote, negotiable]
+    PublicServiceMode:
+      type: string
+      enum: [travels_to_customer, receives_customer, remote_services]
+    ListingState:
+      type: string
+      enum: [draft, pending_review, active, rejected, paused, archived]
+    CreateListingRequest:
+      type: object
+      additionalProperties: false
+      required: [categoryId, primaryLocalityId, title, description, priceType, priceMinor, currency, travelsToCustomer, receivesCustomer, remoteServices]
+      properties:
+        categoryId: { type: string, format: uuid }
+        primaryLocalityId: { type: string, format: uuid }
+        title: { type: string, minLength: 2, maxLength: 140 }
+        description: { type: string, minLength: 20, maxLength: 4000 }
+        priceType: { $ref: "#/components/schemas/ListingPriceType" }
+        priceMinor: { type: [integer, "null"], minimum: 1 }
+        currency: { type: string, const: EUR }
+        travelsToCustomer: { type: boolean }
+        receivesCustomer: { type: boolean }
+        remoteServices: { type: boolean }
+    ReplaceDraftListingRequest:
+      allOf:
+        - $ref: "#/components/schemas/CreateListingRequest"
+        - type: object
+          additionalProperties: false
+          required: [revision]
+          properties:
+            revision: { type: integer, minimum: 1 }
+    ListingResponse:
+      type: object
+      additionalProperties: false
+      required: [id, categoryId, primaryLocalityId, title, description, priceType, priceMinor, currency, travelsToCustomer, receivesCustomer, remoteServices, state, revision, createdAt, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        categoryId: { type: string, format: uuid }
+        primaryLocalityId: { type: string, format: uuid }
+        title: { type: string, minLength: 2, maxLength: 140 }
+        description: { type: string, minLength: 20, maxLength: 4000 }
+        priceType: { $ref: "#/components/schemas/ListingPriceType" }
+        priceMinor: { type: [integer, "null"], minimum: 1 }
+        currency: { type: string, const: EUR }
+        travelsToCustomer: { type: boolean }
+        receivesCustomer: { type: boolean }
+        remoteServices: { type: boolean }
+        state: { $ref: "#/components/schemas/ListingState" }
+        revision: { type: integer, minimum: 1 }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    ListingsResponse:
+      type: object
+      additionalProperties: false
+      required: [listings]
+      properties:
+        listings:
+          type: array
+          items: { $ref: "#/components/schemas/ListingResponse" }
+    PublicListingResponse:
+      type: object
+      additionalProperties: false
+      required: [id, title, description, categoryId, categorySlug, categoryName, primaryLocalityId, localitySlug, localityName, priceType, priceMinor, currency, travelsToCustomer, receivesCustomer, remoteServices, providerDisplayName, providerType, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string, minLength: 2, maxLength: 140 }
+        description: { type: string, minLength: 20, maxLength: 4000 }
+        categoryId: { type: string, format: uuid }
+        categorySlug: { type: string, minLength: 1, maxLength: 100 }
+        categoryName: { type: string, minLength: 1, maxLength: 120 }
+        primaryLocalityId: { type: string, format: uuid }
+        localitySlug: { type: string, minLength: 1, maxLength: 100 }
+        localityName: { type: string, minLength: 1, maxLength: 160 }
+        priceType: { $ref: "#/components/schemas/ListingPriceType" }
+        priceMinor: { type: [integer, "null"], minimum: 1 }
+        currency: { type: string, const: EUR }
+        travelsToCustomer: { type: boolean }
+        receivesCustomer: { type: boolean }
+        remoteServices: { type: boolean }
+        providerDisplayName: { type: string, minLength: 2, maxLength: 100 }
+        providerType: { $ref: "#/components/schemas/ProviderType" }
+        updatedAt: { type: string, format: date-time }
+    PublicListingsResponse:
+      type: object
+      additionalProperties: false
+      required: [listings]
+      properties:
+        listings:
+          type: array
+          items: { $ref: "#/components/schemas/PublicListingResponse" }
+    RevisionRequest:
+      type: object
+      additionalProperties: false
+      required: [revision]
+      properties:
+        revision: { type: integer, minimum: 1 }
+    ArchiveListingRequest:
+      type: object
+      additionalProperties: false
+      required: [revision, state]
+      properties:
+        revision: { type: integer, minimum: 1 }
+        state: { type: string, enum: [draft, rejected, active, paused] }
+    RejectListingRequest:
+      allOf:
+        - $ref: "#/components/schemas/RevisionRequest"
+        - type: object
+          additionalProperties: false
+          required: [reason]
+          properties:
+            reason: { type: string, minLength: 1, maxLength: 500 }
+    CreateUploadIntentRequest:
+      type: object
+      additionalProperties: false
+      required: [ordinal, contentType, byteSize, checksumSha256]
+      properties:
+        ordinal: { type: integer, minimum: 1, maximum: 10 }
+        contentType: { type: string, enum: [image/jpeg, image/png, image/webp] }
+        byteSize: { type: integer, minimum: 1, maximum: 10485760 }
+        checksumSha256: { type: string, pattern: "^[0-9a-f]{64}$" }
+    UploadCapability:
+      type: object
+      additionalProperties: false
+      required: [url, method, headers]
+      properties:
+        url: { type: string, format: uri }
+        method: { type: string, enum: [PUT] }
+        headers: { type: object, additionalProperties: { type: string } }
+    UploadIntentResponse:
+      type: object
+      additionalProperties: false
+      required: [mediaId, capability]
+      properties:
+        mediaId: { type: string, format: uuid }
+        capability: { $ref: "#/components/schemas/UploadCapability" }

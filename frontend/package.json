@@ -4,24 +4,31 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "codegen": "openapi-ts",
+    "codegen:check": "node scripts/check-codegen.mjs",
     "dev": "next dev",
+    "dev:local": "next dev --hostname localhost --port 4200",
     "build": "next build",
     "start": "next start",
+    "start:local": "next start --hostname localhost --port 4200",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "next typegen && tsc --noEmit",
-    "verify": "npm run format:check && npm test && npm run lint && npm run typecheck && npm run build && npm audit --audit-level=high"
+    "verify": "npm run codegen:check && npm run format:check && npm test && npm run lint && npm run typecheck && npm run build && npm audit --audit-level=high"
   },
   "dependencies": {
+    "@clerk/localizations": "4.15.4",
+    "@clerk/nextjs": "7.7.9",
     "next": "16.3.1",
     "next-intl": "4.13.6",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@hey-api/openapi-ts": "0.97.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.2",
