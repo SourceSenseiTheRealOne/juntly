@@ -50,7 +50,8 @@
       "manageListings": "Manage listings",
       "manageMessages": "View messages",
       "manageNotifications": "Manage notifications",
-      "manageQuotations": "Requests and proposals"
+      "manageQuotations": "Requests and proposals",
+      "manageBookings": "Manage bookings"
     }
   },
   "ProviderProfile": {
@@ -181,7 +182,9 @@
     "requestPublished": "New quotation request published",
     "proposalReceived": "New proposal received",
     "proposalAccepted": "Your proposal was accepted",
-    "proposalRejected": "Your proposal was not selected"
+    "proposalRejected": "Your proposal was not selected",
+    "bookingCreated": "New booking created",
+    "bookingUpdated": "Booking status updated"
   },
   "Quotations": {
     "title": "Requests and proposals",
@@ -211,6 +214,32 @@
     "created": "Request published.",
     "submitted": "Proposal submitted.",
     "accepted": "Proposal accepted."
+  },
+  "Bookings": {
+    "title": "Bookings",
+    "description": "Track agreements, dates, private locations, and service status.",
+    "newBooking": "New booking",
+    "sourceType": "Agreement source",
+    "proposal": "Accepted proposal",
+    "listing": "Listing",
+    "direct": "Direct agreement",
+    "sourceId": "Proposal or listing identifier",
+    "providerId": "Provider identifier for a direct agreement",
+    "scheduledAt": "Date and time",
+    "privateLocation": "Private service location",
+    "agreedPrice": "Agreed price in cents",
+    "create": "Create booking",
+    "loading": "Loading bookings...",
+    "error": "We could not load or update bookings.",
+    "empty": "You do not have any bookings yet.",
+    "price": "Price",
+    "confirm": "Confirm",
+    "schedule": "Schedule",
+    "start": "Start service",
+    "complete": "Complete",
+    "cancel": "Cancel",
+    "dispute": "Open dispute",
+    "refund": "Mark refunded"
   },
   "Errors": {
     "title": "Something went wrong",

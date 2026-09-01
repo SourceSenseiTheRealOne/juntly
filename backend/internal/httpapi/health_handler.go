@@ -35,7 +35,7 @@ func (h HealthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(h.service.Check(requestID))
 }
 
-func NewRouter(service health.Service, verifier authn.Verifier, reconcileService ReconcileService, accountService AccountService, referenceService ReferenceService, providerProfileService ProviderProfileService, listingService ListingService, moderationListingService ModerationListingService, publicDiscoveryService PublicDiscoveryService, contactChannelService ContactChannelService, contactRevealService ContactRevealService, messagingService MessagingService, quotationService QuotationService) http.Handler {
+func NewRouter(service health.Service, verifier authn.Verifier, reconcileService ReconcileService, accountService AccountService, referenceService ReferenceService, providerProfileService ProviderProfileService, listingService ListingService, moderationListingService ModerationListingService, publicDiscoveryService PublicDiscoveryService, contactChannelService ContactChannelService, contactRevealService ContactRevealService, messagingService MessagingService, quotationService QuotationService, bookingService BookingService) http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("/api/v1/health", NewHealthHandler(service))
 	mux.Handle("/api/v1/catalog/categories", NewCategoriesHandler(referenceService))
@@ -59,6 +59,8 @@ func NewRouter(service health.Service, verifier authn.Verifier, reconcileService
 	mux.Handle("/api/v1/me/quotation-requests", authn.RequireVerifiedIdentity(verifier, NewQuotationHandler(quotationService)))
 	mux.Handle("/api/v1/me/quotation-requests/", authn.RequireVerifiedIdentity(verifier, NewQuotationHandler(quotationService)))
 	mux.Handle("/api/v1/me/quotation-opportunities", authn.RequireVerifiedIdentity(verifier, NewQuotationHandler(quotationService)))
+	mux.Handle("/api/v1/me/bookings", authn.RequireVerifiedIdentity(verifier, NewBookingHandler(bookingService)))
+	mux.Handle("/api/v1/me/bookings/", authn.RequireVerifiedIdentity(verifier, NewBookingHandler(bookingService)))
 	return mux
 }
 
