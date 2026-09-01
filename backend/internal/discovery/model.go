@@ -60,6 +60,7 @@ type Listing struct {
 	RemoteServices      bool
 	ProviderDisplayName string
 	ProviderType        string
+	Promoted            bool
 	UpdatedAt           time.Time
 }
 

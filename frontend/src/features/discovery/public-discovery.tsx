@@ -20,6 +20,7 @@ type Listing = {
   remoteServices: boolean;
   providerDisplayName: string;
   providerType: string;
+  promoted: boolean;
   updatedAt: string;
 };
 
@@ -41,6 +42,7 @@ export type PublicDiscoveryCopy = {
   marketplaceLabel: string;
   locationContextLabel: string;
   filtersLabel: string;
+  promoted: string;
 };
 
 export function PublicDiscovery({
@@ -158,10 +160,11 @@ export function PublicDiscovery({
               key={listing.id}
               className="market-card group overflow-hidden p-0"
             >
-              <div className="flex min-h-24 items-end bg-control p-5">
+              <div className="flex min-h-24 items-end justify-between gap-3 bg-control p-5">
                 <span className="market-chip bg-surface text-ink">
                   {listing.categoryName}
                 </span>
+                {listing.promoted?<span className="market-chip">{copy.promoted}</span>:null}
               </div>
               <div className="p-5">
                 <p className="text-sm font-medium text-muted">
@@ -236,6 +239,7 @@ function validListing(value: unknown): value is Listing {
       "remoteServices",
       "providerDisplayName",
       "providerType",
+      "promoted",
       "updatedAt",
     ])
   )
@@ -261,6 +265,7 @@ function validListing(value: unknown): value is Listing {
     typeof item.receivesCustomer === "boolean" &&
     typeof item.remoteServices === "boolean" &&
     typeof item.providerDisplayName === "string" &&
+    typeof item.promoted === "boolean" &&
     ["individual", "professional", "business"].includes(
       String(item.providerType),
     ) &&

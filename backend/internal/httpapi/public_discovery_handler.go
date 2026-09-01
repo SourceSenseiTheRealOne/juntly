@@ -39,6 +39,7 @@ type publicListingResponse struct {
 	RemoteServices      bool      `json:"remoteServices"`
 	ProviderDisplayName string    `json:"providerDisplayName"`
 	ProviderType        string    `json:"providerType"`
+	Promoted            bool      `json:"promoted"`
 	UpdatedAt           string    `json:"updatedAt"`
 }
 
@@ -211,7 +212,7 @@ func publicListingResponseFrom(value discovery.Listing) publicListingResponse {
 		PrimaryLocalityID: value.PrimaryLocalityID, LocalitySlug: value.LocalitySlug, LocalityName: value.LocalityName,
 		PriceType: string(value.PriceType), PriceMinor: value.PriceMinor, Currency: value.Currency,
 		TravelsToCustomer: value.TravelsToCustomer, ReceivesCustomer: value.ReceivesCustomer, RemoteServices: value.RemoteServices,
-		ProviderDisplayName: value.ProviderDisplayName, ProviderType: value.ProviderType,
+		ProviderDisplayName: value.ProviderDisplayName, ProviderType: value.ProviderType, Promoted: value.Promoted,
 		UpdatedAt: value.UpdatedAt.UTC().Format(time.RFC3339Nano),
 	}
 }
