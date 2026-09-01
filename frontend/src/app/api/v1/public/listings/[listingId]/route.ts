@@ -84,6 +84,7 @@ function validListing(
       "remoteServices",
       "providerDisplayName",
       "providerType",
+      "promoted",
       "updatedAt",
     ]) &&
     uuid(value.id) &&
@@ -111,6 +112,7 @@ function validListing(
     typeof value.providerDisplayName === "string" &&
     value.providerDisplayName.length >= 2 &&
     ["individual", "professional", "business"].includes(value.providerType) &&
+    typeof value.promoted === "boolean" &&
     typeof value.updatedAt === "string" &&
     !Number.isNaN(Date.parse(value.updatedAt))
   );

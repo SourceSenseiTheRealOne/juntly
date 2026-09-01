@@ -74,7 +74,9 @@ const publicListingColumns = `
   locality.id, locality.slug, locality.name,
   listing.price_type, listing.price_minor, listing.currency,
   listing.travels_to_customer, listing.receives_customer, listing.remote_services,
-  profile.display_name, profile.provider_type, listing.updated_at
+  profile.display_name, profile.provider_type,
+  exists(select 1 from public.listing_promotions promotion where promotion.listing_id=listing.id and promotion.status='active' and promotion.starts_at<=timezone('utc',now()) and promotion.ends_at>timezone('utc',now())) as promoted,
+  listing.updated_at
 `
 
 const publicListingFrom = `
@@ -107,6 +109,7 @@ select` + publicListingColumns + publicListingFrom + `
     ($7 = 'remote_services' and listing.remote_services)
   )
 order by
+  promoted desc,
   case when $2::uuid is null then 1 else 0 end,
   case when $4::uuid is null then 0 else round(st_distance(
     locality.center,
@@ -159,6 +162,7 @@ func scanListing(row rowScanner) (Listing, error) {
 		&value.RemoteServices,
 		&value.ProviderDisplayName,
 		&value.ProviderType,
+		&value.Promoted,
 		&value.UpdatedAt,
 	); err != nil {
 		return Listing{}, err

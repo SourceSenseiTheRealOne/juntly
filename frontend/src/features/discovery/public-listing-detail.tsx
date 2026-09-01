@@ -22,6 +22,7 @@ type Listing = {
   remoteServices: boolean;
   providerDisplayName: string;
   providerType: string;
+  promoted: boolean;
   updatedAt: string;
 };
 
@@ -176,6 +177,7 @@ function validListing(value: unknown): value is Listing {
       "remoteServices",
       "providerDisplayName",
       "providerType",
+      "promoted",
       "updatedAt",
     ])
   )
@@ -204,6 +206,7 @@ function validListing(value: unknown): value is Listing {
     ["individual", "professional", "business"].includes(
       String(item.providerType),
     ) &&
+    typeof item.promoted === "boolean" &&
     typeof item.updatedAt === "string" &&
     !Number.isNaN(Date.parse(item.updatedAt))
   );

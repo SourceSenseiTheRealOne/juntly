@@ -21,6 +21,7 @@ const copy = {
   marketplaceLabel: "Marketplace Juntly",
   locationContextLabel: "Portugal",
   filtersLabel: "Filtros disponíveis",
+  promoted: "Promovido",
 };
 
 afterEach(() => vi.restoreAllMocks());
@@ -54,6 +55,7 @@ describe("PublicDiscovery", () => {
               remoteServices: false,
               providerDisplayName: "Prestador local",
               providerType: "professional",
+              promoted: true,
               updatedAt: "2026-08-24T12:00:00Z",
             },
           ],
@@ -68,6 +70,7 @@ describe("PublicDiscovery", () => {
     );
     expect(screen.getByText("Marketplace Juntly")).toBeInTheDocument();
     expect(screen.getByText("Portugal")).toBeInTheDocument();
+    expect(screen.getByText("Promovido")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ver anúncio" })).toHaveAttribute(
       "href",
       "/pt-PT/listings/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",

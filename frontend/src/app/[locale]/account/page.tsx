@@ -87,6 +87,12 @@ export default async function AccountPage({ params }: AccountPageProps) {
           >
             {t("capabilities.manageReviews")}
           </a>
+          <a
+            className="market-button-secondary"
+            href={`/${locale}/account/entitlements`}
+          >
+            {t("capabilities.manageEntitlements")}
+          </a>
         </nav>
       </section>
     </main>

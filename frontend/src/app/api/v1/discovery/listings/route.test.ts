@@ -37,6 +37,7 @@ describe("GET /api/v1/discovery/listings", () => {
                 remoteServices: false,
                 providerDisplayName: "Public provider",
                 providerType: "professional",
+                promoted: false,
                 updatedAt: "2026-08-24T12:00:00Z",
               },
             ],
