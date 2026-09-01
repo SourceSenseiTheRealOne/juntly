@@ -49,7 +49,8 @@
       "manageProvider": "Gerir perfil de prestador",
       "manageListings": "Gerir anúncios",
       "manageMessages": "Ver mensagens",
-      "manageNotifications": "Gerir notificações"
+      "manageNotifications": "Gerir notificações",
+      "manageQuotations": "Pedidos e propostas"
     }
   },
   "ProviderProfile": {
@@ -176,7 +177,40 @@
     "markRead": "Marcar como lida",
     "conversationStarted": "Nova conversa iniciada",
     "messageReceived": "Nova mensagem recebida",
-    "conversationReported": "Conversa denunciada"
+    "conversationReported": "Conversa denunciada",
+    "requestPublished": "Novo pedido de orçamento publicado",
+    "proposalReceived": "Nova proposta recebida",
+    "proposalAccepted": "A sua proposta foi aceite",
+    "proposalRejected": "A sua proposta não foi selecionada"
+  },
+  "Quotations": {
+    "title": "Pedidos e propostas",
+    "description": "Peça orçamentos locais, compare propostas privadas e escolha um prestador.",
+    "customerRequests": "Os meus pedidos",
+    "opportunities": "Oportunidades para prestar serviços",
+    "newRequest": "Novo pedido de orçamento",
+    "requestTitle": "Título",
+    "requestDescription": "Descrição do trabalho",
+    "category": "Categoria",
+    "locality": "Localidade",
+    "budget": "Orçamento em cêntimos (opcional)",
+    "deadline": "Prazo para propostas",
+    "publish": "Publicar pedido",
+    "emptyRequests": "Ainda não publicou pedidos.",
+    "emptyOpportunities": "Não há pedidos compatíveis neste momento.",
+    "viewProposals": "Ver propostas",
+    "proposals": "Propostas privadas",
+    "proposalPrice": "Preço em cêntimos",
+    "proposalMessage": "Mensagem da proposta",
+    "availableAt": "Disponível a partir de",
+    "estimatedMinutes": "Duração estimada em minutos (opcional)",
+    "submitProposal": "Enviar proposta",
+    "accept": "Aceitar proposta",
+    "loading": "A carregar pedidos...",
+    "error": "Não foi possível carregar ou guardar os pedidos.",
+    "created": "Pedido publicado.",
+    "submitted": "Proposta enviada.",
+    "accepted": "Proposta aceite."
   },
   "Errors": {
     "title": "Algo não correu bem",
