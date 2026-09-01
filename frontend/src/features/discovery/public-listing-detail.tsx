@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ContactRevealControl } from "@/features/contact/contact-reveal-control";
+import { StartConversationControl } from "@/features/messaging/start-conversation-control";
 
 type Listing = {
   id: string;
@@ -34,6 +35,8 @@ export type PublicListingDetailCopy = {
   phone: string;
   whatsapp: string;
   revealError: string;
+  message: string;
+  messageError: string;
 };
 
 export function PublicListingDetail({
@@ -128,6 +131,12 @@ export function PublicListingDetail({
             whatsapp: copy.whatsapp,
             error: copy.revealError,
           }}
+        />
+        <StartConversationControl
+          listingId={listing.id}
+          label={copy.message}
+          error={copy.messageError}
+          messagesUrl={`/${locale}/account/messages`}
         />
       </aside>
     </article>

@@ -53,6 +53,23 @@ export default async function AccountPage({ params }: AccountPageProps) {
           providerProfileUrl={`/${locale}/account/provider-profile`}
           listingsUrl={`/${locale}/account/listings`}
         />
+        <nav
+          aria-label={t("title")}
+          className="mt-6 grid gap-3 border-t border-line pt-6 sm:grid-cols-2"
+        >
+          <a
+            className="market-button-secondary"
+            href={`/${locale}/account/messages`}
+          >
+            {t("capabilities.manageMessages")}
+          </a>
+          <a
+            className="market-button-secondary"
+            href={`/${locale}/account/notifications`}
+          >
+            {t("capabilities.manageNotifications")}
+          </a>
+        </nav>
       </section>
     </main>
   );

@@ -47,7 +47,9 @@
       "loadError": "No hemos podido cargar las capacidades de tu cuenta.",
       "retry": "Intentar de nuevo",
       "manageProvider": "Gestionar perfil profesional",
-      "manageListings": "Gestionar anuncios"
+      "manageListings": "Gestionar anuncios",
+      "manageMessages": "Ver mensajes",
+      "manageNotifications": "Gestionar notificaciones"
     }
   },
   "ProviderProfile": {
@@ -130,7 +132,9 @@
     "category": "Categoría",
     "phone": "Revelar teléfono",
     "whatsapp": "Revelar WhatsApp",
-    "revealError": "No hemos podido revelar este contacto."
+    "revealError": "No hemos podido revelar este contacto.",
+    "message": "Enviar mensaje",
+    "messageError": "No hemos podido iniciar la conversación."
   },
   "ContactChannels": {
     "title": "Canales de contacto",
@@ -146,6 +150,33 @@
     "consent": "Permitir revelación",
     "save": "Guardar canal",
     "saved": "Canal guardado."
+  },
+  "Messaging": {
+    "title": "Mensajes",
+    "description": "Habla en privado con clientes y profesionales.",
+    "empty": "Todavía no tienes conversaciones.",
+    "selectConversation": "Selecciona una conversación",
+    "messageLabel": "Mensaje",
+    "send": "Enviar",
+    "sending": "Enviando...",
+    "loading": "Cargando conversaciones...",
+    "error": "No hemos podido cargar los mensajes.",
+    "conversation": "Conversación"
+  },
+  "Notifications": {
+    "title": "Notificaciones",
+    "description": "Elige cómo recibes las novedades de Juntly.",
+    "empty": "No tienes notificaciones.",
+    "loading": "Cargando notificaciones...",
+    "error": "No hemos podido cargar o guardar las notificaciones.",
+    "inApp": "Notificaciones en la aplicación",
+    "email": "Notificaciones por correo",
+    "save": "Guardar preferencias",
+    "saved": "Preferencias guardadas.",
+    "markRead": "Marcar como leída",
+    "conversationStarted": "Nueva conversación iniciada",
+    "messageReceived": "Nuevo mensaje recibido",
+    "conversationReported": "Conversación denunciada"
   },
   "Errors": {
     "title": "Algo salió mal",

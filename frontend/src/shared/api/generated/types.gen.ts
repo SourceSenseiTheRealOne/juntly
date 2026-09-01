@@ -4,6 +4,77 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8080' | (string & {});
 };
 
+export type StartConversationRequest = {
+    listingId: string;
+};
+
+export type Conversation = {
+    id: string;
+    listingId: string | null;
+    customerId: string;
+    providerId: string;
+    blocked: boolean;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type ConversationsResponse = {
+    conversations: Array<Conversation>;
+};
+
+export type SendMessageRequest = {
+    body: string;
+};
+
+export type Message = {
+    id: string;
+    conversationId: string;
+    senderId: string;
+    body: string;
+    createdAt: string;
+};
+
+export type MessagesResponse = {
+    messages: Array<Message>;
+};
+
+export type BlockConversationRequest = {
+    blocked: boolean;
+};
+
+export type BlockConversationResponse = {
+    blocked: boolean;
+};
+
+export type ReportConversationRequest = {
+    messageId?: string | null;
+    reason: string;
+};
+
+export type ReportedResponse = {
+    reported: true;
+};
+
+export type NotificationPreferences = {
+    inAppEnabled: boolean;
+    emailEnabled: boolean;
+};
+
+export type Notification = {
+    id: string;
+    kind: 'conversation_started' | 'message_received' | 'conversation_reported';
+    read: boolean;
+    createdAt: string;
+};
+
+export type NotificationsResponse = {
+    notifications: Array<Notification>;
+};
+
+export type ReadResponse = {
+    read: true;
+};
+
 export type RequestId = string;
 
 export type HealthStatus = 'ok';
@@ -257,6 +328,10 @@ export type RequestIdHeader = RequestId;
 export type LocaleQuery = 'pt-PT' | 'en' | 'es';
 
 export type ListingIdPath = string;
+
+export type ConversationIdPath = string;
+
+export type NotificationIdPath = string;
 
 export type GetHealthData = {
     body?: never;
@@ -1306,3 +1381,351 @@ export type ReconcileInternalUserResponses = {
 };
 
 export type ReconcileInternalUserResponse = ReconcileInternalUserResponses[keyof ReconcileInternalUserResponses];
+
+export type ListConversationsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/conversations';
+};
+
+export type ListConversationsErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListConversationsError = ListConversationsErrors[keyof ListConversationsErrors];
+
+export type ListConversationsResponses = {
+    /**
+     * Participant conversations
+     */
+    200: ConversationsResponse;
+};
+
+export type ListConversationsResponse = ListConversationsResponses[keyof ListConversationsResponses];
+
+export type StartListingConversationData = {
+    body: StartConversationRequest;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/conversations';
+};
+
+export type StartListingConversationErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested public resource is not available.
+     */
+    404: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type StartListingConversationError = StartListingConversationErrors[keyof StartListingConversationErrors];
+
+export type StartListingConversationResponses = {
+    /**
+     * Conversation started
+     */
+    201: Conversation;
+};
+
+export type StartListingConversationResponse = StartListingConversationResponses[keyof StartListingConversationResponses];
+
+export type ListConversationMessagesData = {
+    body?: never;
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/conversations/{conversationId}/messages';
+};
+
+export type ListConversationMessagesErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListConversationMessagesError = ListConversationMessagesErrors[keyof ListConversationMessagesErrors];
+
+export type ListConversationMessagesResponses = {
+    /**
+     * Conversation messages
+     */
+    200: MessagesResponse;
+};
+
+export type ListConversationMessagesResponse = ListConversationMessagesResponses[keyof ListConversationMessagesResponses];
+
+export type SendConversationMessageData = {
+    body: SendMessageRequest;
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/conversations/{conversationId}/messages';
+};
+
+export type SendConversationMessageErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type SendConversationMessageError = SendConversationMessageErrors[keyof SendConversationMessageErrors];
+
+export type SendConversationMessageResponses = {
+    /**
+     * Message sent
+     */
+    201: Message;
+};
+
+export type SendConversationMessageResponse = SendConversationMessageResponses[keyof SendConversationMessageResponses];
+
+export type ReplaceConversationBlockData = {
+    body: BlockConversationRequest;
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/conversations/{conversationId}/block';
+};
+
+export type ReplaceConversationBlockErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ReplaceConversationBlockError = ReplaceConversationBlockErrors[keyof ReplaceConversationBlockErrors];
+
+export type ReplaceConversationBlockResponses = {
+    /**
+     * Block state updated
+     */
+    200: BlockConversationResponse;
+};
+
+export type ReplaceConversationBlockResponse = ReplaceConversationBlockResponses[keyof ReplaceConversationBlockResponses];
+
+export type ReportConversationData = {
+    body: ReportConversationRequest;
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/conversations/{conversationId}/reports';
+};
+
+export type ReportConversationErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ReportConversationError = ReportConversationErrors[keyof ReportConversationErrors];
+
+export type ReportConversationResponses = {
+    /**
+     * Report recorded
+     */
+    201: ReportedResponse;
+};
+
+export type ReportConversationResponse = ReportConversationResponses[keyof ReportConversationResponses];
+
+export type ListNotificationsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/notifications';
+};
+
+export type ListNotificationsErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListNotificationsError = ListNotificationsErrors[keyof ListNotificationsErrors];
+
+export type ListNotificationsResponses = {
+    /**
+     * Notifications
+     */
+    200: NotificationsResponse;
+};
+
+export type ListNotificationsResponse = ListNotificationsResponses[keyof ListNotificationsResponses];
+
+export type GetNotificationPreferencesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/notifications/preferences';
+};
+
+export type GetNotificationPreferencesErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetNotificationPreferencesError = GetNotificationPreferencesErrors[keyof GetNotificationPreferencesErrors];
+
+export type GetNotificationPreferencesResponses = {
+    /**
+     * Notification preferences
+     */
+    200: NotificationPreferences;
+};
+
+export type GetNotificationPreferencesResponse = GetNotificationPreferencesResponses[keyof GetNotificationPreferencesResponses];
+
+export type ReplaceNotificationPreferencesData = {
+    body: NotificationPreferences;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/notifications/preferences';
+};
+
+export type ReplaceNotificationPreferencesErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ReplaceNotificationPreferencesError = ReplaceNotificationPreferencesErrors[keyof ReplaceNotificationPreferencesErrors];
+
+export type ReplaceNotificationPreferencesResponses = {
+    /**
+     * Updated notification preferences
+     */
+    200: NotificationPreferences;
+};
+
+export type ReplaceNotificationPreferencesResponse = ReplaceNotificationPreferencesResponses[keyof ReplaceNotificationPreferencesResponses];
+
+export type MarkNotificationReadData = {
+    body?: never;
+    path: {
+        notificationId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/notifications/{notificationId}/read';
+};
+
+export type MarkNotificationReadErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type MarkNotificationReadError = MarkNotificationReadErrors[keyof MarkNotificationReadErrors];
+
+export type MarkNotificationReadResponses = {
+    /**
+     * Notification read state
+     */
+    200: ReadResponse;
+};
+
+export type MarkNotificationReadResponse = MarkNotificationReadResponses[keyof MarkNotificationReadResponses];
