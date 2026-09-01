@@ -94,7 +94,7 @@ jobs:
           DATABASE_URL: postgres://user:password@database.invalid/juntly
           CLERK_SECRET_KEY: test-only
           CLERK_AUTHORIZED_PARTIES: https://staging.example.invalid
-          CONTACT_CHANNEL_ENCRYPTION_KEY: test-only
+          JUNTLY_CONTACT_ENCRYPTION_KEY: MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDE=
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_only
         run: docker compose -f compose.production.yaml config --quiet
 
