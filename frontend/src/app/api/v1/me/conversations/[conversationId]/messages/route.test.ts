@@ -21,7 +21,9 @@ describe("conversation messages BFF", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async (request: Request) => {
-        expect(request.headers.get("Authorization")).toBe("Bearer server-token");
+        expect(request.headers.get("Authorization")).toBe(
+          "Bearer server-token",
+        );
         await expect(request.json()).resolves.toEqual({ body: "Boa tarde" });
         return Response.json(
           {
@@ -42,7 +44,11 @@ describe("conversation messages BFF", () => {
         headers: { "X-Request-ID": "req_messages_bff" },
         body: JSON.stringify({ body: "Boa tarde" }),
       }),
-      { params: Promise.resolve({ conversationId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa" }) },
+      {
+        params: Promise.resolve({
+          conversationId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        }),
+      },
     );
 
     expect(response.status).toBe(201);

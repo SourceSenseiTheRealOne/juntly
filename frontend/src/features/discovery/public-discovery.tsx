@@ -164,7 +164,9 @@ export function PublicDiscovery({
                 <span className="market-chip bg-surface text-ink">
                   {listing.categoryName}
                 </span>
-                {listing.promoted?<span className="market-chip">{copy.promoted}</span>:null}
+                {listing.promoted ? (
+                  <span className="market-chip">{copy.promoted}</span>
+                ) : null}
               </div>
               <div className="p-5">
                 <p className="text-sm font-medium text-muted">

@@ -1,1 +1,59 @@
-import{respondToReview}from"@/shared/api/generated";import{authorizedHeaders,correlated,exact,fail,requestID,requestIDHeader,sessionToken,unavailable,uuid}from"@/features/messaging/protected-bff";import{validReview}from"@/features/reviews/review-bff";export const runtime="nodejs";type Context={params:Promise<{reviewId:string}>};export async function PUT(request:Request,context:Context):Promise<Response>{const id=requestID(request.headers),token=await sessionToken(),{reviewId}=await context.params;if(!token)return fail("UNAUTHORIZED","Unauthorized",401,id);let v:unknown;try{v=JSON.parse(await request.text())}catch{return fail("INVALID_REQUEST","Invalid request",400,id)};if(!uuid(reviewId)||!exact(v,["response"])||typeof v.response!=="string")return fail("INVALID_REQUEST","Invalid request",400,id);const baseUrl=process.env.JUNTLY_API_ORIGIN;if(!baseUrl)return unavailable(id);try{const up=await respondToReview({baseUrl,path:{reviewId},body:{response:v.response},headers:authorizedHeaders(token,id)});if(up.error||!up.response?.ok||!correlated(up.response,id)||!validReview(up.data))return unavailable(id);return Response.json(up.data,{status:200,headers:{[requestIDHeader]:id}})}catch{return unavailable(id)}}
+import { respondToReview } from "@/shared/api/generated";
+import {
+  authorizedHeaders,
+  correlated,
+  exact,
+  fail,
+  requestID,
+  requestIDHeader,
+  sessionToken,
+  unavailable,
+  uuid,
+} from "@/features/messaging/protected-bff";
+import { validReview } from "@/features/reviews/review-bff";
+export const runtime = "nodejs";
+type Context = { params: Promise<{ reviewId: string }> };
+export async function PUT(
+  request: Request,
+  context: Context,
+): Promise<Response> {
+  const id = requestID(request.headers),
+    token = await sessionToken(),
+    { reviewId } = await context.params;
+  if (!token) return fail("UNAUTHORIZED", "Unauthorized", 401, id);
+  let v: unknown;
+  try {
+    v = JSON.parse(await request.text());
+  } catch {
+    return fail("INVALID_REQUEST", "Invalid request", 400, id);
+  }
+  if (
+    !uuid(reviewId) ||
+    !exact(v, ["response"]) ||
+    typeof v.response !== "string"
+  )
+    return fail("INVALID_REQUEST", "Invalid request", 400, id);
+  const baseUrl = process.env.JUNTLY_API_ORIGIN;
+  if (!baseUrl) return unavailable(id);
+  try {
+    const up = await respondToReview({
+      baseUrl,
+      path: { reviewId },
+      body: { response: v.response },
+      headers: authorizedHeaders(token, id),
+    });
+    if (
+      up.error ||
+      !up.response?.ok ||
+      !correlated(up.response, id) ||
+      !validReview(up.data)
+    )
+      return unavailable(id);
+    return Response.json(up.data, {
+      status: 200,
+      headers: { [requestIDHeader]: id },
+    });
+  } catch {
+    return unavailable(id);
+  }
+}

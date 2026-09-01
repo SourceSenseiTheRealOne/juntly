@@ -3,6 +3,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { PublicListingDetail } from "./public-listing-detail";
 
+const router = vi.hoisted(() => ({ push: vi.fn() }));
+vi.mock("next/navigation", () => ({ useRouter: () => router }));
+
 const copy = {
   loading: "A carregar anúncio…",
   error: "Não foi possível carregar este anúncio.",
