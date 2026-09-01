@@ -23,12 +23,16 @@ __pycache__/
 bin/
 *.test
 *.out
+*.exe
 
 # Local data and generated service state
 supabase/.branches/
 supabase/.temp/
 supabase/.env
 .volumes/
+backups/
+*.dump
+*.dump.sha256
 
 # Agent/tool local state
 .codegraph/

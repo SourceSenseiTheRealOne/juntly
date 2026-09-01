@@ -4,6 +4,11 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8080' | (string & {});
 };
 
+export type ReadinessResponse = {
+    ready: boolean;
+    database: 'ready' | 'unavailable';
+};
+
 export type AdministrationMetrics = {
     users: number;
     providers: number;
@@ -612,6 +617,31 @@ export type GetHealthResponses = {
 };
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
+
+export type GetReadinessData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ready';
+};
+
+export type GetReadinessErrors = {
+    /**
+     * One or more runtime dependencies are unavailable
+     */
+    503: ReadinessResponse;
+};
+
+export type GetReadinessError = GetReadinessErrors[keyof GetReadinessErrors];
+
+export type GetReadinessResponses = {
+    /**
+     * Runtime dependencies are ready
+     */
+    200: ReadinessResponse;
+};
+
+export type GetReadinessResponse = GetReadinessResponses[keyof GetReadinessResponses];
 
 export type GetAccountCapabilitiesData = {
     body?: never;
