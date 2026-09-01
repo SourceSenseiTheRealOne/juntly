@@ -4,7 +4,7 @@
 
 Deploy immutable digest-pinned API and frontend images through `compose.production.yaml`. Supply runtime values through the deployment platform's secret store. Never commit an environment file.
 
-Required values are `JUNTLY_API_IMAGE`, `JUNTLY_FRONTEND_IMAGE`, `DATABASE_URL`, Clerk keys and authorized parties, `CONTACT_CHANNEL_ENCRYPTION_KEY`, and the public frontend port.
+Required values are `JUNTLY_API_IMAGE`, `JUNTLY_FRONTEND_IMAGE`, `DATABASE_URL`, Clerk keys and authorized parties, `JUNTLY_CONTACT_ENCRYPTION_KEY`, and the public frontend port.
 
 ## Staging promotion
 
