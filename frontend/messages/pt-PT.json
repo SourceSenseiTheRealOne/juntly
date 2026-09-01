@@ -290,6 +290,26 @@
     "cancelled": "Cancelada",
     "expired": "Expirada"
   },
+  "Administration": {
+    "title": "Administração",
+    "description": "Métricas operacionais agregadas e filas de moderação com ações auditadas.",
+    "loading": "A carregar administração...",
+    "error": "Não foi possível carregar ou atualizar a administração.",
+    "users": "Utilizadores",
+    "providers": "Prestadores",
+    "listings": "Anúncios ativos",
+    "bookings": "Reservas concluídas",
+    "reviews": "Avaliações publicadas",
+    "reports": "Denúncias abertas",
+    "reportQueue": "Denúncias",
+    "reviewQueue": "Avaliações",
+    "empty": "Sem itens pendentes.",
+    "reason": "Motivo da ação",
+    "resolve": "Resolver denúncia",
+    "hide": "Ocultar avaliação",
+    "publish": "Publicar avaliação",
+    "saved": "Ação registada."
+  },
   "Errors": {
     "title": "Algo não correu bem",
     "description": "Não foi possível carregar esta página. Tente novamente.",

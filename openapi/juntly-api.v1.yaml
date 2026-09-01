@@ -829,6 +829,29 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "409": { $ref: "#/components/responses/Conflict" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/admin/dashboard:
+    get:
+      operationId: getAdministrationDashboard
+      summary: Read administrator-only bounded metrics and moderation queues.
+      security: [{ clerkSession: [] }]
+      responses:
+        "200": { description: Administrative dashboard, content: { application/json: { schema: { $ref: "#/components/schemas/AdministrationDashboard" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/admin/moderation:
+    post:
+      operationId: moderateAdministrativeTarget
+      summary: Apply one audited administrator moderation action.
+      security: [{ clerkSession: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/AdministrativeModerationAction" } } } }
+      responses:
+        "204": { description: Moderation action applied }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
 components:
   securitySchemes:
     clerkSession:
@@ -951,6 +974,58 @@ components:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
   schemas:
+    AdministrationMetrics:
+      type: object
+      additionalProperties: false
+      required: [users, providers, activeListings, completedBookings, publishedReviews, openReports]
+      properties:
+        users: { type: integer, minimum: 0 }
+        providers: { type: integer, minimum: 0 }
+        activeListings: { type: integer, minimum: 0 }
+        completedBookings: { type: integer, minimum: 0 }
+        publishedReviews: { type: integer, minimum: 0 }
+        openReports: { type: integer, minimum: 0 }
+    AdministrativeReport:
+      type: object
+      additionalProperties: false
+      required: [id, conversationId, reason, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        conversationId: { type: string, format: uuid }
+        reason: { type: string, minLength: 5, maxLength: 500 }
+        createdAt: { type: string, format: date-time }
+    AdministrativeReview:
+      type: object
+      additionalProperties: false
+      required: [id, rating, body, state, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        rating: { type: integer, minimum: 1, maximum: 5 }
+        body: { type: string, minLength: 10, maxLength: 2000 }
+        state: { type: string, enum: [published, hidden] }
+        createdAt: { type: string, format: date-time }
+    AdministrationQueue:
+      type: object
+      additionalProperties: false
+      required: [reports, reviews]
+      properties:
+        reports: { type: array, maxItems: 100, items: { $ref: "#/components/schemas/AdministrativeReport" } }
+        reviews: { type: array, maxItems: 100, items: { $ref: "#/components/schemas/AdministrativeReview" } }
+    AdministrationDashboard:
+      type: object
+      additionalProperties: false
+      required: [metrics, queue]
+      properties:
+        metrics: { $ref: "#/components/schemas/AdministrationMetrics" }
+        queue: { $ref: "#/components/schemas/AdministrationQueue" }
+    AdministrativeModerationAction:
+      type: object
+      additionalProperties: false
+      required: [kind, targetId, reason]
+      properties:
+        kind: { type: string, enum: [hide_review, publish_review, resolve_report] }
+        targetId: { type: string, format: uuid }
+        reason: { type: string, minLength: 5, maxLength: 500 }
     EntitlementStatus:
       type: string
       enum: [pending, active, cancelled, expired]

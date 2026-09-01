@@ -4,6 +4,46 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8080' | (string & {});
 };
 
+export type AdministrationMetrics = {
+    users: number;
+    providers: number;
+    activeListings: number;
+    completedBookings: number;
+    publishedReviews: number;
+    openReports: number;
+};
+
+export type AdministrativeReport = {
+    id: string;
+    conversationId: string;
+    reason: string;
+    createdAt: string;
+};
+
+export type AdministrativeReview = {
+    id: string;
+    rating: number;
+    body: string;
+    state: 'published' | 'hidden';
+    createdAt: string;
+};
+
+export type AdministrationQueue = {
+    reports: Array<AdministrativeReport>;
+    reviews: Array<AdministrativeReview>;
+};
+
+export type AdministrationDashboard = {
+    metrics: AdministrationMetrics;
+    queue: AdministrationQueue;
+};
+
+export type AdministrativeModerationAction = {
+    kind: 'hide_review' | 'publish_review' | 'resolve_report';
+    targetId: string;
+    reason: string;
+};
+
 export type EntitlementStatus = 'pending' | 'active' | 'cancelled' | 'expired';
 
 export type ProfessionalPlan = {
@@ -2563,3 +2603,77 @@ export type RequestListingPromotionResponses = {
 };
 
 export type RequestListingPromotionResponse = RequestListingPromotionResponses[keyof RequestListingPromotionResponses];
+
+export type GetAdministrationDashboardData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/dashboard';
+};
+
+export type GetAdministrationDashboardErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetAdministrationDashboardError = GetAdministrationDashboardErrors[keyof GetAdministrationDashboardErrors];
+
+export type GetAdministrationDashboardResponses = {
+    /**
+     * Administrative dashboard
+     */
+    200: AdministrationDashboard;
+};
+
+export type GetAdministrationDashboardResponse = GetAdministrationDashboardResponses[keyof GetAdministrationDashboardResponses];
+
+export type ModerateAdministrativeTargetData = {
+    body: AdministrativeModerationAction;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/moderation';
+};
+
+export type ModerateAdministrativeTargetErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested public resource is not available.
+     */
+    404: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ModerateAdministrativeTargetError = ModerateAdministrativeTargetErrors[keyof ModerateAdministrativeTargetErrors];
+
+export type ModerateAdministrativeTargetResponses = {
+    /**
+     * Moderation action applied
+     */
+    204: void;
+};
+
+export type ModerateAdministrativeTargetResponse = ModerateAdministrativeTargetResponses[keyof ModerateAdministrativeTargetResponses];
