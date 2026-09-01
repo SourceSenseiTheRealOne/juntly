@@ -12,6 +12,7 @@ on:
       - "scripts/**"
       - "supabase/migrations/**"
       - ".github/workflows/ci.yml"
+      - ".github/workflows/release-images.yml"
   pull_request:
     branches: [main, staging, development]
     paths:
@@ -23,6 +24,7 @@ on:
       - "scripts/**"
       - "supabase/migrations/**"
       - ".github/workflows/ci.yml"
+      - ".github/workflows/release-images.yml"
 
 permissions:
   contents: read
@@ -100,3 +102,8 @@ jobs:
 
       - name: Validate operational scripts
         run: sh -n scripts/backup-postgres.sh scripts/restore-postgres.sh scripts/smoke.sh
+
+      - name: Validate immutable-image release policy
+        run: |
+          python scripts/verify-release-workflow.py
+          python -m unittest scripts/verify-release-workflow_test.py
