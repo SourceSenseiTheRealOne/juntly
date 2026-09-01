@@ -290,6 +290,26 @@
     "cancelled": "Cancelled",
     "expired": "Expired"
   },
+  "Administration": {
+    "title": "Administration",
+    "description": "Aggregated operational metrics and moderation queues with audited actions.",
+    "loading": "Loading administration...",
+    "error": "We could not load or update administration.",
+    "users": "Users",
+    "providers": "Providers",
+    "listings": "Active listings",
+    "bookings": "Completed bookings",
+    "reviews": "Published reviews",
+    "reports": "Open reports",
+    "reportQueue": "Reports",
+    "reviewQueue": "Reviews",
+    "empty": "No pending items.",
+    "reason": "Action reason",
+    "resolve": "Resolve report",
+    "hide": "Hide review",
+    "publish": "Publish review",
+    "saved": "Action recorded."
+  },
   "Errors": {
     "title": "Something went wrong",
     "description": "We could not load this page. Please try again.",

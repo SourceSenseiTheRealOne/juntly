@@ -290,6 +290,26 @@
     "cancelled": "Cancelada",
     "expired": "Expirada"
   },
+  "Administration": {
+    "title": "Administración",
+    "description": "Métricas operativas agregadas y colas de moderación con acciones auditadas.",
+    "loading": "Cargando administración...",
+    "error": "No hemos podido cargar o actualizar la administración.",
+    "users": "Usuarios",
+    "providers": "Profesionales",
+    "listings": "Anuncios activos",
+    "bookings": "Reservas completadas",
+    "reviews": "Reseñas publicadas",
+    "reports": "Denuncias abiertas",
+    "reportQueue": "Denuncias",
+    "reviewQueue": "Reseñas",
+    "empty": "No hay elementos pendientes.",
+    "reason": "Motivo de la acción",
+    "resolve": "Resolver denuncia",
+    "hide": "Ocultar reseña",
+    "publish": "Publicar reseña",
+    "saved": "Acción registrada."
+  },
   "Errors": {
     "title": "Algo salió mal",
     "description": "No hemos podido cargar esta página. Inténtalo de nuevo.",
