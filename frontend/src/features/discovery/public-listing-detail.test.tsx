@@ -46,6 +46,7 @@ describe("PublicListingDetail", () => {
           remoteServices: false,
           providerDisplayName: "Prestador local",
           providerType: "professional",
+          promoted: false,
           updatedAt: "2026-08-24T12:00:00Z",
         });
       }),

@@ -789,6 +789,46 @@ paths:
         "200": { description: Public provider rating aggregate, content: { application/json: { schema: { $ref: "#/components/schemas/ProviderRating" } } } }
         "400": { $ref: "#/components/responses/InvalidRequest" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/entitlements/catalog:
+    get:
+      operationId: getEntitlementCatalog
+      summary: List active administrator-configured plans and promotion periods.
+      responses:
+        "200": { description: Entitlement catalog, content: { application/json: { schema: { $ref: "#/components/schemas/EntitlementCatalog" } } } }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/entitlements:
+    get:
+      operationId: getMyEntitlements
+      summary: Read server-owned provider access, subscription, and promotions.
+      security: [{ clerkSession: [] }]
+      responses:
+        "200": { description: Provider entitlements, content: { application/json: { schema: { $ref: "#/components/schemas/MyEntitlements" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/subscriptions:
+    post:
+      operationId: requestSubscription
+      summary: Request an active configured professional plan.
+      security: [{ clerkSession: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/RequestSubscription" } } } }
+      responses:
+        "201": { description: Requested subscription, content: { application/json: { schema: { $ref: "#/components/schemas/Subscription" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/promotions:
+    post:
+      operationId: requestListingPromotion
+      summary: Request a configured bounded promotion for an owned active listing.
+      security: [{ clerkSession: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/RequestPromotion" } } } }
+      responses:
+        "201": { description: Requested listing promotion, content: { application/json: { schema: { $ref: "#/components/schemas/Promotion" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
 components:
   securitySchemes:
     clerkSession:
@@ -911,6 +951,96 @@ components:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
   schemas:
+    EntitlementStatus:
+      type: string
+      enum: [pending, active, cancelled, expired]
+    ProfessionalPlan:
+      type: object
+      additionalProperties: false
+      required: [id, slug, name, priceMinor, currency, billingDays, maxActiveListings, maxPhotosPerListing, analyticsEnabled]
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string }
+        name: { type: string }
+        priceMinor: { type: integer, minimum: 0 }
+        currency: { type: string, const: EUR }
+        billingDays: { type: integer, minimum: 1, maximum: 366 }
+        maxActiveListings: { type: integer, minimum: 1 }
+        maxPhotosPerListing: { type: integer, minimum: 1 }
+        analyticsEnabled: { type: boolean }
+    PromotionPeriod:
+      type: object
+      additionalProperties: false
+      required: [id, slug, name, durationDays, priceMinor, currency]
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string }
+        name: { type: string }
+        durationDays: { type: integer, minimum: 1, maximum: 90 }
+        priceMinor: { type: integer, minimum: 0 }
+        currency: { type: string, const: EUR }
+    EntitlementCatalog:
+      type: object
+      additionalProperties: false
+      required: [plans, promotionPeriods]
+      properties:
+        plans: { type: array, items: { $ref: "#/components/schemas/ProfessionalPlan" } }
+        promotionPeriods: { type: array, items: { $ref: "#/components/schemas/PromotionPeriod" } }
+    Subscription:
+      type: object
+      additionalProperties: false
+      required: [id, providerId, planId, status, startsAt, endsAt, createdAt, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        providerId: { type: string, format: uuid }
+        planId: { type: string, format: uuid }
+        status: { $ref: "#/components/schemas/EntitlementStatus" }
+        startsAt: { type: [string, "null"], format: date-time }
+        endsAt: { type: [string, "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    Promotion:
+      type: object
+      additionalProperties: false
+      required: [id, listingId, providerId, periodId, status, startsAt, endsAt, createdAt, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        listingId: { type: string, format: uuid }
+        providerId: { type: string, format: uuid }
+        periodId: { type: string, format: uuid }
+        status: { $ref: "#/components/schemas/EntitlementStatus" }
+        startsAt: { type: [string, "null"], format: date-time }
+        endsAt: { type: [string, "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    ProviderAccess:
+      type: object
+      additionalProperties: false
+      required: [maxActiveListings, maxPhotosPerListing, analyticsEnabled]
+      properties:
+        maxActiveListings: { type: integer, minimum: 1 }
+        maxPhotosPerListing: { type: integer, minimum: 1 }
+        analyticsEnabled: { type: boolean }
+    MyEntitlements:
+      type: object
+      additionalProperties: false
+      required: [access, subscription, promotions]
+      properties:
+        access: { $ref: "#/components/schemas/ProviderAccess" }
+        subscription: { anyOf: [{ $ref: "#/components/schemas/Subscription" }, { type: "null" }] }
+        promotions: { type: array, items: { $ref: "#/components/schemas/Promotion" } }
+    RequestSubscription:
+      type: object
+      additionalProperties: false
+      required: [planId]
+      properties: { planId: { type: string, format: uuid } }
+    RequestPromotion:
+      type: object
+      additionalProperties: false
+      required: [listingId, periodId]
+      properties:
+        listingId: { type: string, format: uuid }
+        periodId: { type: string, format: uuid }
     CreateReview:
       type: object
       additionalProperties: false
@@ -1140,7 +1270,7 @@ components:
       required: [id, kind, read, createdAt]
       properties:
         id: { type: string, format: uuid }
-        kind: { type: string, enum: [conversation_started, message_received, conversation_reported, request_published, proposal_received, proposal_accepted, proposal_rejected, booking_created, booking_updated, review_received, review_response] }
+        kind: { type: string, enum: [conversation_started, message_received, conversation_reported, request_published, proposal_received, proposal_accepted, proposal_rejected, booking_created, booking_updated, review_received, review_response, subscription_updated, promotion_updated] }
         read: { type: boolean }
         createdAt: { type: string, format: date-time }
     NotificationsResponse:
@@ -1492,7 +1622,7 @@ components:
     PublicListingResponse:
       type: object
       additionalProperties: false
-      required: [id, title, description, categoryId, categorySlug, categoryName, primaryLocalityId, localitySlug, localityName, priceType, priceMinor, currency, travelsToCustomer, receivesCustomer, remoteServices, providerDisplayName, providerType, updatedAt]
+      required: [id, title, description, categoryId, categorySlug, categoryName, primaryLocalityId, localitySlug, localityName, priceType, priceMinor, currency, travelsToCustomer, receivesCustomer, remoteServices, providerDisplayName, providerType, promoted, updatedAt]
       properties:
         id: { type: string, format: uuid }
         title: { type: string, minLength: 2, maxLength: 140 }
@@ -1511,6 +1641,7 @@ components:
         remoteServices: { type: boolean }
         providerDisplayName: { type: string, minLength: 2, maxLength: 100 }
         providerType: { $ref: "#/components/schemas/ProviderType" }
+        promoted: { type: boolean }
         updatedAt: { type: string, format: date-time }
     PublicListingsResponse:
       type: object

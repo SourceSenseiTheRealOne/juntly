@@ -4,6 +4,78 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8080' | (string & {});
 };
 
+export type EntitlementStatus = 'pending' | 'active' | 'cancelled' | 'expired';
+
+export type ProfessionalPlan = {
+    id: string;
+    slug: string;
+    name: string;
+    priceMinor: number;
+    currency: 'EUR';
+    billingDays: number;
+    maxActiveListings: number;
+    maxPhotosPerListing: number;
+    analyticsEnabled: boolean;
+};
+
+export type PromotionPeriod = {
+    id: string;
+    slug: string;
+    name: string;
+    durationDays: number;
+    priceMinor: number;
+    currency: 'EUR';
+};
+
+export type EntitlementCatalog = {
+    plans: Array<ProfessionalPlan>;
+    promotionPeriods: Array<PromotionPeriod>;
+};
+
+export type Subscription = {
+    id: string;
+    providerId: string;
+    planId: string;
+    status: EntitlementStatus;
+    startsAt: string | null;
+    endsAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type Promotion = {
+    id: string;
+    listingId: string;
+    providerId: string;
+    periodId: string;
+    status: EntitlementStatus;
+    startsAt: string | null;
+    endsAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type ProviderAccess = {
+    maxActiveListings: number;
+    maxPhotosPerListing: number;
+    analyticsEnabled: boolean;
+};
+
+export type MyEntitlements = {
+    access: ProviderAccess;
+    subscription: Subscription | null;
+    promotions: Array<Promotion>;
+};
+
+export type RequestSubscription = {
+    planId: string;
+};
+
+export type RequestPromotion = {
+    listingId: string;
+    periodId: string;
+};
+
 export type CreateReview = {
     bookingId: string;
     rating: number;
@@ -188,7 +260,7 @@ export type NotificationPreferences = {
 
 export type Notification = {
     id: string;
-    kind: 'conversation_started' | 'message_received' | 'conversation_reported' | 'request_published' | 'proposal_received' | 'proposal_accepted' | 'proposal_rejected' | 'booking_created' | 'booking_updated' | 'review_received' | 'review_response';
+    kind: 'conversation_started' | 'message_received' | 'conversation_reported' | 'request_published' | 'proposal_received' | 'proposal_accepted' | 'proposal_rejected' | 'booking_created' | 'booking_updated' | 'review_received' | 'review_response' | 'subscription_updated' | 'promotion_updated';
     read: boolean;
     createdAt: string;
 };
@@ -406,6 +478,7 @@ export type PublicListingResponse = {
     remoteServices: boolean;
     providerDisplayName: string;
     providerType: ProviderType;
+    promoted: boolean;
     updatedAt: string;
 };
 
@@ -2362,3 +2435,131 @@ export type GetProviderRatingResponses = {
 };
 
 export type GetProviderRatingResponse = GetProviderRatingResponses[keyof GetProviderRatingResponses];
+
+export type GetEntitlementCatalogData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/entitlements/catalog';
+};
+
+export type GetEntitlementCatalogErrors = {
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetEntitlementCatalogError = GetEntitlementCatalogErrors[keyof GetEntitlementCatalogErrors];
+
+export type GetEntitlementCatalogResponses = {
+    /**
+     * Entitlement catalog
+     */
+    200: EntitlementCatalog;
+};
+
+export type GetEntitlementCatalogResponse = GetEntitlementCatalogResponses[keyof GetEntitlementCatalogResponses];
+
+export type GetMyEntitlementsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/entitlements';
+};
+
+export type GetMyEntitlementsErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetMyEntitlementsError = GetMyEntitlementsErrors[keyof GetMyEntitlementsErrors];
+
+export type GetMyEntitlementsResponses = {
+    /**
+     * Provider entitlements
+     */
+    200: MyEntitlements;
+};
+
+export type GetMyEntitlementsResponse = GetMyEntitlementsResponses[keyof GetMyEntitlementsResponses];
+
+export type RequestSubscriptionData = {
+    body: RequestSubscription;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/subscriptions';
+};
+
+export type RequestSubscriptionErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type RequestSubscriptionError = RequestSubscriptionErrors[keyof RequestSubscriptionErrors];
+
+export type RequestSubscriptionResponses = {
+    /**
+     * Requested subscription
+     */
+    201: Subscription;
+};
+
+export type RequestSubscriptionResponse = RequestSubscriptionResponses[keyof RequestSubscriptionResponses];
+
+export type RequestListingPromotionData = {
+    body: RequestPromotion;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/promotions';
+};
+
+export type RequestListingPromotionErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type RequestListingPromotionError = RequestListingPromotionErrors[keyof RequestListingPromotionErrors];
+
+export type RequestListingPromotionResponses = {
+    /**
+     * Requested listing promotion
+     */
+    201: Promotion;
+};
+
+export type RequestListingPromotionResponse = RequestListingPromotionResponses[keyof RequestListingPromotionResponses];

@@ -36,6 +36,7 @@ export default async function DiscoverPage({
             marketplaceLabel: t("marketplaceLabel"),
             locationContextLabel: t("locationContextLabel"),
             filtersLabel: t("filtersLabel"),
+            promoted: t("promoted"),
           }}
         />
       </div>

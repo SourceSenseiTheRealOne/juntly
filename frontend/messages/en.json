@@ -52,7 +52,8 @@
       "manageNotifications": "Manage notifications",
       "manageQuotations": "Requests and proposals",
       "manageBookings": "Manage bookings",
-      "manageReviews": "Reviews"
+      "manageReviews": "Reviews",
+      "manageEntitlements": "Plans and promotions"
     }
   },
   "ProviderProfile": {
@@ -124,7 +125,8 @@
     "details": "View listing",
     "marketplaceLabel": "Juntly marketplace",
     "locationContextLabel": "Portugal",
-    "filtersLabel": "Available filters"
+    "filtersLabel": "Available filters",
+    "promoted": "Promoted"
   },
   "PublicListing": {
     "loading": "Loading listing…",
@@ -187,7 +189,9 @@
     "bookingCreated": "New booking created",
     "bookingUpdated": "Booking status updated",
     "reviewReceived": "New review received",
-    "reviewResponse": "The provider responded to your review"
+    "reviewResponse": "The provider responded to your review",
+    "subscriptionUpdated": "Subscription updated",
+    "promotionUpdated": "Promotion updated"
   },
   "Quotations": {
     "title": "Requests and proposals",
@@ -260,6 +264,31 @@
     "error": "We could not load or save reviews.",
     "created": "Review published.",
     "verified": "Verified booking"
+  },
+  "Entitlements": {
+    "title": "Plans and promotions",
+    "description": "Review account limits, choose a professional plan, and promote active listings.",
+    "access": "Current access",
+    "activeListings": "Active listings",
+    "photos": "Photos per listing",
+    "analytics": "Analytics",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "plans": "Professional plans",
+    "choosePlan": "Choose plan",
+    "promotion": "Promote a listing",
+    "listingId": "Listing identifier",
+    "period": "Period",
+    "promote": "Request promotion",
+    "current": "Current subscription",
+    "none": "No subscription",
+    "loading": "Loading plans and access...",
+    "error": "We could not load or save plans and promotions.",
+    "requested": "Request recorded.",
+    "pending": "Pending",
+    "active": "Active",
+    "cancelled": "Cancelled",
+    "expired": "Expired"
   },
   "Errors": {
     "title": "Something went wrong",

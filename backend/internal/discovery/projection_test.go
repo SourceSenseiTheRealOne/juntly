@@ -34,7 +34,7 @@ func TestPublicListingProjectionExcludesPrivateColumnsAndFields(t *testing.T) {
 		"PrimaryLocalityID": true, "LocalitySlug": true, "LocalityName": true,
 		"PriceType": true, "PriceMinor": true, "Currency": true,
 		"TravelsToCustomer": true, "ReceivesCustomer": true, "RemoteServices": true,
-		"ProviderDisplayName": true, "ProviderType": true, "UpdatedAt": true,
+		"ProviderDisplayName": true, "ProviderType": true, "Promoted": true, "UpdatedAt": true,
 	}
 	typeOfListing := reflect.TypeOf(Listing{})
 	if typeOfListing.NumField() != len(allowed) {

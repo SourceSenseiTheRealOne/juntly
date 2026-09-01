@@ -52,7 +52,8 @@
       "manageNotifications": "Gestionar notificaciones",
       "manageQuotations": "Solicitudes y propuestas",
       "manageBookings": "Gestionar reservas",
-      "manageReviews": "Reseñas"
+      "manageReviews": "Reseñas",
+      "manageEntitlements": "Planes y promociones"
     }
   },
   "ProviderProfile": {
@@ -124,7 +125,8 @@
     "details": "Ver anuncio",
     "marketplaceLabel": "Marketplace Juntly",
     "locationContextLabel": "Portugal",
-    "filtersLabel": "Filtros disponibles"
+    "filtersLabel": "Filtros disponibles",
+    "promoted": "Promocionado"
   },
   "PublicListing": {
     "loading": "Cargando anuncio…",
@@ -187,7 +189,9 @@
     "bookingCreated": "Nueva reserva creada",
     "bookingUpdated": "Estado de la reserva actualizado",
     "reviewReceived": "Nueva reseña recibida",
-    "reviewResponse": "El profesional respondió a tu reseña"
+    "reviewResponse": "El profesional respondió a tu reseña",
+    "subscriptionUpdated": "Suscripción actualizada",
+    "promotionUpdated": "Promoción actualizada"
   },
   "Quotations": {
     "title": "Solicitudes y propuestas",
@@ -260,6 +264,31 @@
     "error": "No hemos podido cargar o guardar las reseñas.",
     "created": "Reseña publicada.",
     "verified": "Reserva verificada"
+  },
+  "Entitlements": {
+    "title": "Planes y promociones",
+    "description": "Consulta los límites, elige un plan profesional y promociona anuncios activos.",
+    "access": "Acceso actual",
+    "activeListings": "Anuncios activos",
+    "photos": "Fotos por anuncio",
+    "analytics": "Analítica",
+    "enabled": "Activa",
+    "disabled": "Inactiva",
+    "plans": "Planes profesionales",
+    "choosePlan": "Elegir plan",
+    "promotion": "Promocionar un anuncio",
+    "listingId": "Identificador del anuncio",
+    "period": "Periodo",
+    "promote": "Solicitar promoción",
+    "current": "Suscripción actual",
+    "none": "Sin suscripción",
+    "loading": "Cargando planes y acceso...",
+    "error": "No hemos podido cargar o guardar los planes y promociones.",
+    "requested": "Solicitud registrada.",
+    "pending": "Pendiente",
+    "active": "Activa",
+    "cancelled": "Cancelada",
+    "expired": "Expirada"
   },
   "Errors": {
     "title": "Algo salió mal",
