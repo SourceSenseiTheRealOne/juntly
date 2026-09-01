@@ -19,5 +19,6 @@ COPY --from=build /app/.next ./.next
 
 USER node
 EXPOSE 3000
+HEALTHCHECK --interval=15s --timeout=3s --start-period=15s --retries=5 CMD wget -q -O /dev/null http://127.0.0.1:3000/pt-PT || exit 1
 
 CMD ["npm", "run", "start", "--", "--hostname", "0.0.0.0", "--port", "3000"]

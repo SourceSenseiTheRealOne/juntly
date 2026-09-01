@@ -25,6 +25,7 @@
     "signUp": "Criar conta"
   },
   "Navigation": {
+    "skipToContent": "Saltar para o conteúdo",
     "discover": "Encontrar serviços",
     "account": "A minha conta",
     "accountNavigation": "Opções da conta",

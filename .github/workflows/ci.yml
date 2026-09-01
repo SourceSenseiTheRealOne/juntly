@@ -8,6 +8,9 @@ on:
       - "backend/**"
       - "openapi/**"
       - "compose.yaml"
+      - "compose.production.yaml"
+      - "scripts/**"
+      - "supabase/migrations/**"
       - ".github/workflows/ci.yml"
   pull_request:
     branches: [main, staging, development]
@@ -16,6 +19,9 @@ on:
       - "backend/**"
       - "openapi/**"
       - "compose.yaml"
+      - "compose.production.yaml"
+      - "scripts/**"
+      - "supabase/migrations/**"
       - ".github/workflows/ci.yml"
 
 permissions:
@@ -80,3 +86,17 @@ jobs:
 
       - name: Validate Compose topology
         run: docker compose -f compose.yaml config --quiet
+
+      - name: Validate production topology
+        env:
+          JUNTLY_API_IMAGE: example.invalid/juntly-api@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          JUNTLY_FRONTEND_IMAGE: example.invalid/juntly-frontend@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+          DATABASE_URL: postgres://user:password@database.invalid/juntly
+          CLERK_SECRET_KEY: test-only
+          CLERK_AUTHORIZED_PARTIES: https://staging.example.invalid
+          CONTACT_CHANNEL_ENCRYPTION_KEY: test-only
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_only
+        run: docker compose -f compose.production.yaml config --quiet
+
+      - name: Validate operational scripts
+        run: sh -n scripts/backup-postgres.sh scripts/restore-postgres.sh scripts/smoke.sh

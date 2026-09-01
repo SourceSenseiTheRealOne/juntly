@@ -8,17 +8,19 @@ Juntly is a Portuguese local-services marketplace designed to help people discov
 
 ## Current status
 
-This repository is at the foundation stage. The initial delivery contains:
+This repository contains the production-oriented marketplace MVP:
 
 - Durable product, architecture, security, UI, workflow, and decision context.
 - A localized responsive Next.js frontend shell under `frontend/` after the scaffold commit.
 - pt-PT default, English support, and Spanish-ready routing/messages.
 - A source-level Clerk frontend identity foundation: localized sign-in/sign-up routes, session-aware navigation, and a server-enforced account route.
 - A versioned OpenAPI health contract, generated TypeScript client, same-origin BFF, and narrow Go health API under `backend/`.
-- A local Docker Compose proof for the frontend and API only; no database is included.
+- Durable users, provider profiles, listings, discovery, private contact reveal, messaging, quotations, bookings, verified reviews, promotions, subscriptions, moderation, and bounded administration analytics.
+- Supabase/PostgreSQL migrations and a local frontend/API Compose topology that connects to an explicitly supplied database.
+- A digest-oriented production Compose topology, dependency readiness probe, hardened HTTP/runtime defaults, backup/restore scripts, smoke checks, and operational runbooks.
 - Frontend test, format, lint, type, build, dependency-audit, CI, and runtime-verification foundations.
 
-The Clerk source, local quality gates, canonical-origin runtime routes, signed-out account redirect, and health tracer are verified. An authenticated browser-session journey still requires a real test user. Durable Go internal-user mapping, provider profiles, listings, search, chat, quotations, bookings, reviews, payments, Supabase, Redis, object storage, and production deployment are not implemented yet.
+Paid subscriptions and promotions intentionally remain pending until an external payment provider confirms them; free configured entries activate immediately. Production deployment still requires operator-supplied infrastructure, secrets, DNS/TLS, a managed PostgreSQL target, and a real Clerk test account for authenticated acceptance journeys.
 
 ## Repository layout
 
@@ -29,10 +31,13 @@ juntly/
 ├── openapi/    versioned API contracts
 ├── context/    sanitized durable project reference
 ├── compose.yaml local frontend/API development topology
+├── compose.production.yaml hardened immutable-image topology
+├── supabase/   ordered PostgreSQL migrations
+├── scripts/    backup, restore, and smoke operations
 └── AGENTS.md   project operating rules
 ```
 
-`supabase/` will be created only when its approved foundation slice implements it.
+Deployment and recovery procedures live in [`docs/operations/`](docs/operations/).
 
 ## Context
 
