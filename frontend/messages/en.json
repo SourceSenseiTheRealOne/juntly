@@ -49,7 +49,8 @@
       "manageProvider": "Manage provider profile",
       "manageListings": "Manage listings",
       "manageMessages": "View messages",
-      "manageNotifications": "Manage notifications"
+      "manageNotifications": "Manage notifications",
+      "manageQuotations": "Requests and proposals"
     }
   },
   "ProviderProfile": {
@@ -176,7 +177,40 @@
     "markRead": "Mark as read",
     "conversationStarted": "New conversation started",
     "messageReceived": "New message received",
-    "conversationReported": "Conversation reported"
+    "conversationReported": "Conversation reported",
+    "requestPublished": "New quotation request published",
+    "proposalReceived": "New proposal received",
+    "proposalAccepted": "Your proposal was accepted",
+    "proposalRejected": "Your proposal was not selected"
+  },
+  "Quotations": {
+    "title": "Requests and proposals",
+    "description": "Request local quotes, compare private proposals, and choose a provider.",
+    "customerRequests": "My requests",
+    "opportunities": "Provider opportunities",
+    "newRequest": "New quotation request",
+    "requestTitle": "Title",
+    "requestDescription": "Work description",
+    "category": "Category",
+    "locality": "Locality",
+    "budget": "Budget in cents (optional)",
+    "deadline": "Proposal deadline",
+    "publish": "Publish request",
+    "emptyRequests": "You have not published any requests yet.",
+    "emptyOpportunities": "There are no matching requests right now.",
+    "viewProposals": "View proposals",
+    "proposals": "Private proposals",
+    "proposalPrice": "Price in cents",
+    "proposalMessage": "Proposal message",
+    "availableAt": "Available from",
+    "estimatedMinutes": "Estimated minutes (optional)",
+    "submitProposal": "Submit proposal",
+    "accept": "Accept proposal",
+    "loading": "Loading requests...",
+    "error": "We could not load or save quotation requests.",
+    "created": "Request published.",
+    "submitted": "Proposal submitted.",
+    "accepted": "Proposal accepted."
   },
   "Errors": {
     "title": "Something went wrong",

@@ -49,7 +49,8 @@
       "manageProvider": "Gestionar perfil profesional",
       "manageListings": "Gestionar anuncios",
       "manageMessages": "Ver mensajes",
-      "manageNotifications": "Gestionar notificaciones"
+      "manageNotifications": "Gestionar notificaciones",
+      "manageQuotations": "Solicitudes y propuestas"
     }
   },
   "ProviderProfile": {
@@ -176,7 +177,40 @@
     "markRead": "Marcar como leída",
     "conversationStarted": "Nueva conversación iniciada",
     "messageReceived": "Nuevo mensaje recibido",
-    "conversationReported": "Conversación denunciada"
+    "conversationReported": "Conversación denunciada",
+    "requestPublished": "Nueva solicitud de presupuesto publicada",
+    "proposalReceived": "Nueva propuesta recibida",
+    "proposalAccepted": "Tu propuesta ha sido aceptada",
+    "proposalRejected": "Tu propuesta no ha sido seleccionada"
+  },
+  "Quotations": {
+    "title": "Solicitudes y propuestas",
+    "description": "Solicita presupuestos locales, compara propuestas privadas y elige un profesional.",
+    "customerRequests": "Mis solicitudes",
+    "opportunities": "Oportunidades profesionales",
+    "newRequest": "Nueva solicitud de presupuesto",
+    "requestTitle": "Título",
+    "requestDescription": "Descripción del trabajo",
+    "category": "Categoría",
+    "locality": "Localidad",
+    "budget": "Presupuesto en céntimos (opcional)",
+    "deadline": "Plazo para propuestas",
+    "publish": "Publicar solicitud",
+    "emptyRequests": "Todavía no has publicado solicitudes.",
+    "emptyOpportunities": "No hay solicitudes compatibles ahora mismo.",
+    "viewProposals": "Ver propuestas",
+    "proposals": "Propuestas privadas",
+    "proposalPrice": "Precio en céntimos",
+    "proposalMessage": "Mensaje de la propuesta",
+    "availableAt": "Disponible desde",
+    "estimatedMinutes": "Minutos estimados (opcional)",
+    "submitProposal": "Enviar propuesta",
+    "accept": "Aceptar propuesta",
+    "loading": "Cargando solicitudes...",
+    "error": "No hemos podido cargar o guardar las solicitudes.",
+    "created": "Solicitud publicada.",
+    "submitted": "Propuesta enviada.",
+    "accepted": "Propuesta aceptada."
   },
   "Errors": {
     "title": "Algo salió mal",
