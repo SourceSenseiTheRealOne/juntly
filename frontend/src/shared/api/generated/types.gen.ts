@@ -4,6 +4,59 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8080' | (string & {});
 };
 
+export type CreateQuotationRequest = {
+    title: string;
+    description: string;
+    categoryId: string;
+    localityId: string;
+    budgetMinor?: number | null;
+    proposalDeadline: string;
+};
+
+export type QuotationRequest = {
+    id: string;
+    customerId: string;
+    title: string;
+    description: string;
+    categoryId: string;
+    localityId: string;
+    budgetMinor: number | null;
+    proposalDeadline: string;
+    state: 'open' | 'accepted' | 'closed';
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type QuotationRequestsResponse = {
+    requests: Array<QuotationRequest>;
+};
+
+export type SubmitQuotationProposal = {
+    priceMinor: number;
+    message: string;
+    availableAt: string;
+    estimatedMinutes?: number | null;
+    expiresAt?: string | null;
+};
+
+export type QuotationProposal = {
+    id: string;
+    requestId: string;
+    providerId: string;
+    priceMinor: number;
+    message: string;
+    availableAt: string;
+    estimatedMinutes: number | null;
+    expiresAt: string | null;
+    state: 'submitted' | 'accepted' | 'rejected' | 'expired';
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type QuotationProposalsResponse = {
+    proposals: Array<QuotationProposal>;
+};
+
 export type StartConversationRequest = {
     listingId: string;
 };
@@ -62,7 +115,7 @@ export type NotificationPreferences = {
 
 export type Notification = {
     id: string;
-    kind: 'conversation_started' | 'message_received' | 'conversation_reported';
+    kind: 'conversation_started' | 'message_received' | 'conversation_reported' | 'request_published' | 'proposal_received' | 'proposal_accepted' | 'proposal_rejected';
     read: boolean;
     createdAt: string;
 };
@@ -332,6 +385,10 @@ export type ListingIdPath = string;
 export type ConversationIdPath = string;
 
 export type NotificationIdPath = string;
+
+export type QuotationRequestIdPath = string;
+
+export type QuotationProposalIdPath = string;
 
 export type GetHealthData = {
     body?: never;
@@ -1729,3 +1786,208 @@ export type MarkNotificationReadResponses = {
 };
 
 export type MarkNotificationReadResponse = MarkNotificationReadResponses[keyof MarkNotificationReadResponses];
+
+export type ListMyQuotationRequestsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/quotation-requests';
+};
+
+export type ListMyQuotationRequestsErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListMyQuotationRequestsError = ListMyQuotationRequestsErrors[keyof ListMyQuotationRequestsErrors];
+
+export type ListMyQuotationRequestsResponses = {
+    /**
+     * Customer quotation requests
+     */
+    200: QuotationRequestsResponse;
+};
+
+export type ListMyQuotationRequestsResponse = ListMyQuotationRequestsResponses[keyof ListMyQuotationRequestsResponses];
+
+export type CreateQuotationRequestData = {
+    body: CreateQuotationRequest;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/quotation-requests';
+};
+
+export type CreateQuotationRequestErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type CreateQuotationRequestError = CreateQuotationRequestErrors[keyof CreateQuotationRequestErrors];
+
+export type CreateQuotationRequestResponses = {
+    /**
+     * Quotation request created
+     */
+    201: QuotationRequest;
+};
+
+export type CreateQuotationRequestResponse = CreateQuotationRequestResponses[keyof CreateQuotationRequestResponses];
+
+export type ListQuotationOpportunitiesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/quotation-opportunities';
+};
+
+export type ListQuotationOpportunitiesErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListQuotationOpportunitiesError = ListQuotationOpportunitiesErrors[keyof ListQuotationOpportunitiesErrors];
+
+export type ListQuotationOpportunitiesResponses = {
+    /**
+     * Eligible quotation opportunities
+     */
+    200: QuotationRequestsResponse;
+};
+
+export type ListQuotationOpportunitiesResponse = ListQuotationOpportunitiesResponses[keyof ListQuotationOpportunitiesResponses];
+
+export type ListQuotationProposalsData = {
+    body?: never;
+    path: {
+        requestId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/quotation-requests/{requestId}/proposals';
+};
+
+export type ListQuotationProposalsErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListQuotationProposalsError = ListQuotationProposalsErrors[keyof ListQuotationProposalsErrors];
+
+export type ListQuotationProposalsResponses = {
+    /**
+     * Privacy-filtered proposals
+     */
+    200: QuotationProposalsResponse;
+};
+
+export type ListQuotationProposalsResponse = ListQuotationProposalsResponses[keyof ListQuotationProposalsResponses];
+
+export type SubmitQuotationProposalData = {
+    body: SubmitQuotationProposal;
+    path: {
+        requestId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/quotation-requests/{requestId}/proposals';
+};
+
+export type SubmitQuotationProposalErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type SubmitQuotationProposalError = SubmitQuotationProposalErrors[keyof SubmitQuotationProposalErrors];
+
+export type SubmitQuotationProposalResponses = {
+    /**
+     * Proposal submitted
+     */
+    201: QuotationProposal;
+};
+
+export type SubmitQuotationProposalResponse = SubmitQuotationProposalResponses[keyof SubmitQuotationProposalResponses];
+
+export type AcceptQuotationProposalData = {
+    body?: never;
+    path: {
+        requestId: string;
+        proposalId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/quotation-requests/{requestId}/proposals/{proposalId}/accept';
+};
+
+export type AcceptQuotationProposalErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type AcceptQuotationProposalError = AcceptQuotationProposalErrors[keyof AcceptQuotationProposalErrors];
+
+export type AcceptQuotationProposalResponses = {
+    /**
+     * Accepted proposal
+     */
+    200: QuotationProposal;
+};
+
+export type AcceptQuotationProposalResponse = AcceptQuotationProposalResponses[keyof AcceptQuotationProposalResponses];

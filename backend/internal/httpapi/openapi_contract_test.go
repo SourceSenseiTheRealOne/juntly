@@ -32,10 +32,26 @@ func TestReconcileOpenAPIContract(t *testing.T) {
 		}
 	}
 
-	operation := contents[strings.Index(contents, "/api/v1/auth/reconcile:"):]
+	operation := openAPIPathBlock(t, contents, "/api/v1/auth/reconcile:")
 	if strings.Contains(operation, "requestBody:") {
 		t.Fatal("reconciliation operation must not accept a request body")
 	}
+}
+
+func openAPIPathBlock(t *testing.T, contents, path string) string {
+	t.Helper()
+	start := strings.Index(contents, path)
+	if start < 0 {
+		t.Fatalf("OpenAPI contract does not contain path %q", path)
+	}
+	remainder := contents[start:]
+	end := len(remainder)
+	for _, boundary := range []string{"\n  /api/", "\ncomponents:"} {
+		if index := strings.Index(remainder[1:], boundary); index >= 0 && index+1 < end {
+			end = index + 1
+		}
+	}
+	return remainder[:end]
 }
 
 func TestAccountCapabilitiesOpenAPIContract(t *testing.T) {

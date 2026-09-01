@@ -634,6 +634,70 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/quotation-requests:
+    get:
+      operationId: listMyQuotationRequests
+      summary: List quotation requests owned by the authenticated customer.
+      security: [{ clerkSession: [] }]
+      responses:
+        "200": { description: Customer quotation requests, content: { application/json: { schema: { $ref: "#/components/schemas/QuotationRequestsResponse" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+    post:
+      operationId: createQuotationRequest
+      summary: Publish a quotation request for eligible local providers.
+      security: [{ clerkSession: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateQuotationRequest" } } } }
+      responses:
+        "201": { description: Quotation request created, content: { application/json: { schema: { $ref: "#/components/schemas/QuotationRequest" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/quotation-opportunities:
+    get:
+      operationId: listQuotationOpportunities
+      summary: List open requests matching the authenticated provider's active supply.
+      security: [{ clerkSession: [] }]
+      responses:
+        "200": { description: Eligible quotation opportunities, content: { application/json: { schema: { $ref: "#/components/schemas/QuotationRequestsResponse" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/quotation-requests/{requestId}/proposals:
+    parameters: [{ $ref: "#/components/parameters/QuotationRequestIdPath" }]
+    get:
+      operationId: listQuotationProposals
+      summary: List proposals visible to the request owner or the submitting provider.
+      security: [{ clerkSession: [] }]
+      responses:
+        "200": { description: Privacy-filtered proposals, content: { application/json: { schema: { $ref: "#/components/schemas/QuotationProposalsResponse" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+    post:
+      operationId: submitQuotationProposal
+      summary: Submit one private proposal as an eligible provider.
+      security: [{ clerkSession: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SubmitQuotationProposal" } } } }
+      responses:
+        "201": { description: Proposal submitted, content: { application/json: { schema: { $ref: "#/components/schemas/QuotationProposal" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/quotation-requests/{requestId}/proposals/{proposalId}/accept:
+    post:
+      operationId: acceptQuotationProposal
+      summary: Accept exactly one proposal as the request owner.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/QuotationRequestIdPath" }
+        - { $ref: "#/components/parameters/QuotationProposalIdPath" }
+      responses:
+        "200": { description: Accepted proposal, content: { application/json: { schema: { $ref: "#/components/schemas/QuotationProposal" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
 components:
   securitySchemes:
     clerkSession:
@@ -667,6 +731,16 @@ components:
       schema: { type: string, format: uuid }
     NotificationIdPath:
       name: notificationId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    QuotationRequestIdPath:
+      name: requestId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    QuotationProposalIdPath:
+      name: proposalId
       in: path
       required: true
       schema: { type: string, format: uuid }
@@ -731,6 +805,69 @@ components:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
   schemas:
+    CreateQuotationRequest:
+      type: object
+      additionalProperties: false
+      required: [title, description, categoryId, localityId, proposalDeadline]
+      properties:
+        title: { type: string, minLength: 5, maxLength: 140 }
+        description: { type: string, minLength: 20, maxLength: 4000 }
+        categoryId: { type: string, format: uuid }
+        localityId: { type: string, format: uuid }
+        budgetMinor: { type: [integer, "null"], minimum: 1 }
+        proposalDeadline: { type: string, format: date-time }
+    QuotationRequest:
+      type: object
+      additionalProperties: false
+      required: [id, customerId, title, description, categoryId, localityId, budgetMinor, proposalDeadline, state, createdAt, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        customerId: { type: string, format: uuid }
+        title: { type: string }
+        description: { type: string }
+        categoryId: { type: string, format: uuid }
+        localityId: { type: string, format: uuid }
+        budgetMinor: { type: [integer, "null"] }
+        proposalDeadline: { type: string, format: date-time }
+        state: { type: string, enum: [open, accepted, closed] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    QuotationRequestsResponse:
+      type: object
+      additionalProperties: false
+      required: [requests]
+      properties: { requests: { type: array, items: { $ref: "#/components/schemas/QuotationRequest" } } }
+    SubmitQuotationProposal:
+      type: object
+      additionalProperties: false
+      required: [priceMinor, message, availableAt]
+      properties:
+        priceMinor: { type: integer, minimum: 1 }
+        message: { type: string, minLength: 5, maxLength: 2000 }
+        availableAt: { type: string, format: date-time }
+        estimatedMinutes: { type: [integer, "null"], minimum: 15, maximum: 525600 }
+        expiresAt: { type: [string, "null"], format: date-time }
+    QuotationProposal:
+      type: object
+      additionalProperties: false
+      required: [id, requestId, providerId, priceMinor, message, availableAt, estimatedMinutes, expiresAt, state, createdAt, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        requestId: { type: string, format: uuid }
+        providerId: { type: string, format: uuid }
+        priceMinor: { type: integer }
+        message: { type: string }
+        availableAt: { type: string, format: date-time }
+        estimatedMinutes: { type: [integer, "null"] }
+        expiresAt: { type: [string, "null"], format: date-time }
+        state: { type: string, enum: [submitted, accepted, rejected, expired] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    QuotationProposalsResponse:
+      type: object
+      additionalProperties: false
+      required: [proposals]
+      properties: { proposals: { type: array, items: { $ref: "#/components/schemas/QuotationProposal" } } }
     StartConversationRequest:
       type: object
       additionalProperties: false
@@ -808,7 +945,7 @@ components:
       required: [id, kind, read, createdAt]
       properties:
         id: { type: string, format: uuid }
-        kind: { type: string, enum: [conversation_started, message_received, conversation_reported] }
+        kind: { type: string, enum: [conversation_started, message_received, conversation_reported, request_published, proposal_received, proposal_accepted, proposal_rejected] }
         read: { type: boolean }
         createdAt: { type: string, format: date-time }
     NotificationsResponse:

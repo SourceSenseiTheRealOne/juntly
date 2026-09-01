@@ -26,6 +26,7 @@ import (
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/moderation"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/provideraccess"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/providers"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/quotations"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/reference"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/users"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -110,6 +111,7 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	contactChannels := contactreveal.NewProviderChannelService(providerAuthorizer, contactreveal.NewSQLChannelStore(database), config.contactCipher)
 	contactReveal := contactreveal.NewRevealService(userService, contactreveal.NewSQLRevealStore(database), config.contactCipher, time.Now)
 	messagingService := messaging.NewService(userService, messaging.NewSQLStore(database))
+	quotationService := quotations.NewService(userService, quotations.NewSQLStore(database), time.Now)
 	providerService := providers.NewService(providerAuthorizer, providers.NewEntRepository(client), referenceRepository)
 	listingRepository := listings.NewEntRepository(client)
 	listingDrafts := listings.NewService(providerAuthorizer, listingRepository)
@@ -119,5 +121,5 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	ownerListings := listings.NewOwnerService(listingDrafts, listingLifecycle, listingMedia)
 	moderationQueue := moderation.NewQueueService(moderatorAuthorizer, listingRepository)
 	moderationReview := moderation.NewReviewService(moderationQueue, listingLifecycle)
-	return httpapi.NewRouter(healthService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery, contactChannels, contactReveal, messagingService), client, nil
+	return httpapi.NewRouter(healthService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery, contactChannels, contactReveal, messagingService, quotationService), client, nil
 }

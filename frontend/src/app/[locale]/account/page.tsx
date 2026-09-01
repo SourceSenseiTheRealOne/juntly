@@ -55,7 +55,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
         />
         <nav
           aria-label={t("title")}
-          className="mt-6 grid gap-3 border-t border-line pt-6 sm:grid-cols-2"
+          className="mt-6 grid gap-3 border-t border-line pt-6 sm:grid-cols-3"
         >
           <a
             className="market-button-secondary"
@@ -68,6 +68,12 @@ export default async function AccountPage({ params }: AccountPageProps) {
             href={`/${locale}/account/notifications`}
           >
             {t("capabilities.manageNotifications")}
+          </a>
+          <a
+            className="market-button-secondary"
+            href={`/${locale}/account/quotations`}
+          >
+            {t("capabilities.manageQuotations")}
           </a>
         </nav>
       </section>
