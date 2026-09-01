@@ -29,6 +29,7 @@ export default async function ProviderProfilePage({
     "serviceLocalities",
     "languages",
     "travelRadius",
+    "serviceModes",
     "travels",
     "receives",
     "remote",
@@ -44,8 +45,8 @@ export default async function ProviderProfilePage({
     string
   >;
   return (
-    <main className="min-h-screen bg-canvas px-5 py-10 text-ink">
-      <div className="mx-auto w-full max-w-3xl rounded-3xl border border-line bg-surface p-6 shadow-sm sm:p-8">
+    <main className="market-page px-4 py-8 sm:px-6 sm:py-10">
+      <div className="market-panel mx-auto w-full max-w-3xl p-6 sm:p-8">
         <ProviderProfileForm locale={locale} copy={copy} />
       </div>
     </main>

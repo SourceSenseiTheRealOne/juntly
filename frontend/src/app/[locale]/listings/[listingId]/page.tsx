@@ -14,22 +14,24 @@ export default async function PublicListingPage({
   if (!hasLocale(routing.locales, locale) || !uuid(listingId)) notFound();
   const t = await getTranslations({ locale, namespace: "PublicListing" });
   return (
-    <main className="mx-auto w-full max-w-3xl px-5 py-10">
-      <PublicListingDetail
-        locale={locale}
-        listingId={listingId}
-        copy={{
-          loading: t("loading"),
-          error: t("error"),
-          retry: t("retry"),
-          provider: t("provider"),
-          locality: t("locality"),
-          category: t("category"),
-          phone: t("phone"),
-          whatsapp: t("whatsapp"),
-          revealError: t("revealError"),
-        }}
-      />
+    <main className="market-page px-4 py-8 sm:px-6 sm:py-10">
+      <div className="market-container max-w-4xl">
+        <PublicListingDetail
+          locale={locale}
+          listingId={listingId}
+          copy={{
+            loading: t("loading"),
+            error: t("error"),
+            retry: t("retry"),
+            provider: t("provider"),
+            locality: t("locality"),
+            category: t("category"),
+            phone: t("phone"),
+            whatsapp: t("whatsapp"),
+            revealError: t("revealError"),
+          }}
+        />
+      </div>
     </main>
   );
 }

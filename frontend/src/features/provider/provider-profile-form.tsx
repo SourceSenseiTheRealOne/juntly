@@ -38,6 +38,7 @@ export type ProviderProfileCopy = {
   serviceLocalities: string;
   languages: string;
   travelRadius: string;
+  serviceModes: string;
   travels: string;
   receives: string;
   remote: string;
@@ -162,7 +163,10 @@ export function ProviderProfileForm({
       : [...values, value];
   return (
     <section aria-labelledby="provider-profile-title">
-      <h1 id="provider-profile-title" className="text-3xl font-semibold">
+      <h1
+        id="provider-profile-title"
+        className="text-4xl font-bold tracking-[-0.05em]"
+      >
         {copy.title}
       </h1>
       <p className="mt-3 text-muted">{copy.description}</p>
@@ -282,7 +286,7 @@ export function ProviderProfileForm({
           />
         </label>
         <fieldset className="grid gap-3">
-          <legend className="sr-only">Service modes</legend>
+          <legend className="sr-only">{copy.serviceModes}</legend>
           {[
             ["travelsToCustomer", copy.travels],
             ["receivesCustomer", copy.receives],
@@ -314,7 +318,7 @@ export function ProviderProfileForm({
         <button
           type="submit"
           disabled={saving}
-          className="min-h-11 rounded-full bg-ink px-6 font-semibold text-canvas disabled:opacity-60"
+          className="market-button w-full sm:w-auto"
         >
           {saving ? copy.saving : copy.save}
         </button>

@@ -6,6 +6,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { getClerkLocalization } from "@/features/auth/clerk-localization";
+import { MarketplaceNavigation } from "@/features/navigation/marketplace-navigation";
 import { routing } from "@/i18n/routing";
 
 import "../globals.css";
@@ -61,6 +62,8 @@ export default async function LocaleLayout({
   }
 
   const messages = await getMessages({ locale });
+  const navigation = await getTranslations({ locale, namespace: "Navigation" });
+  const auth = await getTranslations({ locale, namespace: "Auth" });
 
   return (
     <html
@@ -77,6 +80,18 @@ export default async function LocaleLayout({
           signUpUrl={`/${locale}/sign-up`}
         >
           <NextIntlClientProvider messages={messages}>
+            <MarketplaceNavigation
+              accountLabel={navigation("account")}
+              accountUrl={`/${locale}/account`}
+              accountNavigationLabel={navigation("accountNavigation")}
+              discoverLabel={navigation("discover")}
+              discoverUrl={`/${locale}/discover`}
+              navigationLabel={navigation("marketplace")}
+              signInLabel={auth("signIn")}
+              signInUrl={`/${locale}/sign-in`}
+              signUpLabel={auth("signUp")}
+              signUpUrl={`/${locale}/sign-up`}
+            />
             {children}
           </NextIntlClientProvider>
         </ClerkProvider>

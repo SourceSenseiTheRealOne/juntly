@@ -189,7 +189,7 @@ export function ListingDashboard({
     );
   return (
     <section aria-labelledby="listings-title">
-      <h1 id="listings-title" className="text-3xl font-semibold">
+      <h1 id="listings-title" className="text-4xl font-bold tracking-[-0.05em]">
         {copy.title}
       </h1>
       <p className="mt-3 text-muted">{copy.description}</p>
@@ -200,13 +200,13 @@ export function ListingDashboard({
       ) : null}
       <button
         type="button"
-        className="mt-5 min-h-11 rounded-full bg-ink px-5 text-canvas"
+        className="market-button mt-5"
         onClick={() => setCreating((v) => !v)}
       >
         {copy.newListing}
       </button>
       {creating ? (
-        <form onSubmit={create} className="mt-6 grid gap-4">
+        <form onSubmit={create} className="market-card mt-6 grid gap-4 p-5">
           <label>
             {copy.titleLabel}
             <input
@@ -276,10 +276,7 @@ export function ListingDashboard({
       <div className="mt-8 grid gap-4">
         {listings?.length ? (
           listings.map((item) => (
-            <article
-              key={item.id}
-              className="rounded-2xl border border-line p-5"
-            >
+            <article key={item.id} className="market-card p-5">
               <h2 className="font-semibold">{item.title}</h2>
               <p className="mt-2 text-sm text-muted">{item.description}</p>
               <p className="mt-3 text-sm font-semibold">{item.state}</p>

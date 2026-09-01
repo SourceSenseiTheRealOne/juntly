@@ -17,11 +17,18 @@
     "visionLinkLabel": "Descubrir la visión",
     "visionTitle": "Creada para conexiones locales reales",
     "visionDescription": "Descubrimiento, contacto y confianza sin quitar elección a las personas. Juntly conecta a quien necesita ayuda con quien sabe hacerla.",
+    "showcaseTitle": "Lo local, más fácil.",
     "footerLabel": "Juntly — nacida en Portugal."
   },
   "Auth": {
     "signIn": "Iniciar sesión",
     "signUp": "Crear cuenta"
+  },
+  "Navigation": {
+    "discover": "Encontrar servicios",
+    "account": "Mi cuenta",
+    "accountNavigation": "Opciones de la cuenta",
+    "marketplace": "Navegación del mercado"
   },
   "Account": {
     "title": "Cuenta Juntly",
@@ -56,6 +63,7 @@
     "serviceLocalities": "Áreas de servicio",
     "languages": "Idiomas",
     "travelRadius": "Distancia máxima en kilómetros",
+    "serviceModes": "Modos de servicio",
     "travels": "Se desplaza al cliente",
     "receives": "Recibe clientes",
     "remote": "Trabaja a distancia",
@@ -108,7 +116,10 @@
     "radiusLabel": "Radio",
     "priceLabel": "Tipo de precio",
     "modeLabel": "Modo de servicio",
-    "details": "Ver anuncio"
+    "details": "Ver anuncio",
+    "marketplaceLabel": "Marketplace Juntly",
+    "locationContextLabel": "Portugal",
+    "filtersLabel": "Filtros disponibles"
   },
   "PublicListing": {
     "loading": "Cargando anuncio…",

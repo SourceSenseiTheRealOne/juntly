@@ -5,11 +5,11 @@ export default async function LoadingPage() {
 
   return (
     <main
-      className="grid min-h-screen place-items-center bg-canvas text-ink"
+      className="market-page grid place-items-center"
       aria-live="polite"
       aria-busy="true"
     >
-      <div className="flex items-center gap-3 text-sm font-medium text-muted">
+      <div className="market-panel flex items-center gap-3 p-5 text-sm font-medium text-muted">
         <span
           className="h-3 w-3 animate-pulse rounded-full bg-accent motion-reduce:animate-none"
           aria-hidden="true"
