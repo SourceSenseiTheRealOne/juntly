@@ -22,6 +22,7 @@ import (
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/httpapi"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/listingmedia"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/listings"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/messaging"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/moderation"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/provideraccess"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/providers"
@@ -108,6 +109,7 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	providerAuthorizer := provideraccess.NewService(userService, accountService)
 	contactChannels := contactreveal.NewProviderChannelService(providerAuthorizer, contactreveal.NewSQLChannelStore(database), config.contactCipher)
 	contactReveal := contactreveal.NewRevealService(userService, contactreveal.NewSQLRevealStore(database), config.contactCipher, time.Now)
+	messagingService := messaging.NewService(userService, messaging.NewSQLStore(database))
 	providerService := providers.NewService(providerAuthorizer, providers.NewEntRepository(client), referenceRepository)
 	listingRepository := listings.NewEntRepository(client)
 	listingDrafts := listings.NewService(providerAuthorizer, listingRepository)
@@ -117,5 +119,5 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	ownerListings := listings.NewOwnerService(listingDrafts, listingLifecycle, listingMedia)
 	moderationQueue := moderation.NewQueueService(moderatorAuthorizer, listingRepository)
 	moderationReview := moderation.NewReviewService(moderationQueue, listingLifecycle)
-	return httpapi.NewRouter(healthService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery, contactChannels, contactReveal), client, nil
+	return httpapi.NewRouter(healthService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery, contactChannels, contactReveal, messagingService), client, nil
 }

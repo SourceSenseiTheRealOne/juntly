@@ -29,6 +29,8 @@ export default async function PublicListingPage({
             phone: t("phone"),
             whatsapp: t("whatsapp"),
             revealError: t("revealError"),
+            message: t("message"),
+            messageError: t("messageError"),
           }}
         />
       </div>

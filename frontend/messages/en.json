@@ -47,7 +47,9 @@
       "loadError": "We could not load your account capabilities.",
       "retry": "Try again",
       "manageProvider": "Manage provider profile",
-      "manageListings": "Manage listings"
+      "manageListings": "Manage listings",
+      "manageMessages": "View messages",
+      "manageNotifications": "Manage notifications"
     }
   },
   "ProviderProfile": {
@@ -130,7 +132,9 @@
     "category": "Category",
     "phone": "Reveal phone",
     "whatsapp": "Reveal WhatsApp",
-    "revealError": "We could not reveal this contact."
+    "revealError": "We could not reveal this contact.",
+    "message": "Send message",
+    "messageError": "We could not start the conversation."
   },
   "ContactChannels": {
     "title": "Contact channels",
@@ -146,6 +150,33 @@
     "consent": "Allow reveal",
     "save": "Save channel",
     "saved": "Channel saved."
+  },
+  "Messaging": {
+    "title": "Messages",
+    "description": "Talk privately with customers and providers.",
+    "empty": "You do not have any conversations yet.",
+    "selectConversation": "Select a conversation",
+    "messageLabel": "Message",
+    "send": "Send",
+    "sending": "Sending...",
+    "loading": "Loading conversations...",
+    "error": "We could not load your messages.",
+    "conversation": "Conversation"
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "description": "Choose how you receive Juntly updates.",
+    "empty": "You do not have any notifications.",
+    "loading": "Loading notifications...",
+    "error": "We could not load or save notifications.",
+    "inApp": "In-app notifications",
+    "email": "Email notifications",
+    "save": "Save preferences",
+    "saved": "Preferences saved.",
+    "markRead": "Mark as read",
+    "conversationStarted": "New conversation started",
+    "messageReceived": "New message received",
+    "conversationReported": "Conversation reported"
   },
   "Errors": {
     "title": "Something went wrong",

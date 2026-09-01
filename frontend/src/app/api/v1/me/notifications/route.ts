@@ -1,0 +1,7 @@
+import { listNotifications } from "@/shared/api/generated";
+import type { Notification, NotificationsResponse } from "@/shared/api/generated";
+import { authorizedHeaders, correlated, dateTime, exact, fail, requestID, requestIDHeader, sessionToken, unavailable, uuid } from "@/features/messaging/protected-bff";
+export const runtime="nodejs";
+export async function GET(request:Request):Promise<Response>{const id=requestID(request.headers),token=await sessionToken();if(!token)return fail("UNAUTHORIZED","Unauthorized",401,id);const baseUrl=process.env.JUNTLY_API_ORIGIN;if(!baseUrl)return unavailable(id);try{const upstream=await listNotifications({baseUrl,headers:authorizedHeaders(token,id)});if(upstream.error||!upstream.response?.ok||!correlated(upstream.response,id)||!validList(upstream.data))return unavailable(id);return Response.json(upstream.data,{status:200,headers:{[requestIDHeader]:id}})}catch{return unavailable(id)}}
+function validList(value:NotificationsResponse|undefined):value is NotificationsResponse{return !!value&&exact(value,["notifications"])&&Array.isArray(value.notifications)&&value.notifications.every(validNotification)}
+function validNotification(value:Notification|undefined):value is Notification{return !!value&&exact(value,["id","kind","read","createdAt"])&&uuid(value.id)&&["conversation_started","message_received","conversation_reported"].includes(value.kind)&&typeof value.read==="boolean"&&dateTime(value.createdAt)}
