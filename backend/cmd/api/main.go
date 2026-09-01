@@ -30,6 +30,7 @@ import (
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/provideraccess"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/providers"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/quotations"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/readiness"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/reference"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/reviews"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/users"
@@ -67,6 +68,10 @@ func run() error {
 		Addr:              addr,
 		Handler:           handler,
 		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       60 * time.Second,
+		MaxHeaderBytes:    1 << 20,
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -103,9 +108,14 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	if err != nil {
 		return nil, nil, err
 	}
+	database.SetMaxOpenConns(25)
+	database.SetMaxIdleConns(10)
+	database.SetConnMaxLifetime(30 * time.Minute)
+	database.SetConnMaxIdleTime(5 * time.Minute)
 	client := ent.NewClient(ent.Driver(entsql.OpenDB(dialect.Postgres, database)))
 
 	healthService := health.NewService(version, time.Now)
+	readinessService := readiness.NewService(database)
 	userService := users.NewService(users.NewEntRepository(client))
 	accountService := accounts.NewService(userService, accounts.NewEntRepository(client))
 	referenceRepository := reference.NewSQLRepository(database)
@@ -129,5 +139,5 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	ownerListings := listings.NewOwnerService(listingDrafts, listingLifecycle, listingMedia)
 	moderationQueue := moderation.NewQueueService(moderatorAuthorizer, listingRepository)
 	moderationReview := moderation.NewReviewService(moderationQueue, listingLifecycle)
-	return httpapi.NewRouter(healthService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery, contactChannels, contactReveal, messagingService, quotationService, bookingService, reviewService, entitlementService, administrationService), client, nil
+	return httpapi.NewRouter(healthService, readinessService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery, contactChannels, contactReveal, messagingService, quotationService, bookingService, reviewService, entitlementService, administrationService), client, nil
 }

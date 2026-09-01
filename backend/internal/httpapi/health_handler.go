@@ -35,9 +35,10 @@ func (h HealthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(h.service.Check(requestID))
 }
 
-func NewRouter(service health.Service, verifier authn.Verifier, reconcileService ReconcileService, accountService AccountService, referenceService ReferenceService, providerProfileService ProviderProfileService, listingService ListingService, moderationListingService ModerationListingService, publicDiscoveryService PublicDiscoveryService, contactChannelService ContactChannelService, contactRevealService ContactRevealService, messagingService MessagingService, quotationService QuotationService, bookingService BookingService, reviewService ReviewService, entitlementService EntitlementService, administrationService AdministrationService) http.Handler {
+func NewRouter(service health.Service, readinessService ReadinessService, verifier authn.Verifier, reconcileService ReconcileService, accountService AccountService, referenceService ReferenceService, providerProfileService ProviderProfileService, listingService ListingService, moderationListingService ModerationListingService, publicDiscoveryService PublicDiscoveryService, contactChannelService ContactChannelService, contactRevealService ContactRevealService, messagingService MessagingService, quotationService QuotationService, bookingService BookingService, reviewService ReviewService, entitlementService EntitlementService, administrationService AdministrationService) http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("/api/v1/health", NewHealthHandler(service))
+	mux.Handle("/api/v1/ready", NewReadinessHandler(readinessService))
 	mux.Handle("/api/v1/catalog/categories", NewCategoriesHandler(referenceService))
 	mux.Handle("/api/v1/reference/languages", NewLanguagesHandler(referenceService))
 	mux.Handle("/api/v1/reference/localities", NewLocalitiesHandler(referenceService))

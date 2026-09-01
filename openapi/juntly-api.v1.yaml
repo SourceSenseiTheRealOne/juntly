@@ -33,6 +33,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/ready:
+    get:
+      operationId: getReadiness
+      summary: Report runtime readiness without dependency details.
+      responses:
+        "200": { description: Runtime dependencies are ready, content: { application/json: { schema: { $ref: "#/components/schemas/ReadinessResponse" } } } }
+        "503": { description: One or more runtime dependencies are unavailable, content: { application/json: { schema: { $ref: "#/components/schemas/ReadinessResponse" } } } }
   /api/v1/me/account:
     get:
       operationId: getAccountCapabilities
@@ -974,6 +981,13 @@ components:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
   schemas:
+    ReadinessResponse:
+      type: object
+      additionalProperties: false
+      required: [ready, database]
+      properties:
+        ready: { type: boolean }
+        database: { type: string, enum: [ready, unavailable] }
     AdministrationMetrics:
       type: object
       additionalProperties: false
