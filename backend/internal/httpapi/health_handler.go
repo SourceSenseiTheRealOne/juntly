@@ -35,7 +35,7 @@ func (h HealthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(h.service.Check(requestID))
 }
 
-func NewRouter(service health.Service, verifier authn.Verifier, reconcileService ReconcileService, accountService AccountService, referenceService ReferenceService, providerProfileService ProviderProfileService, listingService ListingService, moderationListingService ModerationListingService, publicDiscoveryService PublicDiscoveryService, contactChannelService ContactChannelService, contactRevealService ContactRevealService, messagingService MessagingService, quotationService QuotationService, bookingService BookingService, reviewService ReviewService, entitlementService EntitlementService) http.Handler {
+func NewRouter(service health.Service, verifier authn.Verifier, reconcileService ReconcileService, accountService AccountService, referenceService ReferenceService, providerProfileService ProviderProfileService, listingService ListingService, moderationListingService ModerationListingService, publicDiscoveryService PublicDiscoveryService, contactChannelService ContactChannelService, contactRevealService ContactRevealService, messagingService MessagingService, quotationService QuotationService, bookingService BookingService, reviewService ReviewService, entitlementService EntitlementService, administrationService AdministrationService) http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("/api/v1/health", NewHealthHandler(service))
 	mux.Handle("/api/v1/catalog/categories", NewCategoriesHandler(referenceService))
@@ -68,6 +68,8 @@ func NewRouter(service health.Service, verifier authn.Verifier, reconcileService
 	mux.Handle("/api/v1/me/entitlements", authn.RequireVerifiedIdentity(verifier, NewEntitlementHandler(entitlementService)))
 	mux.Handle("/api/v1/me/subscriptions", authn.RequireVerifiedIdentity(verifier, NewEntitlementHandler(entitlementService)))
 	mux.Handle("/api/v1/me/promotions", authn.RequireVerifiedIdentity(verifier, NewEntitlementHandler(entitlementService)))
+	mux.Handle("/api/v1/admin/dashboard", authn.RequireVerifiedIdentity(verifier, NewAdministrationHandler(administrationService)))
+	mux.Handle("/api/v1/admin/moderation", authn.RequireVerifiedIdentity(verifier, NewAdministrationHandler(administrationService)))
 	return mux
 }
 
