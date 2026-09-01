@@ -51,7 +51,8 @@
       "manageMessages": "Ver mensagens",
       "manageNotifications": "Gerir notificações",
       "manageQuotations": "Pedidos e propostas",
-      "manageBookings": "Gerir reservas"
+      "manageBookings": "Gerir reservas",
+      "manageReviews": "Avaliações"
     }
   },
   "ProviderProfile": {
@@ -184,7 +185,9 @@
     "proposalAccepted": "A sua proposta foi aceite",
     "proposalRejected": "A sua proposta não foi selecionada",
     "bookingCreated": "Nova reserva criada",
-    "bookingUpdated": "Estado da reserva atualizado"
+    "bookingUpdated": "Estado da reserva atualizado",
+    "reviewReceived": "Nova avaliação recebida",
+    "reviewResponse": "O prestador respondeu à sua avaliação"
   },
   "Quotations": {
     "title": "Pedidos e propostas",
@@ -240,6 +243,23 @@
     "cancel": "Cancelar",
     "dispute": "Abrir disputa",
     "refund": "Marcar reembolso"
+  },
+  "Reviews": {
+    "title": "Avaliações",
+    "description": "Avalie serviços concluídos e responda às avaliações recebidas.",
+    "newReview": "Avaliar uma reserva concluída",
+    "bookingId": "Identificador da reserva",
+    "rating": "Classificação",
+    "body": "Comentário",
+    "submit": "Publicar avaliação",
+    "received": "Avaliações recebidas",
+    "empty": "Ainda não recebeu avaliações.",
+    "response": "Resposta do prestador",
+    "respond": "Responder",
+    "loading": "A carregar avaliações...",
+    "error": "Não foi possível carregar ou guardar as avaliações.",
+    "created": "Avaliação publicada.",
+    "verified": "Reserva verificada"
   },
   "Errors": {
     "title": "Algo não correu bem",

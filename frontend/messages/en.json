@@ -51,7 +51,8 @@
       "manageMessages": "View messages",
       "manageNotifications": "Manage notifications",
       "manageQuotations": "Requests and proposals",
-      "manageBookings": "Manage bookings"
+      "manageBookings": "Manage bookings",
+      "manageReviews": "Reviews"
     }
   },
   "ProviderProfile": {
@@ -184,7 +185,9 @@
     "proposalAccepted": "Your proposal was accepted",
     "proposalRejected": "Your proposal was not selected",
     "bookingCreated": "New booking created",
-    "bookingUpdated": "Booking status updated"
+    "bookingUpdated": "Booking status updated",
+    "reviewReceived": "New review received",
+    "reviewResponse": "The provider responded to your review"
   },
   "Quotations": {
     "title": "Requests and proposals",
@@ -240,6 +243,23 @@
     "cancel": "Cancel",
     "dispute": "Open dispute",
     "refund": "Mark refunded"
+  },
+  "Reviews": {
+    "title": "Reviews",
+    "description": "Review completed services and respond to reviews you receive.",
+    "newReview": "Review a completed booking",
+    "bookingId": "Booking identifier",
+    "rating": "Rating",
+    "body": "Review",
+    "submit": "Publish review",
+    "received": "Reviews received",
+    "empty": "You have not received any reviews yet.",
+    "response": "Provider response",
+    "respond": "Respond",
+    "loading": "Loading reviews...",
+    "error": "We could not load or save reviews.",
+    "created": "Review published.",
+    "verified": "Verified booking"
   },
   "Errors": {
     "title": "Something went wrong",

@@ -51,7 +51,8 @@
       "manageMessages": "Ver mensajes",
       "manageNotifications": "Gestionar notificaciones",
       "manageQuotations": "Solicitudes y propuestas",
-      "manageBookings": "Gestionar reservas"
+      "manageBookings": "Gestionar reservas",
+      "manageReviews": "Reseñas"
     }
   },
   "ProviderProfile": {
@@ -184,7 +185,9 @@
     "proposalAccepted": "Tu propuesta ha sido aceptada",
     "proposalRejected": "Tu propuesta no ha sido seleccionada",
     "bookingCreated": "Nueva reserva creada",
-    "bookingUpdated": "Estado de la reserva actualizado"
+    "bookingUpdated": "Estado de la reserva actualizado",
+    "reviewReceived": "Nueva reseña recibida",
+    "reviewResponse": "El profesional respondió a tu reseña"
   },
   "Quotations": {
     "title": "Solicitudes y propuestas",
@@ -240,6 +243,23 @@
     "cancel": "Cancelar",
     "dispute": "Abrir disputa",
     "refund": "Marcar reembolso"
+  },
+  "Reviews": {
+    "title": "Reseñas",
+    "description": "Valora servicios completados y responde a las reseñas recibidas.",
+    "newReview": "Valorar una reserva completada",
+    "bookingId": "Identificador de la reserva",
+    "rating": "Valoración",
+    "body": "Reseña",
+    "submit": "Publicar reseña",
+    "received": "Reseñas recibidas",
+    "empty": "Todavía no has recibido reseñas.",
+    "response": "Respuesta del profesional",
+    "respond": "Responder",
+    "loading": "Cargando reseñas...",
+    "error": "No hemos podido cargar o guardar las reseñas.",
+    "created": "Reseña publicada.",
+    "verified": "Reserva verificada"
   },
   "Errors": {
     "title": "Algo salió mal",
