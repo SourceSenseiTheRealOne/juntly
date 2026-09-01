@@ -13,6 +13,8 @@ const copy = {
   phone: "Revelar telefone",
   whatsapp: "Revelar WhatsApp",
   revealError: "Não foi possível revelar o contacto.",
+  message: "Enviar mensagem",
+  messageError: "Não foi possível iniciar a conversa.",
 };
 
 afterEach(() => vi.restoreAllMocks());

@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { ApproveListingData, ApproveListingErrors, ApproveListingResponses, ArchiveListingData, ArchiveListingErrors, ArchiveListingResponses, CreateListingData, CreateListingErrors, CreateListingMediaUploadIntentData, CreateListingMediaUploadIntentErrors, CreateListingMediaUploadIntentResponses, CreateListingResponses, GetAccountCapabilitiesData, GetAccountCapabilitiesErrors, GetAccountCapabilitiesResponses, GetContactChannelStatusesData, GetContactChannelStatusesErrors, GetContactChannelStatusesResponses, GetHealthData, GetHealthErrors, GetHealthResponses, GetMyListingData, GetMyListingErrors, GetMyListingResponses, GetProviderProfileData, GetProviderProfileErrors, GetProviderProfileResponses, GetPublicListingData, GetPublicListingErrors, GetPublicListingResponses, ListLocalitiesData, ListLocalitiesErrors, ListLocalitiesResponses, ListMyListingsData, ListMyListingsErrors, ListMyListingsResponses, ListPendingModerationListingsData, ListPendingModerationListingsErrors, ListPendingModerationListingsResponses, ListServiceCategoriesData, ListServiceCategoriesErrors, ListServiceCategoriesResponses, ListSpokenLanguagesData, ListSpokenLanguagesErrors, ListSpokenLanguagesResponses, PauseListingData, PauseListingErrors, PauseListingResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses, RejectListingData, RejectListingErrors, RejectListingResponses, ReplaceContactChannelData, ReplaceContactChannelErrors, ReplaceContactChannelResponses, ReplaceMyDraftListingData, ReplaceMyDraftListingErrors, ReplaceMyDraftListingResponses, ReplaceProviderProfileData, ReplaceProviderProfileErrors, ReplaceProviderProfileResponses, RevealListingContactData, RevealListingContactErrors, RevealListingContactResponses, SearchPublicListingsData, SearchPublicListingsErrors, SearchPublicListingsResponses, SubmitListingForReviewData, SubmitListingForReviewErrors, SubmitListingForReviewResponses, UpdateAccountCapabilitiesData, UpdateAccountCapabilitiesErrors, UpdateAccountCapabilitiesResponses } from './types.gen';
+import type { ApproveListingData, ApproveListingErrors, ApproveListingResponses, ArchiveListingData, ArchiveListingErrors, ArchiveListingResponses, CreateListingData, CreateListingErrors, CreateListingMediaUploadIntentData, CreateListingMediaUploadIntentErrors, CreateListingMediaUploadIntentResponses, CreateListingResponses, GetAccountCapabilitiesData, GetAccountCapabilitiesErrors, GetAccountCapabilitiesResponses, GetContactChannelStatusesData, GetContactChannelStatusesErrors, GetContactChannelStatusesResponses, GetHealthData, GetHealthErrors, GetHealthResponses, GetMyListingData, GetMyListingErrors, GetMyListingResponses, GetNotificationPreferencesData, GetNotificationPreferencesErrors, GetNotificationPreferencesResponses, GetProviderProfileData, GetProviderProfileErrors, GetProviderProfileResponses, GetPublicListingData, GetPublicListingErrors, GetPublicListingResponses, ListConversationMessagesData, ListConversationMessagesErrors, ListConversationMessagesResponses, ListConversationsData, ListConversationsErrors, ListConversationsResponses, ListLocalitiesData, ListLocalitiesErrors, ListLocalitiesResponses, ListMyListingsData, ListMyListingsErrors, ListMyListingsResponses, ListNotificationsData, ListNotificationsErrors, ListNotificationsResponses, ListPendingModerationListingsData, ListPendingModerationListingsErrors, ListPendingModerationListingsResponses, ListServiceCategoriesData, ListServiceCategoriesErrors, ListServiceCategoriesResponses, ListSpokenLanguagesData, ListSpokenLanguagesErrors, ListSpokenLanguagesResponses, MarkNotificationReadData, MarkNotificationReadErrors, MarkNotificationReadResponses, PauseListingData, PauseListingErrors, PauseListingResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses, RejectListingData, RejectListingErrors, RejectListingResponses, ReplaceContactChannelData, ReplaceContactChannelErrors, ReplaceContactChannelResponses, ReplaceConversationBlockData, ReplaceConversationBlockErrors, ReplaceConversationBlockResponses, ReplaceMyDraftListingData, ReplaceMyDraftListingErrors, ReplaceMyDraftListingResponses, ReplaceNotificationPreferencesData, ReplaceNotificationPreferencesErrors, ReplaceNotificationPreferencesResponses, ReplaceProviderProfileData, ReplaceProviderProfileErrors, ReplaceProviderProfileResponses, ReportConversationData, ReportConversationErrors, ReportConversationResponses, RevealListingContactData, RevealListingContactErrors, RevealListingContactResponses, SearchPublicListingsData, SearchPublicListingsErrors, SearchPublicListingsResponses, SendConversationMessageData, SendConversationMessageErrors, SendConversationMessageResponses, StartListingConversationData, StartListingConversationErrors, StartListingConversationResponses, SubmitListingForReviewData, SubmitListingForReviewErrors, SubmitListingForReviewResponses, UpdateAccountCapabilitiesData, UpdateAccountCapabilitiesErrors, UpdateAccountCapabilitiesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -268,5 +268,115 @@ export const rejectListing = <ThrowOnError extends boolean = false>(options: Opt
 export const reconcileInternalUser = <ThrowOnError extends boolean = false>(options?: Options<ReconcileInternalUserData, ThrowOnError>) => (options?.client ?? client).post<ReconcileInternalUserResponses, ReconcileInternalUserErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/auth/reconcile',
+    ...options
+});
+
+/**
+ * List conversations for the authenticated participant.
+ */
+export const listConversations = <ThrowOnError extends boolean = false>(options?: Options<ListConversationsData, ThrowOnError>) => (options?.client ?? client).get<ListConversationsResponses, ListConversationsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations',
+    ...options
+});
+
+/**
+ * Start or return a conversation with an active listing provider.
+ */
+export const startListingConversation = <ThrowOnError extends boolean = false>(options: Options<StartListingConversationData, ThrowOnError>) => (options.client ?? client).post<StartListingConversationResponses, StartListingConversationErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List private messages for an authenticated participant.
+ */
+export const listConversationMessages = <ThrowOnError extends boolean = false>(options: Options<ListConversationMessagesData, ThrowOnError>) => (options.client ?? client).get<ListConversationMessagesResponses, ListConversationMessagesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations/{conversationId}/messages',
+    ...options
+});
+
+/**
+ * Send a private message as an authenticated participant.
+ */
+export const sendConversationMessage = <ThrowOnError extends boolean = false>(options: Options<SendConversationMessageData, ThrowOnError>) => (options.client ?? client).post<SendConversationMessageResponses, SendConversationMessageErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations/{conversationId}/messages',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Block or unblock a conversation as one of its participants.
+ */
+export const replaceConversationBlock = <ThrowOnError extends boolean = false>(options: Options<ReplaceConversationBlockData, ThrowOnError>) => (options.client ?? client).put<ReplaceConversationBlockResponses, ReplaceConversationBlockErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations/{conversationId}/block',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Report a private conversation or one of its messages.
+ */
+export const reportConversation = <ThrowOnError extends boolean = false>(options: Options<ReportConversationData, ThrowOnError>) => (options.client ?? client).post<ReportConversationResponses, ReportConversationErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations/{conversationId}/reports',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List privacy-safe notifications for the authenticated user.
+ */
+export const listNotifications = <ThrowOnError extends boolean = false>(options?: Options<ListNotificationsData, ThrowOnError>) => (options?.client ?? client).get<ListNotificationsResponses, ListNotificationsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/notifications',
+    ...options
+});
+
+/**
+ * Read notification delivery preferences.
+ */
+export const getNotificationPreferences = <ThrowOnError extends boolean = false>(options?: Options<GetNotificationPreferencesData, ThrowOnError>) => (options?.client ?? client).get<GetNotificationPreferencesResponses, GetNotificationPreferencesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/notifications/preferences',
+    ...options
+});
+
+/**
+ * Replace notification delivery preferences.
+ */
+export const replaceNotificationPreferences = <ThrowOnError extends boolean = false>(options: Options<ReplaceNotificationPreferencesData, ThrowOnError>) => (options.client ?? client).put<ReplaceNotificationPreferencesResponses, ReplaceNotificationPreferencesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/notifications/preferences',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Mark one owned notification as read.
+ */
+export const markNotificationRead = <ThrowOnError extends boolean = false>(options: Options<MarkNotificationReadData, ThrowOnError>) => (options.client ?? client).post<MarkNotificationReadResponses, MarkNotificationReadErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/notifications/{notificationId}/read',
     ...options
 });

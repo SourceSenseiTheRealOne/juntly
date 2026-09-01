@@ -47,7 +47,9 @@
       "loadError": "Não foi possível carregar as capacidades da conta.",
       "retry": "Tentar novamente",
       "manageProvider": "Gerir perfil de prestador",
-      "manageListings": "Gerir anúncios"
+      "manageListings": "Gerir anúncios",
+      "manageMessages": "Ver mensagens",
+      "manageNotifications": "Gerir notificações"
     }
   },
   "ProviderProfile": {
@@ -130,7 +132,9 @@
     "category": "Categoria",
     "phone": "Revelar telefone",
     "whatsapp": "Revelar WhatsApp",
-    "revealError": "Não foi possível revelar o contacto."
+    "revealError": "Não foi possível revelar o contacto.",
+    "message": "Enviar mensagem",
+    "messageError": "Não foi possível iniciar a conversa."
   },
   "ContactChannels": {
     "title": "Canais de contacto",
@@ -146,6 +150,33 @@
     "consent": "Autorizar revelação",
     "save": "Guardar canal",
     "saved": "Canal guardado."
+  },
+  "Messaging": {
+    "title": "Mensagens",
+    "description": "Converse em privado com clientes e prestadores.",
+    "empty": "Ainda não tem conversas.",
+    "selectConversation": "Selecione uma conversa",
+    "messageLabel": "Mensagem",
+    "send": "Enviar",
+    "sending": "A enviar...",
+    "loading": "A carregar conversas...",
+    "error": "Não foi possível carregar as mensagens.",
+    "conversation": "Conversa"
+  },
+  "Notifications": {
+    "title": "Notificações",
+    "description": "Escolha como recebe atualizações da Juntly.",
+    "empty": "Não tem notificações.",
+    "loading": "A carregar notificações...",
+    "error": "Não foi possível carregar ou guardar as notificações.",
+    "inApp": "Notificações na aplicação",
+    "email": "Notificações por email",
+    "save": "Guardar preferências",
+    "saved": "Preferências guardadas.",
+    "markRead": "Marcar como lida",
+    "conversationStarted": "Nova conversa iniciada",
+    "messageReceived": "Nova mensagem recebida",
+    "conversationReported": "Conversa denunciada"
   },
   "Errors": {
     "title": "Algo não correu bem",
