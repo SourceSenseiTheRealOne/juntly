@@ -6,6 +6,8 @@ Deploy immutable digest-pinned API and frontend images through `compose.producti
 
 Required values are `JUNTLY_API_IMAGE`, `JUNTLY_FRONTEND_IMAGE`, `DATABASE_URL`, Clerk keys and authorized parties, `JUNTLY_CONTACT_ENCRYPTION_KEY`, and the public frontend port.
 
+Use the manually dispatched `Publish immutable images` GitHub workflow to build a reviewed ref. It publishes `linux/amd64` API and frontend images to GHCR with the resolved full commit SHA as the only tag, disables mutable provenance/SBOM side artifacts, and records each registry digest in the workflow summary. Supply the resulting `image@sha256:...` references to `compose.production.yaml`; do not deploy a branch tag.
+
 ## Staging promotion
 
 1. Apply all `supabase/migrations/` files in timestamp order to a backed-up staging database.
