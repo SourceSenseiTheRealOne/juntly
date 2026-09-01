@@ -1,2 +1,208 @@
-"use client";import{FormEvent,useEffect,useState,type ReactNode}from"react";import type{AdministrationDashboard}from"@/shared/api/generated";import{validDashboard}from"@/features/administration/administration-bff";export type AdministrationCopy={title:string;description:string;loading:string;error:string;users:string;providers:string;listings:string;bookings:string;reviews:string;reports:string;reportQueue:string;reviewQueue:string;empty:string;reason:string;resolve:string;hide:string;publish:string;saved:string};export function AdministrationDashboardView({copy}:{copy:AdministrationCopy}){const[data,setData]=useState<AdministrationDashboard|null>(null),[failed,setFailed]=useState(false),[saved,setSaved]=useState(false);async function load(){setFailed(false);try{const r=await fetch("/api/v1/admin/dashboard"),v:unknown=await r.json();if(!r.ok||!validDashboard(v))throw new Error();setData(v)}catch{setFailed(true)}}useEffect(()=>{void load()},[]);async function moderate(e:FormEvent<HTMLFormElement>,kind:"hide_review"|"publish_review"|"resolve_report",targetId:string){e.preventDefault();const reason=new FormData(e.currentTarget).get("reason");setFailed(false);setSaved(false);try{const r=await fetch("/api/v1/admin/moderation",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({kind,targetId,reason})});if(!r.ok)throw new Error();setSaved(true);await load()}catch{setFailed(true)}}if(!data&&!failed)return <p>{copy.loading}</p>;return <section aria-labelledby="administration-title"><h1 id="administration-title" className="text-4xl font-bold tracking-[-0.05em]">{copy.title}</h1><p className="mt-3 max-w-3xl text-lg leading-8 text-muted">{copy.description}</p>{failed?<p role="alert" className="mt-6 text-earth">{copy.error}</p>:null}{saved?<p aria-live="polite" className="mt-6 font-semibold text-accent">{copy.saved}</p>:null}{data?<><div className="market-card mt-8 grid gap-5 p-5 sm:grid-cols-2 lg:grid-cols-3"><Metric label={copy.users} value={data.metrics.users}/><Metric label={copy.providers} value={data.metrics.providers}/><Metric label={copy.listings} value={data.metrics.activeListings}/><Metric label={copy.bookings} value={data.metrics.completedBookings}/><Metric label={copy.reviews} value={data.metrics.publishedReviews}/><Metric label={copy.reports} value={data.metrics.openReports}/></div><h2 className="mt-10 text-2xl font-bold">{copy.reportQueue}</h2><div className="mt-4 grid gap-4">{data.queue.reports.length===0?<p className="market-card p-5 text-muted">{copy.empty}</p>:data.queue.reports.map(item=><ModerationForm key={item.id} reason={copy.reason} action={copy.resolve} onSubmit={e=>void moderate(e,"resolve_report",item.id)}><p className="leading-7 text-muted">{item.reason}</p></ModerationForm>)}</div><h2 className="mt-10 text-2xl font-bold">{copy.reviewQueue}</h2><div className="mt-4 grid gap-4">{data.queue.reviews.length===0?<p className="market-card p-5 text-muted">{copy.empty}</p>:data.queue.reviews.map(item=><ModerationForm key={item.id} reason={copy.reason} action={item.state==="published"?copy.hide:copy.publish} onSubmit={e=>void moderate(e,item.state==="published"?"hide_review":"publish_review",item.id)}><p className="font-bold">{"★".repeat(item.rating)}</p><p className="mt-2 leading-7 text-muted">{item.body}</p></ModerationForm>)}</div></>:null}</section>}
-function Metric({label,value}:{label:string;value:number}){return <div><p className="text-sm text-muted">{label}</p><p className="mt-1 text-3xl font-bold">{value}</p></div>}function ModerationForm({children,reason,action,onSubmit}:{children:ReactNode;reason:string;action:string;onSubmit:(e:FormEvent<HTMLFormElement>)=>void}){return <form className="market-card p-5" onSubmit={onSubmit}>{children}<label className="mt-4 grid gap-2 font-semibold">{reason}<input className="market-control" name="reason" required minLength={5} maxLength={500}/></label><button className="market-button mt-4" type="submit">{action}</button></form>}
+"use client";
+import { FormEvent, useEffect, useState, type ReactNode } from "react";
+import type { AdministrationDashboard } from "@/shared/api/generated";
+import { validDashboard } from "@/features/administration/administration-bff";
+export type AdministrationCopy = {
+  title: string;
+  description: string;
+  loading: string;
+  error: string;
+  users: string;
+  providers: string;
+  listings: string;
+  bookings: string;
+  reviews: string;
+  reports: string;
+  reportQueue: string;
+  reviewQueue: string;
+  empty: string;
+  reason: string;
+  resolve: string;
+  hide: string;
+  publish: string;
+  saved: string;
+};
+export function AdministrationDashboardView({
+  copy,
+}: {
+  copy: AdministrationCopy;
+}) {
+  const [data, setData] = useState<AdministrationDashboard | null>(null),
+    [failed, setFailed] = useState(false),
+    [saved, setSaved] = useState(false);
+  async function load() {
+    setFailed(false);
+    try {
+      const r = await fetch("/api/v1/admin/dashboard"),
+        v: unknown = await r.json();
+      if (!r.ok || !validDashboard(v)) throw new Error();
+      setData(v);
+    } catch {
+      setFailed(true);
+    }
+  }
+  useEffect(() => {
+    let active = true;
+    void fetchDashboard()
+      .then((value) => {
+        if (active) setData(value);
+      })
+      .catch(() => {
+        if (active) setFailed(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+  async function moderate(
+    e: FormEvent<HTMLFormElement>,
+    kind: "hide_review" | "publish_review" | "resolve_report",
+    targetId: string,
+  ) {
+    e.preventDefault();
+    const reason = new FormData(e.currentTarget).get("reason");
+    setFailed(false);
+    setSaved(false);
+    try {
+      const r = await fetch("/api/v1/admin/moderation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind, targetId, reason }),
+      });
+      if (!r.ok) throw new Error();
+      setSaved(true);
+      await load();
+    } catch {
+      setFailed(true);
+    }
+  }
+  if (!data && !failed) return <p>{copy.loading}</p>;
+  return (
+    <section aria-labelledby="administration-title">
+      <h1
+        id="administration-title"
+        className="text-4xl font-bold tracking-[-0.05em]"
+      >
+        {copy.title}
+      </h1>
+      <p className="mt-3 max-w-3xl text-lg leading-8 text-muted">
+        {copy.description}
+      </p>
+      {failed ? (
+        <p role="alert" className="mt-6 text-earth">
+          {copy.error}
+        </p>
+      ) : null}
+      {saved ? (
+        <p aria-live="polite" className="mt-6 font-semibold text-accent">
+          {copy.saved}
+        </p>
+      ) : null}
+      {data ? (
+        <>
+          <div className="market-card mt-8 grid gap-5 p-5 sm:grid-cols-2 lg:grid-cols-3">
+            <Metric label={copy.users} value={data.metrics.users} />
+            <Metric label={copy.providers} value={data.metrics.providers} />
+            <Metric label={copy.listings} value={data.metrics.activeListings} />
+            <Metric
+              label={copy.bookings}
+              value={data.metrics.completedBookings}
+            />
+            <Metric
+              label={copy.reviews}
+              value={data.metrics.publishedReviews}
+            />
+            <Metric label={copy.reports} value={data.metrics.openReports} />
+          </div>
+          <h2 className="mt-10 text-2xl font-bold">{copy.reportQueue}</h2>
+          <div className="mt-4 grid gap-4">
+            {data.queue.reports.length === 0 ? (
+              <p className="market-card p-5 text-muted">{copy.empty}</p>
+            ) : (
+              data.queue.reports.map((item) => (
+                <ModerationForm
+                  key={item.id}
+                  reason={copy.reason}
+                  action={copy.resolve}
+                  onSubmit={(e) => void moderate(e, "resolve_report", item.id)}
+                >
+                  <p className="leading-7 text-muted">{item.reason}</p>
+                </ModerationForm>
+              ))
+            )}
+          </div>
+          <h2 className="mt-10 text-2xl font-bold">{copy.reviewQueue}</h2>
+          <div className="mt-4 grid gap-4">
+            {data.queue.reviews.length === 0 ? (
+              <p className="market-card p-5 text-muted">{copy.empty}</p>
+            ) : (
+              data.queue.reviews.map((item) => (
+                <ModerationForm
+                  key={item.id}
+                  reason={copy.reason}
+                  action={item.state === "published" ? copy.hide : copy.publish}
+                  onSubmit={(e) =>
+                    void moderate(
+                      e,
+                      item.state === "published"
+                        ? "hide_review"
+                        : "publish_review",
+                      item.id,
+                    )
+                  }
+                >
+                  <p className="font-bold">{"★".repeat(item.rating)}</p>
+                  <p className="mt-2 leading-7 text-muted">{item.body}</p>
+                </ModerationForm>
+              ))
+            )}
+          </div>
+        </>
+      ) : null}
+    </section>
+  );
+}
+async function fetchDashboard(): Promise<AdministrationDashboard> {
+  const response = await fetch("/api/v1/admin/dashboard");
+  const value: unknown = await response.json();
+  if (!response.ok || !validDashboard(value)) throw new Error();
+  return value;
+}
+function Metric({ label, value }: { label: string; value: number }) {
+  return (
+    <div>
+      <p className="text-sm text-muted">{label}</p>
+      <p className="mt-1 text-3xl font-bold">{value}</p>
+    </div>
+  );
+}
+function ModerationForm({
+  children,
+  reason,
+  action,
+  onSubmit,
+}: {
+  children: ReactNode;
+  reason: string;
+  action: string;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <form className="market-card p-5" onSubmit={onSubmit}>
+      {children}
+      <label className="mt-4 grid gap-2 font-semibold">
+        {reason}
+        <input
+          className="market-control"
+          name="reason"
+          required
+          minLength={5}
+          maxLength={500}
+        />
+      </label>
+      <button className="market-button mt-4" type="submit">
+        {action}
+      </button>
+    </form>
+  );
+}

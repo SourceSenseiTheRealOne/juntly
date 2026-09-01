@@ -1,8 +1,82 @@
-import { getNotificationPreferences, replaceNotificationPreferences } from "@/shared/api/generated";
+import {
+  getNotificationPreferences,
+  replaceNotificationPreferences,
+} from "@/shared/api/generated";
 import type { NotificationPreferences } from "@/shared/api/generated";
-import { authorizedHeaders, correlated, exact, fail, requestID, requestIDHeader, sessionToken, unavailable } from "@/features/messaging/protected-bff";
-export const runtime="nodejs";
-export async function GET(request:Request):Promise<Response>{return proxy(request)}
-export async function PUT(request:Request):Promise<Response>{let value:unknown;try{value=JSON.parse(await request.text())}catch{return fail("INVALID_REQUEST","Invalid request",400,requestID(request.headers))};if(!valid(value))return fail("INVALID_REQUEST","Invalid request",400,requestID(request.headers));return proxy(request,value)}
-async function proxy(request:Request,body?:NotificationPreferences):Promise<Response>{const id=requestID(request.headers),token=await sessionToken();if(!token)return fail("UNAUTHORIZED","Unauthorized",401,id);const baseUrl=process.env.JUNTLY_API_ORIGIN;if(!baseUrl)return unavailable(id);try{const upstream=body?await replaceNotificationPreferences({baseUrl,body,headers:authorizedHeaders(token,id)}):await getNotificationPreferences({baseUrl,headers:authorizedHeaders(token,id)});if(upstream.error||!upstream.response?.ok||!correlated(upstream.response,id)||!valid(upstream.data))return unavailable(id);return Response.json(upstream.data,{status:200,headers:{[requestIDHeader]:id}})}catch{return unavailable(id)}}
-function valid(value:unknown):value is NotificationPreferences{return exact(value,["inAppEnabled","emailEnabled"])&&typeof value.inAppEnabled==="boolean"&&typeof value.emailEnabled==="boolean"}
+import {
+  authorizedHeaders,
+  correlated,
+  exact,
+  fail,
+  requestID,
+  requestIDHeader,
+  sessionToken,
+  unavailable,
+} from "@/features/messaging/protected-bff";
+export const runtime = "nodejs";
+export async function GET(request: Request): Promise<Response> {
+  return proxy(request);
+}
+export async function PUT(request: Request): Promise<Response> {
+  let value: unknown;
+  try {
+    value = JSON.parse(await request.text());
+  } catch {
+    return fail(
+      "INVALID_REQUEST",
+      "Invalid request",
+      400,
+      requestID(request.headers),
+    );
+  }
+  if (!valid(value))
+    return fail(
+      "INVALID_REQUEST",
+      "Invalid request",
+      400,
+      requestID(request.headers),
+    );
+  return proxy(request, value);
+}
+async function proxy(
+  request: Request,
+  body?: NotificationPreferences,
+): Promise<Response> {
+  const id = requestID(request.headers),
+    token = await sessionToken();
+  if (!token) return fail("UNAUTHORIZED", "Unauthorized", 401, id);
+  const baseUrl = process.env.JUNTLY_API_ORIGIN;
+  if (!baseUrl) return unavailable(id);
+  try {
+    const upstream = body
+      ? await replaceNotificationPreferences({
+          baseUrl,
+          body,
+          headers: authorizedHeaders(token, id),
+        })
+      : await getNotificationPreferences({
+          baseUrl,
+          headers: authorizedHeaders(token, id),
+        });
+    if (
+      upstream.error ||
+      !upstream.response?.ok ||
+      !correlated(upstream.response, id) ||
+      !valid(upstream.data)
+    )
+      return unavailable(id);
+    return Response.json(upstream.data, {
+      status: 200,
+      headers: { [requestIDHeader]: id },
+    });
+  } catch {
+    return unavailable(id);
+  }
+}
+function valid(value: unknown): value is NotificationPreferences {
+  return (
+    exact(value, ["inAppEnabled", "emailEnabled"]) &&
+    typeof value.inAppEnabled === "boolean" &&
+    typeof value.emailEnabled === "boolean"
+  );
+}

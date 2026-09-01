@@ -25,20 +25,43 @@ describe("MessagingInbox", () => {
       .fn()
       .mockResolvedValueOnce(
         Response.json({
-          conversations: [{ id: conversationId, listingId: null, customerId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", providerId: "cccccccc-cccc-4ccc-8ccc-cccccccccccc", blocked: false, createdAt: "2026-09-01T12:00:00Z", updatedAt: "2026-09-01T12:00:00Z" }],
+          conversations: [
+            {
+              id: conversationId,
+              listingId: null,
+              customerId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+              providerId: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+              blocked: false,
+              createdAt: "2026-09-01T12:00:00Z",
+              updatedAt: "2026-09-01T12:00:00Z",
+            },
+          ],
         }),
       )
       .mockResolvedValueOnce(Response.json({ messages: [] }))
       .mockResolvedValueOnce(
-        Response.json({ id: "dddddddd-dddd-4ddd-8ddd-dddddddddddd", conversationId, senderId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", body: "Boa tarde", createdAt: "2026-09-01T12:01:00Z" }, { status: 201 }),
+        Response.json(
+          {
+            id: "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+            conversationId,
+            senderId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+            body: "Boa tarde",
+            createdAt: "2026-09-01T12:01:00Z",
+          },
+          { status: 201 },
+        ),
       );
     vi.stubGlobal("fetch", fetchMock);
 
     render(<MessagingInbox copy={copy} />);
-    const conversation = await screen.findByRole("button", { name: /Conversa 1/ });
+    const conversation = await screen.findByRole("button", {
+      name: /Conversa 1/,
+    });
     fireEvent.click(conversation);
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
-    fireEvent.change(screen.getByLabelText(copy.messageLabel), { target: { value: "Boa tarde" } });
+    fireEvent.change(screen.getByLabelText(copy.messageLabel), {
+      target: { value: "Boa tarde" },
+    });
     fireEvent.click(screen.getByRole("button", { name: copy.send }));
 
     expect(await screen.findByText("Boa tarde")).toBeInTheDocument();
