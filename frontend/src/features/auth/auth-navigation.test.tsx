@@ -22,6 +22,7 @@ vi.mock("@clerk/nextjs", () => ({
 import { AuthNavigation } from "./auth-navigation";
 
 const copy = {
+  navigationLabel: "Opções da conta",
   signInLabel: "Entrar",
   signInUrl: "/pt-PT/sign-in",
   signUpLabel: "Criar conta",
@@ -33,6 +34,9 @@ describe("AuthNavigation", () => {
     clerkState.signedIn = false;
     render(<AuthNavigation {...copy} />);
 
+    expect(
+      screen.getByRole("navigation", { name: copy.navigationLabel }),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: copy.signInLabel }),
     ).toHaveAttribute("href", copy.signInUrl);

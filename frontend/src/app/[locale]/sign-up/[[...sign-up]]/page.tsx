@@ -16,7 +16,7 @@ export default async function SignUpPage({ params }: AuthPageProps) {
   }
 
   return (
-    <main className="grid min-h-screen place-items-center bg-canvas px-5 py-12 text-ink">
+    <main className="market-page grid place-items-center px-5 py-12">
       <SignUp
         fallbackRedirectUrl={`/${locale}/account`}
         signInUrl={`/${locale}/sign-in`}

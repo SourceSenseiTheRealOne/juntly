@@ -16,24 +16,26 @@ export default async function ContactChannelsPage({
   await requireAuthenticatedUser(locale);
   const t = await getTranslations({ locale, namespace: "ContactChannels" });
   return (
-    <main className="mx-auto w-full max-w-3xl px-5 py-10">
-      <ContactChannelsCard
-        copy={{
-          title: t("title"),
-          description: t("description"),
-          loading: t("loading"),
-          error: t("error"),
-          retry: t("retry"),
-          phone: t("phone"),
-          whatsapp: t("whatsapp"),
-          contact: t("contact"),
-          formatHint: t("formatHint"),
-          enabled: t("enabled"),
-          consent: t("consent"),
-          save: t("save"),
-          saved: t("saved"),
-        }}
-      />
+    <main className="market-page px-4 py-8 sm:px-6 sm:py-10">
+      <div className="market-panel mx-auto w-full max-w-3xl p-6 sm:p-8">
+        <ContactChannelsCard
+          copy={{
+            title: t("title"),
+            description: t("description"),
+            loading: t("loading"),
+            error: t("error"),
+            retry: t("retry"),
+            phone: t("phone"),
+            whatsapp: t("whatsapp"),
+            contact: t("contact"),
+            formatHint: t("formatHint"),
+            enabled: t("enabled"),
+            consent: t("consent"),
+            save: t("save"),
+            saved: t("saved"),
+          }}
+        />
+      </div>
     </main>
   );
 }

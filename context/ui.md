@@ -11,7 +11,24 @@
 
 Juntly must feel trustworthy, local, clear, and welcoming rather than technical or corporate. Mobile use and slow rural connections are primary constraints. The interface uses plain pt-PT language, short forms, clear confirmations, helpful empty/error states, and visible distinctions between individuals, verified professionals, businesses, organic results, and promotions.
 
-The bootstrap uses neutral, high-contrast foundation tokens only. Final brand visual direction requires a later approved design slice; the shell must not freeze an unreviewed final identity.
+## Approved marketplace visual direction
+
+The 2026-08-25 marketplace redesign is approved. It translates the reviewed
+browse-screen reference into Juntly-owned presentation rules without copying
+the reference's brand, content, imagery, or assets:
+
+- off-white canvas, cool mist control surfaces, white cards, blue-gray borders,
+  and dark plum-charcoal ink;
+- a shared marketplace header, prominent discovery toolbar, rounded controls,
+  and content-first editorial listing cards;
+- a wide desktop discovery grid that becomes one readable column on narrow
+  screens;
+- semantic `market-*` utilities for page, container, panel, card, control,
+  button, and chip treatments.
+
+The redesign remains presentation-only. It does not change locale routing,
+same-origin BFF behavior, authorization, privacy boundaries, contacts, or API
+contracts.
 
 ## Design-token baseline
 

@@ -43,11 +43,12 @@ export function ContactRevealControl({
     }
   }
   return (
-    <section className="mt-8" aria-live="polite">
+    <section className="mt-8 border-t border-line pt-5" aria-live="polite">
       <div className="flex flex-wrap gap-3">
         <button
           type="button"
           disabled={pending !== null || !!reveals.phone}
+          className="market-button w-full"
           onClick={() => void reveal("phone")}
         >
           {copy.phone}
@@ -55,13 +56,22 @@ export function ContactRevealControl({
         <button
           type="button"
           disabled={pending !== null || !!reveals.whatsapp}
+          className="market-button-secondary w-full"
           onClick={() => void reveal("whatsapp")}
         >
           {copy.whatsapp}
         </button>
       </div>
-      {reveals.phone ? <p className="mt-3">{reveals.phone}</p> : null}
-      {reveals.whatsapp ? <p className="mt-3">{reveals.whatsapp}</p> : null}
+      {reveals.phone ? (
+        <p className="mt-4 rounded-xl bg-accent-soft p-4 font-semibold text-ink">
+          {reveals.phone}
+        </p>
+      ) : null}
+      {reveals.whatsapp ? (
+        <p className="mt-4 rounded-xl bg-accent-soft p-4 font-semibold text-ink">
+          {reveals.whatsapp}
+        </p>
+      ) : null}
       {failed ? (
         <p role="alert" className="mt-3 text-earth">
           {copy.error}

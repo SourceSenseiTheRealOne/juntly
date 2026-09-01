@@ -16,6 +16,7 @@ const copy = {
   serviceLocalities: "Áreas de serviço",
   languages: "Idiomas",
   travelRadius: "Distância máxima em quilómetros",
+  serviceModes: "Modos de serviço",
   travels: "Desloca-se ao cliente",
   receives: "Recebe clientes",
   remote: "Trabalha à distância",
@@ -53,6 +54,9 @@ describe("ProviderProfileForm", () => {
     expect(screen.getByLabelText(copy.primaryLocality)).toHaveValue(
       locality.id,
     );
+    expect(
+      screen.getByRole("group", { name: copy.serviceModes }),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText(language.name)).toBeChecked();
     expect(
       screen.getByText("© OpenStreetMap contributors"),

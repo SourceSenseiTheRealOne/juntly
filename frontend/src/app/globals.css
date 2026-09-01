@@ -1,16 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --canvas: #f7f4ed;
-  --surface: #fffdf8;
-  --ink: #252720;
-  --muted: #64675c;
-  --line: #ded9cc;
-  --accent: #39705b;
-  --accent-soft: #cfe3d9;
-  --earth: #bd744f;
-  --earth-soft: #ead2c4;
-  --focus: #176bff;
+  --canvas: #f5f7fb;
+  --surface: #ffffff;
+  --ink: #493941;
+  --muted: #6e6670;
+  --line: #dce2ec;
+  --accent: #b95163;
+  --accent-soft: #f5e8ec;
+  --earth: #9b634f;
+  --earth-soft: #f5e9e3;
+  --focus: #315fd8;
+  --control: #eaf0f7;
+  --control-strong: #dce7f3;
+  --shadow-card: 0 14px 34px rgba(56, 61, 73, 0.08);
 }
 
 @theme inline {
@@ -24,6 +27,8 @@
   --color-earth: var(--earth);
   --color-earth-soft: var(--earth-soft);
   --color-focus: var(--focus);
+  --color-control: var(--control);
+  --color-control-strong: var(--control-strong);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -45,6 +50,152 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
+a,
+button,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+select,
+textarea {
+  color: var(--ink);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.market-page {
+  min-height: calc(100vh - 4rem);
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.market-container {
+  width: min(100% - 2rem, 76rem);
+  margin-inline: auto;
+}
+
+.market-panel {
+  border: 1px solid var(--line);
+  border-radius: 1.5rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+.market-card {
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  background: var(--surface);
+  box-shadow: 0 5px 16px rgba(56, 61, 73, 0.04);
+}
+
+.market-control {
+  min-height: 2.875rem;
+  border: 1px solid var(--line);
+  border-radius: 0.875rem;
+  background: var(--control);
+  padding-inline: 1rem;
+  outline: none;
+}
+
+.market-control:focus-visible {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 20%, transparent);
+}
+
+.market-panel
+  :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  min-height: 2.875rem;
+  border: 1px solid var(--line);
+  border-radius: 0.875rem;
+  background: var(--control);
+  padding: 0.625rem 1rem;
+  outline: none;
+}
+
+.market-panel
+  :where(
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea
+  ):focus-visible {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 20%, transparent);
+}
+
+.market-button {
+  display: inline-flex;
+  min-height: 2.875rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.875rem;
+  background: var(--ink);
+  padding-inline: 1.125rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--surface);
+  outline: none;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.market-button:hover {
+  background: color-mix(in srgb, var(--ink) 88%, black);
+  transform: translateY(-1px);
+}
+.market-button:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 30%, transparent);
+}
+.market-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+  transform: none;
+}
+
+.market-button-secondary {
+  display: inline-flex;
+  min-height: 2.875rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 0.875rem;
+  background: var(--surface);
+  padding-inline: 1.125rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ink);
+  outline: none;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.market-button-secondary:hover {
+  background: var(--control);
+}
+.market-button-secondary:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 30%, transparent);
+}
+
+.market-chip {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--control);
+  padding-inline: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
 ::selection {
   background: var(--accent-soft);
   color: var(--ink);
@@ -62,5 +213,9 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .market-button {
+    transition: none;
   }
 }

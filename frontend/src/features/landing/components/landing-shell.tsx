@@ -1,94 +1,62 @@
 import type { HealthStatusLabels } from "./health-status-indicator";
 import { HealthStatusIndicator } from "./health-status-indicator";
-import { AuthNavigation } from "@/features/auth/auth-navigation";
 
 type LandingShellProps = {
-  eyebrow: string;
   tagline: string;
   heading: string;
   description: string;
   statusLabel: string;
   healthStatusLabels: HealthStatusLabels;
-  signInLabel: string;
-  signInUrl: string;
-  signUpLabel: string;
-  signUpUrl: string;
   visionLinkLabel: string;
   visionTitle: string;
   visionDescription: string;
+  showcaseTitle: string;
   footerLabel: string;
 };
 
 export function LandingShell({
-  eyebrow,
   tagline,
   heading,
   description,
   statusLabel,
   healthStatusLabels,
-  signInLabel,
-  signInUrl,
-  signUpLabel,
-  signUpUrl,
   visionLinkLabel,
   visionTitle,
   visionDescription,
+  showcaseTitle,
   footerLabel,
 }: LandingShellProps) {
   return (
-    <div className="flex min-h-screen flex-col overflow-hidden bg-canvas text-ink">
-      <header className="relative z-10 border-b border-line/80 bg-canvas/90 backdrop-blur-sm">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 sm:px-8 lg:px-10">
-          <a
-            href="#content"
-            className="rounded-sm text-2xl font-bold tracking-[-0.04em] text-ink transition-colors outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-4 focus-visible:ring-offset-canvas"
-            aria-label="Juntly"
-          >
-            Juntly<span className="text-accent">.</span>
-          </a>
-          <div className="flex items-center gap-3 sm:gap-5">
-            <p className="hidden text-sm font-medium text-muted sm:block">
-              {eyebrow}
-            </p>
-            <AuthNavigation
-              signInLabel={signInLabel}
-              signInUrl={signInUrl}
-              signUpLabel={signUpLabel}
-              signUpUrl={signUpUrl}
-            />
-          </div>
-        </div>
-      </header>
-
+    <div className="market-page flex min-h-screen flex-col overflow-hidden">
       <main id="content" className="flex-1">
         <section className="relative isolate">
-          <div className="absolute inset-0 -z-10 opacity-70" aria-hidden="true">
-            <div className="absolute -top-36 right-[-9rem] h-96 w-96 rounded-full bg-accent-soft blur-3xl" />
-            <div className="absolute bottom-[-12rem] left-[-10rem] h-80 w-80 rounded-full bg-earth-soft blur-3xl" />
+          <div
+            className="absolute inset-0 -z-10 overflow-hidden"
+            aria-hidden="true"
+          >
+            <div className="absolute -top-36 right-[-9rem] h-96 w-96 rounded-full bg-control blur-3xl" />
+            <div className="absolute bottom-[-12rem] left-[-10rem] h-80 w-80 rounded-full bg-accent-soft blur-3xl" />
           </div>
 
-          <div className="mx-auto grid min-h-[70vh] w-full max-w-6xl items-center gap-14 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[1.35fr_0.65fr] lg:px-10 lg:py-32">
+          <div className="market-container grid min-h-[68vh] items-center gap-12 py-16 sm:py-20 lg:grid-cols-[1.2fr_0.8fr] lg:py-24">
             <div className="max-w-3xl">
-              <p className="mb-5 text-sm font-semibold tracking-[0.16em] text-accent uppercase">
+              <p className="mb-5 text-xs font-bold tracking-[0.16em] text-accent uppercase">
                 {tagline}
               </p>
-              <h1 className="text-5xl leading-[0.98] font-semibold tracking-[-0.055em] text-balance text-ink sm:text-6xl lg:text-7xl">
+              <h1 className="text-5xl leading-[0.98] font-bold tracking-[-0.06em] text-balance text-ink sm:text-6xl lg:text-7xl">
                 {heading}
               </h1>
               <p className="mt-7 max-w-2xl text-lg leading-8 text-pretty text-muted sm:text-xl">
                 {description}
               </p>
               <div className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
-                <a
-                  href="#vision"
-                  className="inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-6 py-3 text-sm font-semibold text-canvas transition-transform outline-none hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-4 focus-visible:ring-offset-canvas motion-reduce:transform-none"
-                >
+                <a href="#vision" className="market-button">
                   {visionLinkLabel}
                   <span className="ml-2" aria-hidden="true">
                     ↓
                   </span>
                 </a>
-                <span className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-5 text-sm font-medium text-muted shadow-sm">
+                <span className="inline-flex min-h-11 items-center rounded-xl border border-line bg-surface px-5 text-sm font-medium text-muted shadow-sm">
                   <span
                     className="mr-3 h-2.5 w-2.5 rounded-full bg-accent"
                     aria-hidden="true"
@@ -99,20 +67,32 @@ export function LandingShell({
               </div>
             </div>
 
-            <div className="relative mx-auto hidden aspect-square w-full max-w-sm lg:block">
-              <div className="absolute inset-0 rounded-full border border-line bg-surface/70 shadow-[0_32px_90px_rgba(53,45,35,0.10)]" />
-              <div className="absolute inset-[16%] rounded-full border border-accent/25 bg-accent-soft/70" />
-              <div className="absolute inset-[34%] grid place-items-center rounded-full bg-accent text-5xl font-bold tracking-[-0.08em] text-white shadow-xl">
-                J
+            <div className="market-panel relative mx-auto hidden w-full max-w-md overflow-hidden p-5 lg:block">
+              <div className="grid min-h-96 grid-cols-[0.8fr_1.2fr] gap-4 rounded-2xl bg-control p-4">
+                <div className="rounded-xl bg-ink p-5 text-surface">
+                  <p className="text-xs font-bold tracking-[0.14em] text-accent-soft uppercase">
+                    Juntly
+                  </p>
+                  <p className="mt-20 text-3xl leading-none font-bold tracking-[-0.06em]">
+                    {showcaseTitle}
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  <div className="h-28 rounded-xl bg-surface" />
+                  <div className="h-20 rounded-xl border border-line bg-surface p-4">
+                    <div className="h-2 w-20 rounded-full bg-control-strong" />
+                    <div className="mt-3 h-3 w-full rounded-full bg-control" />
+                    <div className="mt-2 h-3 w-3/4 rounded-full bg-control" />
+                  </div>
+                  <div className="h-20 rounded-xl bg-accent-soft" />
+                </div>
               </div>
-              <span className="absolute top-[12%] right-[8%] h-5 w-5 rounded-full bg-earth" />
-              <span className="absolute bottom-[18%] left-[6%] h-3 w-3 rounded-full bg-accent" />
             </div>
           </div>
         </section>
 
         <section id="vision" className="border-y border-line bg-surface">
-          <div className="mx-auto grid w-full max-w-6xl gap-7 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[0.8fr_1.2fr] lg:px-10">
+          <div className="market-container grid gap-7 py-16 sm:py-20 lg:grid-cols-[0.8fr_1.2fr]">
             <p className="text-sm font-semibold tracking-[0.16em] text-accent uppercase">
               Juntly
             </p>
@@ -128,10 +108,10 @@ export function LandingShell({
         </section>
       </main>
 
-      <footer className="bg-ink text-canvas">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-5 py-8 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
+      <footer className="bg-ink text-surface">
+        <div className="market-container flex flex-col gap-3 py-8 text-sm sm:flex-row sm:items-center sm:justify-between">
           <strong className="text-lg tracking-[-0.03em]">Juntly.</strong>
-          <p className="text-canvas/70">{footerLabel}</p>
+          <p className="text-surface/70">{footerLabel}</p>
         </div>
       </footer>
     </div>
