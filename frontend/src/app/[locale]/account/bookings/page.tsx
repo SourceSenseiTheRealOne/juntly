@@ -1,1 +1,49 @@
-import{hasLocale}from"next-intl";import{getTranslations}from"next-intl/server";import{notFound}from"next/navigation";import{requireAuthenticatedUser}from"@/features/auth/require-session";import{BookingDashboard}from"@/features/bookings/booking-dashboard";import{routing}from"@/i18n/routing";export const dynamic="force-dynamic";export default async function BookingsPage({params}:PageProps<"/[locale]/account/bookings">){const{locale}=await params;if(!hasLocale(routing.locales,locale))notFound();await requireAuthenticatedUser(locale);const t=await getTranslations({locale,namespace:"Bookings"});return <main className="market-page px-4 py-8 sm:px-6 sm:py-10"><div className="market-panel mx-auto w-full max-w-5xl p-6 sm:p-8"><BookingDashboard copy={{title:t("title"),description:t("description"),newBooking:t("newBooking"),sourceType:t("sourceType"),proposal:t("proposal"),listing:t("listing"),direct:t("direct"),sourceId:t("sourceId"),providerId:t("providerId"),scheduledAt:t("scheduledAt"),privateLocation:t("privateLocation"),agreedPrice:t("agreedPrice"),create:t("create"),loading:t("loading"),error:t("error"),empty:t("empty"),price:t("price"),confirm:t("confirm"),schedule:t("schedule"),start:t("start"),complete:t("complete"),cancel:t("cancel"),dispute:t("dispute"),refund:t("refund")}}/></div></main>}
+import { hasLocale } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { requireAuthenticatedUser } from "@/features/auth/require-session";
+import { BookingDashboard } from "@/features/bookings/booking-dashboard";
+import { routing } from "@/i18n/routing";
+export const dynamic = "force-dynamic";
+export default async function BookingsPage({
+  params,
+}: PageProps<"/[locale]/account/bookings">) {
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) notFound();
+  await requireAuthenticatedUser(locale);
+  const t = await getTranslations({ locale, namespace: "Bookings" });
+  return (
+    <main className="market-page px-4 py-8 sm:px-6 sm:py-10">
+      <div className="market-panel mx-auto w-full max-w-5xl p-6 sm:p-8">
+        <BookingDashboard
+          copy={{
+            title: t("title"),
+            description: t("description"),
+            newBooking: t("newBooking"),
+            sourceType: t("sourceType"),
+            proposal: t("proposal"),
+            listing: t("listing"),
+            direct: t("direct"),
+            sourceId: t("sourceId"),
+            providerId: t("providerId"),
+            scheduledAt: t("scheduledAt"),
+            privateLocation: t("privateLocation"),
+            agreedPrice: t("agreedPrice"),
+            create: t("create"),
+            loading: t("loading"),
+            error: t("error"),
+            empty: t("empty"),
+            price: t("price"),
+            confirm: t("confirm"),
+            schedule: t("schedule"),
+            start: t("start"),
+            complete: t("complete"),
+            cancel: t("cancel"),
+            dispute: t("dispute"),
+            refund: t("refund"),
+          }}
+        />
+      </div>
+    </main>
+  );
+}

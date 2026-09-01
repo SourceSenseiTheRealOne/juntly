@@ -2,18 +2,277 @@
 
 import { FormEvent, useEffect, useState } from "react";
 
-type Notification = { id: string; kind: "conversation_started" | "message_received" | "conversation_reported" | "request_published" | "proposal_received" | "proposal_accepted" | "proposal_rejected" | "booking_created" | "booking_updated" | "review_received" | "review_response" | "subscription_updated" | "promotion_updated"; read: boolean; createdAt: string };
+type Notification = {
+  id: string;
+  kind:
+    | "conversation_started"
+    | "message_received"
+    | "conversation_reported"
+    | "request_published"
+    | "proposal_received"
+    | "proposal_accepted"
+    | "proposal_rejected"
+    | "booking_created"
+    | "booking_updated"
+    | "review_received"
+    | "review_response"
+    | "subscription_updated"
+    | "promotion_updated";
+  read: boolean;
+  createdAt: string;
+};
 type Preferences = { inAppEnabled: boolean; emailEnabled: boolean };
-export type NotificationsCopy = { title:string;description:string;empty:string;loading:string;error:string;inApp:string;email:string;save:string;saved:string;markRead:string;conversationStarted:string;messageReceived:string;conversationReported:string;requestPublished:string;proposalReceived:string;proposalAccepted:string;proposalRejected:string;bookingCreated:string;bookingUpdated:string;reviewReceived:string;reviewResponse:string;subscriptionUpdated:string;promotionUpdated:string };
+export type NotificationsCopy = {
+  title: string;
+  description: string;
+  empty: string;
+  loading: string;
+  error: string;
+  inApp: string;
+  email: string;
+  save: string;
+  saved: string;
+  markRead: string;
+  conversationStarted: string;
+  messageReceived: string;
+  conversationReported: string;
+  requestPublished: string;
+  proposalReceived: string;
+  proposalAccepted: string;
+  proposalRejected: string;
+  bookingCreated: string;
+  bookingUpdated: string;
+  reviewReceived: string;
+  reviewResponse: string;
+  subscriptionUpdated: string;
+  promotionUpdated: string;
+};
 
-export function NotificationsPanel({copy}:{copy:NotificationsCopy}){
- const [items,setItems]=useState<Notification[]>([]),[preferences,setPreferences]=useState<Preferences|null>(null),[loading,setLoading]=useState(true),[failed,setFailed]=useState(false),[saved,setSaved]=useState(false);
- useEffect(()=>{let active=true;void Promise.all([fetch("/api/v1/me/notifications"),fetch("/api/v1/me/notifications/preferences")]).then(async([notificationsResponse,preferencesResponse])=>{const notifications:unknown=await notificationsResponse.json(),nextPreferences:unknown=await preferencesResponse.json();if(!notificationsResponse.ok||!preferencesResponse.ok||!validNotifications(notifications)||!validPreferences(nextPreferences))throw new Error();if(active){setItems(notifications.notifications);setPreferences(nextPreferences)}}).catch(()=>{if(active)setFailed(true)}).finally(()=>{if(active)setLoading(false)});return()=>{active=false}},[]);
- async function save(event:FormEvent){event.preventDefault();if(!preferences)return;setFailed(false);setSaved(false);try{const response=await fetch("/api/v1/me/notifications/preferences",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(preferences)});const value:unknown=await response.json();if(!response.ok||!validPreferences(value))throw new Error();setPreferences(value);setSaved(true)}catch{setFailed(true)}}
- async function markRead(id:string){setFailed(false);try{const response=await fetch(`/api/v1/me/notifications/${id}/read`,{method:"POST"});if(!response.ok)throw new Error();setItems(current=>current.map(item=>item.id===id?{...item,read:true}:item))}catch{setFailed(true)}}
- const label=(kind:Notification["kind"])=>kind==="conversation_started"?copy.conversationStarted:kind==="message_received"?copy.messageReceived:kind==="conversation_reported"?copy.conversationReported:kind==="request_published"?copy.requestPublished:kind==="proposal_received"?copy.proposalReceived:kind==="proposal_accepted"?copy.proposalAccepted:kind==="proposal_rejected"?copy.proposalRejected:kind==="booking_created"?copy.bookingCreated:kind==="booking_updated"?copy.bookingUpdated:kind==="review_received"?copy.reviewReceived:kind==="review_response"?copy.reviewResponse:kind==="subscription_updated"?copy.subscriptionUpdated:copy.promotionUpdated;
- return <section aria-labelledby="notifications-title"><h1 id="notifications-title" className="text-4xl font-bold tracking-[-0.05em]">{copy.title}</h1><p className="mt-3 text-lg leading-8 text-muted">{copy.description}</p>{loading?<p className="mt-8 text-muted">{copy.loading}</p>:null}{failed?<p role="alert" className="mt-6 text-earth">{copy.error}</p>:null}{preferences?<form className="market-card mt-8 grid gap-4 p-5" onSubmit={save}><label className="flex min-h-11 items-center gap-3"><input type="checkbox" checked={preferences.inAppEnabled} onChange={event=>setPreferences({...preferences,inAppEnabled:event.target.checked})}/>{copy.inApp}</label><label className="flex min-h-11 items-center gap-3"><input type="checkbox" checked={preferences.emailEnabled} onChange={event=>setPreferences({...preferences,emailEnabled:event.target.checked})}/>{copy.email}</label><button type="submit" className="market-button justify-self-start">{copy.save}</button>{saved?<p aria-live="polite" className="text-sm font-semibold text-accent">{copy.saved}</p>:null}</form>:null}<div className="mt-6 grid gap-3">{!loading&&items.length===0?<p className="market-card p-5 text-muted">{copy.empty}</p>:items.map(item=><article className="market-card flex items-center justify-between gap-4 p-5" key={item.id}><div><p className="font-semibold">{label(item.kind)}</p><time className="mt-1 block text-sm text-muted" dateTime={item.createdAt}>{new Date(item.createdAt).toLocaleString()}</time></div>{!item.read?<button type="button" className="market-button-secondary" onClick={()=>void markRead(item.id)}>{copy.markRead}</button>:null}</article>)}</div></section>
+export function NotificationsPanel({ copy }: { copy: NotificationsCopy }) {
+  const [items, setItems] = useState<Notification[]>([]),
+    [preferences, setPreferences] = useState<Preferences | null>(null),
+    [loading, setLoading] = useState(true),
+    [failed, setFailed] = useState(false),
+    [saved, setSaved] = useState(false);
+  useEffect(() => {
+    let active = true;
+    void Promise.all([
+      fetch("/api/v1/me/notifications"),
+      fetch("/api/v1/me/notifications/preferences"),
+    ])
+      .then(async ([notificationsResponse, preferencesResponse]) => {
+        const notifications: unknown = await notificationsResponse.json(),
+          nextPreferences: unknown = await preferencesResponse.json();
+        if (
+          !notificationsResponse.ok ||
+          !preferencesResponse.ok ||
+          !validNotifications(notifications) ||
+          !validPreferences(nextPreferences)
+        )
+          throw new Error();
+        if (active) {
+          setItems(notifications.notifications);
+          setPreferences(nextPreferences);
+        }
+      })
+      .catch(() => {
+        if (active) setFailed(true);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+  async function save(event: FormEvent) {
+    event.preventDefault();
+    if (!preferences) return;
+    setFailed(false);
+    setSaved(false);
+    try {
+      const response = await fetch("/api/v1/me/notifications/preferences", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(preferences),
+      });
+      const value: unknown = await response.json();
+      if (!response.ok || !validPreferences(value)) throw new Error();
+      setPreferences(value);
+      setSaved(true);
+    } catch {
+      setFailed(true);
+    }
+  }
+  async function markRead(id: string) {
+    setFailed(false);
+    try {
+      const response = await fetch(`/api/v1/me/notifications/${id}/read`, {
+        method: "POST",
+      });
+      if (!response.ok) throw new Error();
+      setItems((current) =>
+        current.map((item) =>
+          item.id === id ? { ...item, read: true } : item,
+        ),
+      );
+    } catch {
+      setFailed(true);
+    }
+  }
+  const label = (kind: Notification["kind"]) =>
+    kind === "conversation_started"
+      ? copy.conversationStarted
+      : kind === "message_received"
+        ? copy.messageReceived
+        : kind === "conversation_reported"
+          ? copy.conversationReported
+          : kind === "request_published"
+            ? copy.requestPublished
+            : kind === "proposal_received"
+              ? copy.proposalReceived
+              : kind === "proposal_accepted"
+                ? copy.proposalAccepted
+                : kind === "proposal_rejected"
+                  ? copy.proposalRejected
+                  : kind === "booking_created"
+                    ? copy.bookingCreated
+                    : kind === "booking_updated"
+                      ? copy.bookingUpdated
+                      : kind === "review_received"
+                        ? copy.reviewReceived
+                        : kind === "review_response"
+                          ? copy.reviewResponse
+                          : kind === "subscription_updated"
+                            ? copy.subscriptionUpdated
+                            : copy.promotionUpdated;
+  return (
+    <section aria-labelledby="notifications-title">
+      <h1
+        id="notifications-title"
+        className="text-4xl font-bold tracking-[-0.05em]"
+      >
+        {copy.title}
+      </h1>
+      <p className="mt-3 text-lg leading-8 text-muted">{copy.description}</p>
+      {loading ? <p className="mt-8 text-muted">{copy.loading}</p> : null}
+      {failed ? (
+        <p role="alert" className="mt-6 text-earth">
+          {copy.error}
+        </p>
+      ) : null}
+      {preferences ? (
+        <form className="market-card mt-8 grid gap-4 p-5" onSubmit={save}>
+          <label className="flex min-h-11 items-center gap-3">
+            <input
+              type="checkbox"
+              checked={preferences.inAppEnabled}
+              onChange={(event) =>
+                setPreferences({
+                  ...preferences,
+                  inAppEnabled: event.target.checked,
+                })
+              }
+            />
+            {copy.inApp}
+          </label>
+          <label className="flex min-h-11 items-center gap-3">
+            <input
+              type="checkbox"
+              checked={preferences.emailEnabled}
+              onChange={(event) =>
+                setPreferences({
+                  ...preferences,
+                  emailEnabled: event.target.checked,
+                })
+              }
+            />
+            {copy.email}
+          </label>
+          <button type="submit" className="market-button justify-self-start">
+            {copy.save}
+          </button>
+          {saved ? (
+            <p aria-live="polite" className="text-sm font-semibold text-accent">
+              {copy.saved}
+            </p>
+          ) : null}
+        </form>
+      ) : null}
+      <div className="mt-6 grid gap-3">
+        {!loading && items.length === 0 ? (
+          <p className="market-card p-5 text-muted">{copy.empty}</p>
+        ) : (
+          items.map((item) => (
+            <article
+              className="market-card flex items-center justify-between gap-4 p-5"
+              key={item.id}
+            >
+              <div>
+                <p className="font-semibold">{label(item.kind)}</p>
+                <time
+                  className="mt-1 block text-sm text-muted"
+                  dateTime={item.createdAt}
+                >
+                  {new Date(item.createdAt).toLocaleString()}
+                </time>
+              </div>
+              {!item.read ? (
+                <button
+                  type="button"
+                  className="market-button-secondary"
+                  onClick={() => void markRead(item.id)}
+                >
+                  {copy.markRead}
+                </button>
+              ) : null}
+            </article>
+          ))
+        )}
+      </div>
+    </section>
+  );
 }
-function record(value:unknown):value is Record<string,unknown>{return value!==null&&typeof value==="object"&&!Array.isArray(value)}
-function validPreferences(value:unknown):value is Preferences{return record(value)&&Object.keys(value).sort().join(",")==="emailEnabled,inAppEnabled"&&typeof value.inAppEnabled==="boolean"&&typeof value.emailEnabled==="boolean"}
-function validNotifications(value:unknown):value is {notifications:Notification[]}{return record(value)&&Object.keys(value).length===1&&Array.isArray(value.notifications)&&value.notifications.every(item=>record(item)&&typeof item.id==="string"&&["conversation_started","message_received","conversation_reported","request_published","proposal_received","proposal_accepted","proposal_rejected","booking_created","booking_updated","review_received","review_response","subscription_updated","promotion_updated"].includes(String(item.kind))&&typeof item.read==="boolean"&&typeof item.createdAt==="string"&&!Number.isNaN(Date.parse(item.createdAt)))}
+function record(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+function validPreferences(value: unknown): value is Preferences {
+  return (
+    record(value) &&
+    Object.keys(value).sort().join(",") === "emailEnabled,inAppEnabled" &&
+    typeof value.inAppEnabled === "boolean" &&
+    typeof value.emailEnabled === "boolean"
+  );
+}
+function validNotifications(
+  value: unknown,
+): value is { notifications: Notification[] } {
+  return (
+    record(value) &&
+    Object.keys(value).length === 1 &&
+    Array.isArray(value.notifications) &&
+    value.notifications.every(
+      (item) =>
+        record(item) &&
+        typeof item.id === "string" &&
+        [
+          "conversation_started",
+          "message_received",
+          "conversation_reported",
+          "request_published",
+          "proposal_received",
+          "proposal_accepted",
+          "proposal_rejected",
+          "booking_created",
+          "booking_updated",
+          "review_received",
+          "review_response",
+          "subscription_updated",
+          "promotion_updated",
+        ].includes(String(item.kind)) &&
+        typeof item.read === "boolean" &&
+        typeof item.createdAt === "string" &&
+        !Number.isNaN(Date.parse(item.createdAt)),
+    )
+  );
+}

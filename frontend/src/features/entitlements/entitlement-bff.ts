@@ -1,15 +1,153 @@
-import type { EntitlementCatalog, MyEntitlements, ProfessionalPlan, Promotion, PromotionPeriod, ProviderAccess, Subscription } from "@/shared/api/generated";
+import type {
+  EntitlementCatalog,
+  MyEntitlements,
+  ProfessionalPlan,
+  Promotion,
+  PromotionPeriod,
+  ProviderAccess,
+  Subscription,
+} from "@/shared/api/generated";
 
-
-const status = (value: unknown) => ["pending", "active", "cancelled", "expired"].includes(String(value));
+const status = (value: unknown) =>
+  ["pending", "active", "cancelled", "expired"].includes(String(value));
 const nullableDate = (value: unknown) => value === null || dateTime(value);
-export function validPlan(value: unknown): value is ProfessionalPlan { return exact(value,["id","slug","name","priceMinor","currency","billingDays","maxActiveListings","maxPhotosPerListing","analyticsEnabled"])&&uuid(value.id)&&typeof value.slug==="string"&&typeof value.name==="string"&&Number.isInteger(value.priceMinor)&&value.currency==="EUR"&&Number.isInteger(value.billingDays)&&Number.isInteger(value.maxActiveListings)&&Number.isInteger(value.maxPhotosPerListing)&&typeof value.analyticsEnabled==="boolean"; }
-export function validPeriod(value: unknown): value is PromotionPeriod { return exact(value,["id","slug","name","durationDays","priceMinor","currency"])&&uuid(value.id)&&typeof value.slug==="string"&&typeof value.name==="string"&&Number.isInteger(value.durationDays)&&Number.isInteger(value.priceMinor)&&value.currency==="EUR"; }
-export function validCatalog(value: unknown): value is EntitlementCatalog { return exact(value,["plans","promotionPeriods"])&&Array.isArray(value.plans)&&value.plans.every(validPlan)&&Array.isArray(value.promotionPeriods)&&value.promotionPeriods.every(validPeriod); }
-export function validSubscription(value: unknown): value is Subscription { return exact(value,["id","providerId","planId","status","startsAt","endsAt","createdAt","updatedAt"])&&uuid(value.id)&&uuid(value.providerId)&&uuid(value.planId)&&status(value.status)&&nullableDate(value.startsAt)&&nullableDate(value.endsAt)&&dateTime(value.createdAt)&&dateTime(value.updatedAt); }
-export function validPromotion(value: unknown): value is Promotion { return exact(value,["id","listingId","providerId","periodId","status","startsAt","endsAt","createdAt","updatedAt"])&&uuid(value.id)&&uuid(value.listingId)&&uuid(value.providerId)&&uuid(value.periodId)&&status(value.status)&&nullableDate(value.startsAt)&&nullableDate(value.endsAt)&&dateTime(value.createdAt)&&dateTime(value.updatedAt); }
-function validAccess(value: unknown): value is ProviderAccess { return exact(value,["maxActiveListings","maxPhotosPerListing","analyticsEnabled"])&&Number.isInteger(value.maxActiveListings)&&Number.isInteger(value.maxPhotosPerListing)&&typeof value.analyticsEnabled==="boolean"; }
-export function validEntitlements(value: unknown): value is MyEntitlements { return exact(value,["access","subscription","promotions"])&&validAccess(value.access)&&(value.subscription===null||validSubscription(value.subscription))&&Array.isArray(value.promotions)&&value.promotions.every(validPromotion); }
-function exact(value:unknown,expected:string[]):value is Record<string,unknown>{if(value===null||typeof value!=="object"||Array.isArray(value))return false;const actual=Object.keys(value).sort(),wanted=[...expected].sort();return actual.length===wanted.length&&actual.every((key,index)=>key===wanted[index])}
-function uuid(value:unknown):value is string{return typeof value==="string"&&/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(value)}
-function dateTime(value:unknown):value is string{return typeof value==="string"&&!Number.isNaN(Date.parse(value))}
+export function validPlan(value: unknown): value is ProfessionalPlan {
+  return (
+    exact(value, [
+      "id",
+      "slug",
+      "name",
+      "priceMinor",
+      "currency",
+      "billingDays",
+      "maxActiveListings",
+      "maxPhotosPerListing",
+      "analyticsEnabled",
+    ]) &&
+    uuid(value.id) &&
+    typeof value.slug === "string" &&
+    typeof value.name === "string" &&
+    Number.isInteger(value.priceMinor) &&
+    value.currency === "EUR" &&
+    Number.isInteger(value.billingDays) &&
+    Number.isInteger(value.maxActiveListings) &&
+    Number.isInteger(value.maxPhotosPerListing) &&
+    typeof value.analyticsEnabled === "boolean"
+  );
+}
+export function validPeriod(value: unknown): value is PromotionPeriod {
+  return (
+    exact(value, [
+      "id",
+      "slug",
+      "name",
+      "durationDays",
+      "priceMinor",
+      "currency",
+    ]) &&
+    uuid(value.id) &&
+    typeof value.slug === "string" &&
+    typeof value.name === "string" &&
+    Number.isInteger(value.durationDays) &&
+    Number.isInteger(value.priceMinor) &&
+    value.currency === "EUR"
+  );
+}
+export function validCatalog(value: unknown): value is EntitlementCatalog {
+  return (
+    exact(value, ["plans", "promotionPeriods"]) &&
+    Array.isArray(value.plans) &&
+    value.plans.every(validPlan) &&
+    Array.isArray(value.promotionPeriods) &&
+    value.promotionPeriods.every(validPeriod)
+  );
+}
+export function validSubscription(value: unknown): value is Subscription {
+  return (
+    exact(value, [
+      "id",
+      "providerId",
+      "planId",
+      "status",
+      "startsAt",
+      "endsAt",
+      "createdAt",
+      "updatedAt",
+    ]) &&
+    uuid(value.id) &&
+    uuid(value.providerId) &&
+    uuid(value.planId) &&
+    status(value.status) &&
+    nullableDate(value.startsAt) &&
+    nullableDate(value.endsAt) &&
+    dateTime(value.createdAt) &&
+    dateTime(value.updatedAt)
+  );
+}
+export function validPromotion(value: unknown): value is Promotion {
+  return (
+    exact(value, [
+      "id",
+      "listingId",
+      "providerId",
+      "periodId",
+      "status",
+      "startsAt",
+      "endsAt",
+      "createdAt",
+      "updatedAt",
+    ]) &&
+    uuid(value.id) &&
+    uuid(value.listingId) &&
+    uuid(value.providerId) &&
+    uuid(value.periodId) &&
+    status(value.status) &&
+    nullableDate(value.startsAt) &&
+    nullableDate(value.endsAt) &&
+    dateTime(value.createdAt) &&
+    dateTime(value.updatedAt)
+  );
+}
+function validAccess(value: unknown): value is ProviderAccess {
+  return (
+    exact(value, [
+      "maxActiveListings",
+      "maxPhotosPerListing",
+      "analyticsEnabled",
+    ]) &&
+    Number.isInteger(value.maxActiveListings) &&
+    Number.isInteger(value.maxPhotosPerListing) &&
+    typeof value.analyticsEnabled === "boolean"
+  );
+}
+export function validEntitlements(value: unknown): value is MyEntitlements {
+  return (
+    exact(value, ["access", "subscription", "promotions"]) &&
+    validAccess(value.access) &&
+    (value.subscription === null || validSubscription(value.subscription)) &&
+    Array.isArray(value.promotions) &&
+    value.promotions.every(validPromotion)
+  );
+}
+function exact(
+  value: unknown,
+  expected: string[],
+): value is Record<string, unknown> {
+  if (value === null || typeof value !== "object" || Array.isArray(value))
+    return false;
+  const actual = Object.keys(value).sort(),
+    wanted = [...expected].sort();
+  return (
+    actual.length === wanted.length &&
+    actual.every((key, index) => key === wanted[index])
+  );
+}
+function uuid(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(value)
+  );
+}
+function dateTime(value: unknown): value is string {
+  return typeof value === "string" && !Number.isNaN(Date.parse(value));
+}

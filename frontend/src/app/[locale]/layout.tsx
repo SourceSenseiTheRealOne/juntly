@@ -71,7 +71,10 @@ export default async function LocaleLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
       <body className="min-h-full antialiased">
-        <a className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-surface focus:px-4 focus:py-3 focus:text-ink" href="#main-content">
+        <a
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-surface focus:px-4 focus:py-3 focus:text-ink"
+          href="#main-content"
+        >
           {navigation("skipToContent")}
         </a>
         <ClerkProvider
@@ -95,7 +98,9 @@ export default async function LocaleLayout({
               signUpLabel={auth("signUp")}
               signUpUrl={`/${locale}/sign-up`}
             />
-            <div id="main-content" tabIndex={-1}>{children}</div>
+            <div id="main-content" tabIndex={-1}>
+              {children}
+            </div>
           </NextIntlClientProvider>
         </ClerkProvider>
       </body>

@@ -1,5 +1,49 @@
 import { requestSubscription } from "@/shared/api/generated";
-import { authorizedHeaders, correlated, exact, fail, requestID, requestIDHeader, sessionToken, unavailable, uuid } from "@/features/messaging/protected-bff";
+import {
+  authorizedHeaders,
+  correlated,
+  exact,
+  fail,
+  requestID,
+  requestIDHeader,
+  sessionToken,
+  unavailable,
+  uuid,
+} from "@/features/messaging/protected-bff";
 import { validSubscription } from "@/features/entitlements/entitlement-bff";
-export const runtime="nodejs";
-export async function POST(request:Request):Promise<Response>{const id=requestID(request.headers),token=await sessionToken();if(!token)return fail("UNAUTHORIZED","Unauthorized",401,id);let value:unknown;try{value=JSON.parse(await request.text())}catch{return fail("INVALID_REQUEST","Invalid request",400,id)}if(!exact(value,["planId"])||!uuid(value.planId))return fail("INVALID_REQUEST","Invalid request",400,id);const baseUrl=process.env.JUNTLY_API_ORIGIN;if(!baseUrl)return unavailable(id);try{const up=await requestSubscription({baseUrl,body:{planId:value.planId},headers:authorizedHeaders(token,id)});if(up.error||up.response?.status!==201||!correlated(up.response,id)||!validSubscription(up.data))return unavailable(id);return Response.json(up.data,{status:201,headers:{[requestIDHeader]:id}})}catch{return unavailable(id)}}
+export const runtime = "nodejs";
+export async function POST(request: Request): Promise<Response> {
+  const id = requestID(request.headers),
+    token = await sessionToken();
+  if (!token) return fail("UNAUTHORIZED", "Unauthorized", 401, id);
+  let value: unknown;
+  try {
+    value = JSON.parse(await request.text());
+  } catch {
+    return fail("INVALID_REQUEST", "Invalid request", 400, id);
+  }
+  if (!exact(value, ["planId"]) || !uuid(value.planId))
+    return fail("INVALID_REQUEST", "Invalid request", 400, id);
+  const baseUrl = process.env.JUNTLY_API_ORIGIN;
+  if (!baseUrl) return unavailable(id);
+  try {
+    const up = await requestSubscription({
+      baseUrl,
+      body: { planId: value.planId },
+      headers: authorizedHeaders(token, id),
+    });
+    if (
+      up.error ||
+      up.response?.status !== 201 ||
+      !correlated(up.response, id) ||
+      !validSubscription(up.data)
+    )
+      return unavailable(id);
+    return Response.json(up.data, {
+      status: 201,
+      headers: { [requestIDHeader]: id },
+    });
+  } catch {
+    return unavailable(id);
+  }
+}
