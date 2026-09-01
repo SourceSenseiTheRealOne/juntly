@@ -4,6 +4,40 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8080' | (string & {});
 };
 
+export type CreateReview = {
+    bookingId: string;
+    rating: number;
+    body: string;
+};
+
+export type RespondToReview = {
+    response: string;
+};
+
+export type Review = {
+    id: string;
+    bookingId: string;
+    customerId: string;
+    providerId: string;
+    rating: number;
+    body: string;
+    providerResponse: string;
+    verifiedBooking: true;
+    state: 'published' | 'hidden';
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type ReviewsResponse = {
+    reviews: Array<Review>;
+};
+
+export type ProviderRating = {
+    providerId: string;
+    averageRating: number;
+    reviewCount: number;
+};
+
 export type CreateBooking = {
     sourceType: 'proposal' | 'listing' | 'direct';
     sourceId?: string | null;
@@ -154,7 +188,7 @@ export type NotificationPreferences = {
 
 export type Notification = {
     id: string;
-    kind: 'conversation_started' | 'message_received' | 'conversation_reported' | 'request_published' | 'proposal_received' | 'proposal_accepted' | 'proposal_rejected' | 'booking_created' | 'booking_updated';
+    kind: 'conversation_started' | 'message_received' | 'conversation_reported' | 'request_published' | 'proposal_received' | 'proposal_accepted' | 'proposal_rejected' | 'booking_created' | 'booking_updated' | 'review_received' | 'review_response';
     read: boolean;
     createdAt: string;
 };
@@ -430,6 +464,10 @@ export type QuotationRequestIdPath = string;
 export type QuotationProposalIdPath = string;
 
 export type BookingIdPath = string;
+
+export type ReviewIdPath = string;
+
+export type ProviderIdPath = string;
 
 export type GetHealthData = {
     body?: never;
@@ -2184,3 +2222,143 @@ export type TransitionBookingResponses = {
 };
 
 export type TransitionBookingResponse = TransitionBookingResponses[keyof TransitionBookingResponses];
+
+export type CreateBookingReviewData = {
+    body: CreateReview;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/reviews';
+};
+
+export type CreateBookingReviewErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type CreateBookingReviewError = CreateBookingReviewErrors[keyof CreateBookingReviewErrors];
+
+export type CreateBookingReviewResponses = {
+    /**
+     * Verified booking review
+     */
+    201: Review;
+};
+
+export type CreateBookingReviewResponse = CreateBookingReviewResponses[keyof CreateBookingReviewResponses];
+
+export type ListMyProviderReviewsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/reviews/provider';
+};
+
+export type ListMyProviderReviewsErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListMyProviderReviewsError = ListMyProviderReviewsErrors[keyof ListMyProviderReviewsErrors];
+
+export type ListMyProviderReviewsResponses = {
+    /**
+     * Provider-owned reviews
+     */
+    200: ReviewsResponse;
+};
+
+export type ListMyProviderReviewsResponse = ListMyProviderReviewsResponses[keyof ListMyProviderReviewsResponses];
+
+export type RespondToReviewData = {
+    body: RespondToReview;
+    path: {
+        reviewId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/reviews/{reviewId}/response';
+};
+
+export type RespondToReviewErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type RespondToReviewError = RespondToReviewErrors[keyof RespondToReviewErrors];
+
+export type RespondToReviewResponses = {
+    /**
+     * Review with provider response
+     */
+    200: Review;
+};
+
+export type RespondToReviewResponse = RespondToReviewResponses[keyof RespondToReviewResponses];
+
+export type GetProviderRatingData = {
+    body?: never;
+    path: {
+        providerId: string;
+    };
+    query?: never;
+    url: '/api/v1/public/providers/{providerId}/rating';
+};
+
+export type GetProviderRatingErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetProviderRatingError = GetProviderRatingErrors[keyof GetProviderRatingErrors];
+
+export type GetProviderRatingResponses = {
+    /**
+     * Public provider rating aggregate
+     */
+    200: ProviderRating;
+};
+
+export type GetProviderRatingResponse = GetProviderRatingResponses[keyof GetProviderRatingResponses];
