@@ -38,6 +38,9 @@ export type PublicDiscoveryCopy = {
   priceLabel: string;
   modeLabel: string;
   details: string;
+  marketplaceLabel: string;
+  locationContextLabel: string;
+  filtersLabel: string;
 };
 
 export function PublicDiscovery({
@@ -92,29 +95,46 @@ export function PublicDiscovery({
     );
 
   return (
-    <section aria-labelledby="discovery-title">
-      <h1 id="discovery-title" className="text-3xl font-semibold">
-        {copy.title}
-      </h1>
-      <p className="mt-3 text-muted">{copy.description}</p>
+    <section aria-labelledby="discovery-title" className="pb-12">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <p className="text-xs font-bold tracking-[0.14em] text-accent uppercase">
+            {copy.marketplaceLabel}
+          </p>
+          <h1
+            id="discovery-title"
+            className="mt-2 text-4xl font-bold tracking-[-0.05em] sm:text-5xl"
+          >
+            {copy.title}
+          </h1>
+          <p className="mt-3 max-w-2xl text-lg leading-8 text-muted">
+            {copy.description}
+          </p>
+        </div>
+        <span className="market-chip shrink-0">
+          {copy.locationContextLabel}
+        </span>
+      </div>
       <form
-        className="mt-6 flex gap-3"
+        className="market-panel mt-8 flex flex-col gap-3 p-3 sm:flex-row sm:items-end"
         onSubmit={(event) => {
           event.preventDefault();
           void load();
         }}
       >
-        <label className="grid gap-1">
-          <span className="text-sm">{copy.searchLabel}</span>
+        <label className="grid flex-1 gap-1">
+          <span className="px-1 text-sm font-semibold">{copy.searchLabel}</span>
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             maxLength={80}
+            placeholder={copy.searchLabel}
+            className="market-control w-full"
           />
         </label>
         <button
           type="submit"
-          className="min-h-11 self-end rounded-full bg-ink px-5 text-canvas"
+          className="market-button w-full self-end sm:w-auto"
         >
           {copy.searchButton}
         </button>
@@ -124,25 +144,47 @@ export function PublicDiscovery({
           {copy.error}
         </p>
       ) : null}
-      <div className="mt-8 grid gap-4">
+      <div className="mt-6 flex flex-wrap gap-2" aria-label={copy.filtersLabel}>
+        <span className="market-chip">{copy.categoryLabel}</span>
+        <span className="market-chip">{copy.localityLabel}</span>
+        <span className="market-chip">{copy.radiusLabel}</span>
+        <span className="market-chip">{copy.priceLabel}</span>
+        <span className="market-chip">{copy.modeLabel}</span>
+      </div>
+      <div className="mt-8 grid gap-4 md:grid-cols-2">
         {listings?.length ? (
           listings.map((listing) => (
             <article
               key={listing.id}
-              className="rounded-2xl border border-line p-5"
+              className="market-card group overflow-hidden p-0"
             >
-              <p className="text-sm text-muted">
-                {listing.categoryName} · {listing.localityName}
-              </p>
-              <h2 className="mt-2 text-xl font-semibold">{listing.title}</h2>
-              <p className="mt-2 text-muted">{listing.description}</p>
-              <p className="mt-3 text-sm">{listing.providerDisplayName}</p>
-              <a
-                className="mt-4 inline-flex min-h-11 items-center rounded-full border border-line px-4"
-                href={`/${locale}/listings/${listing.id}`}
-              >
-                {copy.details}
-              </a>
+              <div className="flex min-h-24 items-end bg-control p-5">
+                <span className="market-chip bg-surface text-ink">
+                  {listing.categoryName}
+                </span>
+              </div>
+              <div className="p-5">
+                <p className="text-sm font-medium text-muted">
+                  {listing.localityName}
+                </p>
+                <h2 className="mt-2 text-xl font-bold tracking-[-0.03em]">
+                  {listing.title}
+                </h2>
+                <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted">
+                  {listing.description}
+                </p>
+                <div className="mt-5 flex items-center justify-between gap-4 border-t border-line pt-4">
+                  <p className="min-w-0 truncate text-sm font-semibold">
+                    {listing.providerDisplayName}
+                  </p>
+                  <a
+                    className="market-button-secondary shrink-0"
+                    href={`/${locale}/listings/${listing.id}`}
+                  >
+                    {copy.details}
+                  </a>
+                </div>
+              </div>
             </article>
           ))
         ) : (

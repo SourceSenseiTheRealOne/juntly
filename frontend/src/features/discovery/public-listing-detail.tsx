@@ -89,30 +89,47 @@ export function PublicListingDetail({
     );
 
   return (
-    <article>
-      <p className="text-sm text-muted">
-        {copy.category}: {listing.categoryName}
-      </p>
-      <h1 className="mt-2 text-3xl font-semibold">{listing.title}</h1>
-      <p className="mt-4 text-muted">{listing.description}</p>
-      <dl className="mt-6 grid gap-3">
-        <div>
-          <dt className="text-sm text-muted">{copy.provider}</dt>
-          <dd>{listing.providerDisplayName}</dd>
+    <article className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+      <div className="market-panel overflow-hidden">
+        <div className="min-h-44 bg-control p-6 sm:p-8">
+          <span className="market-chip bg-surface text-ink">
+            {listing.categoryName}
+          </span>
         </div>
-        <div>
-          <dt className="text-sm text-muted">{copy.locality}</dt>
-          <dd>{listing.localityName}</dd>
+        <div className="p-6 sm:p-8">
+          <p className="text-sm font-medium text-muted">{copy.category}</p>
+          <h1 className="mt-2 text-4xl font-bold tracking-[-0.05em]">
+            {listing.title}
+          </h1>
+          <p className="mt-5 max-w-2xl leading-7 text-muted">
+            {listing.description}
+          </p>
         </div>
-      </dl>
-      <ContactRevealControl
-        listingId={listing.id}
-        copy={{
-          phone: copy.phone,
-          whatsapp: copy.whatsapp,
-          error: copy.revealError,
-        }}
-      />
+      </div>
+      <aside className="market-panel h-fit p-6" aria-label={copy.provider}>
+        <dl className="grid gap-5">
+          <div className="border-b border-line pb-5">
+            <dt className="text-xs font-bold tracking-[0.12em] text-muted uppercase">
+              {copy.provider}
+            </dt>
+            <dd className="mt-2 font-bold">{listing.providerDisplayName}</dd>
+          </div>
+          <div>
+            <dt className="text-xs font-bold tracking-[0.12em] text-muted uppercase">
+              {copy.locality}
+            </dt>
+            <dd className="mt-2 font-semibold">{listing.localityName}</dd>
+          </div>
+        </dl>
+        <ContactRevealControl
+          listingId={listing.id}
+          copy={{
+            phone: copy.phone,
+            whatsapp: copy.whatsapp,
+            error: copy.revealError,
+          }}
+        />
+      </aside>
     </article>
   );
 }

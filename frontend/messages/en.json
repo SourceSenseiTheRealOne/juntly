@@ -17,11 +17,18 @@
     "visionLinkLabel": "Discover the vision",
     "visionTitle": "Built for genuine local connections",
     "visionDescription": "Discovery, contact and trust without taking choice away from people. Juntly connects those who need help with those who know how.",
+    "showcaseTitle": "Local, made easier.",
     "footerLabel": "Juntly — born in Portugal."
   },
   "Auth": {
     "signIn": "Sign in",
     "signUp": "Create account"
+  },
+  "Navigation": {
+    "discover": "Find services",
+    "account": "My account",
+    "accountNavigation": "Account options",
+    "marketplace": "Marketplace navigation"
   },
   "Account": {
     "title": "Juntly account",
@@ -56,6 +63,7 @@
     "serviceLocalities": "Service areas",
     "languages": "Languages",
     "travelRadius": "Maximum travel distance in kilometres",
+    "serviceModes": "Service modes",
     "travels": "Travels to the customer",
     "receives": "Receives customers",
     "remote": "Works remotely",
@@ -108,7 +116,10 @@
     "radiusLabel": "Radius",
     "priceLabel": "Price type",
     "modeLabel": "Service mode",
-    "details": "View listing"
+    "details": "View listing",
+    "marketplaceLabel": "Juntly marketplace",
+    "locationContextLabel": "Portugal",
+    "filtersLabel": "Available filters"
   },
   "PublicListing": {
     "loading": "Loading listing…",

@@ -122,20 +122,31 @@ export function ContactChannelsCard({ copy }: { copy: ContactChannelsCopy }) {
           {copy.saved}
         </p>
       ) : null}
-      <ul className="mt-6 grid gap-2">
+      <ul className="mt-6 grid gap-3 sm:grid-cols-2">
         {statuses?.map((status) => (
-          <li key={status.channel}>
-            {status.channel === "phone" ? copy.phone : copy.whatsapp}:{" "}
-            {status.enabled && status.revealConsent ? copy.enabled : "—"}
+          <li
+            key={status.channel}
+            className="market-card flex items-center justify-between gap-3 p-4"
+          >
+            <span className="font-semibold">
+              {status.channel === "phone" ? copy.phone : copy.whatsapp}
+            </span>
+            <span className="market-chip">
+              {status.enabled && status.revealConsent ? copy.enabled : "—"}
+            </span>
           </li>
         ))}
       </ul>
-      <form className="mt-6 grid gap-4" onSubmit={(event) => void save(event)}>
+      <form
+        className="market-card mt-6 grid gap-4 p-5"
+        onSubmit={(event) => void save(event)}
+      >
         <label>
           <span className="sr-only">{copy.phone}</span>
           <select
             value={channel}
             onChange={(event) => setChannel(event.target.value as Channel)}
+            className="market-control"
           >
             <option value="phone">{copy.phone}</option>
             <option value="whatsapp">{copy.whatsapp}</option>
@@ -148,6 +159,7 @@ export function ContactChannelsCard({ copy }: { copy: ContactChannelsCopy }) {
             onChange={(event) => setContact(event.target.value)}
             autoComplete="tel"
             inputMode="tel"
+            className="market-control mt-2 w-full"
           />
           <span className="mt-1 block text-sm text-muted">
             {copy.formatHint}
@@ -169,7 +181,9 @@ export function ContactChannelsCard({ copy }: { copy: ContactChannelsCopy }) {
           />{" "}
           {copy.consent}
         </label>
-        <button type="submit">{copy.save}</button>
+        <button type="submit" className="market-button">
+          {copy.save}
+        </button>
       </form>
     </section>
   );

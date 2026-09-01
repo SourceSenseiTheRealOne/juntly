@@ -131,24 +131,24 @@ export function ModerationQueue({ copy }: { copy: ModerationQueueCopy }) {
 
   return (
     <section aria-labelledby="moderation-title">
-      <h1 id="moderation-title" className="text-3xl font-semibold">
+      <h1
+        id="moderation-title"
+        className="text-4xl font-bold tracking-[-0.05em]"
+      >
         {copy.title}
       </h1>
       {failed ? <p role="alert">{copy.error}</p> : null}
       <div className="mt-6 grid gap-4">
         {listings?.length ? (
           listings.map((item) => (
-            <article
-              key={item.id}
-              className="rounded-2xl border border-line p-5"
-            >
+            <article key={item.id} className="market-card p-5">
               <h2 className="font-semibold">{item.title}</h2>
               <p className="mt-2 text-muted">{item.description}</p>
               <p className="mt-2">{item.state}</p>
               <button
                 disabled={saving}
                 type="button"
-                className="mt-3 min-h-11 rounded-full bg-ink px-4 text-canvas"
+                className="market-button mt-3"
                 onClick={() => void approve(item)}
               >
                 {copy.approve}
@@ -165,7 +165,7 @@ export function ModerationQueue({ copy }: { copy: ModerationQueueCopy }) {
               <button
                 disabled={saving || !reason.trim()}
                 type="button"
-                className="mt-3 min-h-11 rounded-full border border-line px-4"
+                className="market-button-secondary mt-3"
                 onClick={() => void reject(item)}
               >
                 {copy.reject}

@@ -39,12 +39,12 @@ export default async function AccountPage({ params }: AccountPageProps) {
   };
 
   return (
-    <main className="grid min-h-screen place-items-center bg-canvas px-5 py-10 text-ink">
-      <section className="w-full max-w-2xl rounded-3xl border border-line bg-surface p-6 shadow-sm sm:p-8">
+    <main className="market-page px-4 py-8 sm:px-6 sm:py-10">
+      <section className="market-panel mx-auto w-full max-w-3xl p-6 sm:p-8">
         <p className="text-sm font-semibold tracking-[0.16em] text-accent uppercase">
           Juntly
         </p>
-        <h1 className="mt-4 text-3xl font-semibold tracking-[-0.04em]">
+        <h1 className="mt-3 text-4xl font-bold tracking-[-0.05em]">
           {t("title")}
         </h1>
         <p className="mt-4 text-lg leading-8 text-muted">{t("description")}</p>

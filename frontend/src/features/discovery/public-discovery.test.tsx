@@ -18,6 +18,9 @@ const copy = {
   priceLabel: "Tipo de preço",
   modeLabel: "Modo de serviço",
   details: "Ver anúncio",
+  marketplaceLabel: "Marketplace Juntly",
+  locationContextLabel: "Portugal",
+  filtersLabel: "Filtros disponíveis",
 };
 
 afterEach(() => vi.restoreAllMocks());
@@ -63,6 +66,8 @@ describe("PublicDiscovery", () => {
         screen.getByRole("heading", { name: "Canalização local" }),
       ).toBeInTheDocument(),
     );
+    expect(screen.getByText("Marketplace Juntly")).toBeInTheDocument();
+    expect(screen.getByText("Portugal")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ver anúncio" })).toHaveAttribute(
       "href",
       "/pt-PT/listings/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",

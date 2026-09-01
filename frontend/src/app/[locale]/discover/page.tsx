@@ -14,26 +14,31 @@ export default async function DiscoverPage({
   if (!hasLocale(routing.locales, locale)) notFound();
   const t = await getTranslations({ locale, namespace: "Discovery" });
   return (
-    <main className="mx-auto w-full max-w-4xl px-5 py-10">
-      <PublicDiscovery
-        locale={locale}
-        copy={{
-          title: t("title"),
-          description: t("description"),
-          loading: t("loading"),
-          empty: t("empty"),
-          error: t("error"),
-          retry: t("retry"),
-          searchLabel: t("searchLabel"),
-          searchButton: t("searchButton"),
-          categoryLabel: t("categoryLabel"),
-          localityLabel: t("localityLabel"),
-          radiusLabel: t("radiusLabel"),
-          priceLabel: t("priceLabel"),
-          modeLabel: t("modeLabel"),
-          details: t("details"),
-        }}
-      />
+    <main className="market-page px-4 py-8 sm:px-6 sm:py-10">
+      <div className="market-container">
+        <PublicDiscovery
+          locale={locale}
+          copy={{
+            title: t("title"),
+            description: t("description"),
+            loading: t("loading"),
+            empty: t("empty"),
+            error: t("error"),
+            retry: t("retry"),
+            searchLabel: t("searchLabel"),
+            searchButton: t("searchButton"),
+            categoryLabel: t("categoryLabel"),
+            localityLabel: t("localityLabel"),
+            radiusLabel: t("radiusLabel"),
+            priceLabel: t("priceLabel"),
+            modeLabel: t("modeLabel"),
+            details: t("details"),
+            marketplaceLabel: t("marketplaceLabel"),
+            locationContextLabel: t("locationContextLabel"),
+            filtersLabel: t("filtersLabel"),
+          }}
+        />
+      </div>
     </main>
   );
 }
