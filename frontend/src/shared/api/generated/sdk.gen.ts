@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AcceptQuotationProposalData, AcceptQuotationProposalErrors, AcceptQuotationProposalResponses, ApproveListingData, ApproveListingErrors, ApproveListingResponses, ArchiveListingData, ArchiveListingErrors, ArchiveListingResponses, CreateListingData, CreateListingErrors, CreateListingMediaUploadIntentData, CreateListingMediaUploadIntentErrors, CreateListingMediaUploadIntentResponses, CreateListingResponses, CreateQuotationRequestData, CreateQuotationRequestErrors, CreateQuotationRequestResponses, GetAccountCapabilitiesData, GetAccountCapabilitiesErrors, GetAccountCapabilitiesResponses, GetContactChannelStatusesData, GetContactChannelStatusesErrors, GetContactChannelStatusesResponses, GetHealthData, GetHealthErrors, GetHealthResponses, GetMyListingData, GetMyListingErrors, GetMyListingResponses, GetNotificationPreferencesData, GetNotificationPreferencesErrors, GetNotificationPreferencesResponses, GetProviderProfileData, GetProviderProfileErrors, GetProviderProfileResponses, GetPublicListingData, GetPublicListingErrors, GetPublicListingResponses, ListConversationMessagesData, ListConversationMessagesErrors, ListConversationMessagesResponses, ListConversationsData, ListConversationsErrors, ListConversationsResponses, ListLocalitiesData, ListLocalitiesErrors, ListLocalitiesResponses, ListMyListingsData, ListMyListingsErrors, ListMyListingsResponses, ListMyQuotationRequestsData, ListMyQuotationRequestsErrors, ListMyQuotationRequestsResponses, ListNotificationsData, ListNotificationsErrors, ListNotificationsResponses, ListPendingModerationListingsData, ListPendingModerationListingsErrors, ListPendingModerationListingsResponses, ListQuotationOpportunitiesData, ListQuotationOpportunitiesErrors, ListQuotationOpportunitiesResponses, ListQuotationProposalsData, ListQuotationProposalsErrors, ListQuotationProposalsResponses, ListServiceCategoriesData, ListServiceCategoriesErrors, ListServiceCategoriesResponses, ListSpokenLanguagesData, ListSpokenLanguagesErrors, ListSpokenLanguagesResponses, MarkNotificationReadData, MarkNotificationReadErrors, MarkNotificationReadResponses, PauseListingData, PauseListingErrors, PauseListingResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses, RejectListingData, RejectListingErrors, RejectListingResponses, ReplaceContactChannelData, ReplaceContactChannelErrors, ReplaceContactChannelResponses, ReplaceConversationBlockData, ReplaceConversationBlockErrors, ReplaceConversationBlockResponses, ReplaceMyDraftListingData, ReplaceMyDraftListingErrors, ReplaceMyDraftListingResponses, ReplaceNotificationPreferencesData, ReplaceNotificationPreferencesErrors, ReplaceNotificationPreferencesResponses, ReplaceProviderProfileData, ReplaceProviderProfileErrors, ReplaceProviderProfileResponses, ReportConversationData, ReportConversationErrors, ReportConversationResponses, RevealListingContactData, RevealListingContactErrors, RevealListingContactResponses, SearchPublicListingsData, SearchPublicListingsErrors, SearchPublicListingsResponses, SendConversationMessageData, SendConversationMessageErrors, SendConversationMessageResponses, StartListingConversationData, StartListingConversationErrors, StartListingConversationResponses, SubmitListingForReviewData, SubmitListingForReviewErrors, SubmitListingForReviewResponses, SubmitQuotationProposalData, SubmitQuotationProposalErrors, SubmitQuotationProposalResponses, UpdateAccountCapabilitiesData, UpdateAccountCapabilitiesErrors, UpdateAccountCapabilitiesResponses } from './types.gen';
+import type { AcceptQuotationProposalData, AcceptQuotationProposalErrors, AcceptQuotationProposalResponses, ApproveListingData, ApproveListingErrors, ApproveListingResponses, ArchiveListingData, ArchiveListingErrors, ArchiveListingResponses, CreateBookingData, CreateBookingErrors, CreateBookingResponses, CreateListingData, CreateListingErrors, CreateListingMediaUploadIntentData, CreateListingMediaUploadIntentErrors, CreateListingMediaUploadIntentResponses, CreateListingResponses, CreateQuotationRequestData, CreateQuotationRequestErrors, CreateQuotationRequestResponses, GetAccountCapabilitiesData, GetAccountCapabilitiesErrors, GetAccountCapabilitiesResponses, GetContactChannelStatusesData, GetContactChannelStatusesErrors, GetContactChannelStatusesResponses, GetHealthData, GetHealthErrors, GetHealthResponses, GetMyBookingData, GetMyBookingErrors, GetMyBookingResponses, GetMyListingData, GetMyListingErrors, GetMyListingResponses, GetNotificationPreferencesData, GetNotificationPreferencesErrors, GetNotificationPreferencesResponses, GetProviderProfileData, GetProviderProfileErrors, GetProviderProfileResponses, GetPublicListingData, GetPublicListingErrors, GetPublicListingResponses, ListConversationMessagesData, ListConversationMessagesErrors, ListConversationMessagesResponses, ListConversationsData, ListConversationsErrors, ListConversationsResponses, ListLocalitiesData, ListLocalitiesErrors, ListLocalitiesResponses, ListMyBookingsData, ListMyBookingsErrors, ListMyBookingsResponses, ListMyListingsData, ListMyListingsErrors, ListMyListingsResponses, ListMyQuotationRequestsData, ListMyQuotationRequestsErrors, ListMyQuotationRequestsResponses, ListNotificationsData, ListNotificationsErrors, ListNotificationsResponses, ListPendingModerationListingsData, ListPendingModerationListingsErrors, ListPendingModerationListingsResponses, ListQuotationOpportunitiesData, ListQuotationOpportunitiesErrors, ListQuotationOpportunitiesResponses, ListQuotationProposalsData, ListQuotationProposalsErrors, ListQuotationProposalsResponses, ListServiceCategoriesData, ListServiceCategoriesErrors, ListServiceCategoriesResponses, ListSpokenLanguagesData, ListSpokenLanguagesErrors, ListSpokenLanguagesResponses, MarkNotificationReadData, MarkNotificationReadErrors, MarkNotificationReadResponses, PauseListingData, PauseListingErrors, PauseListingResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses, RejectListingData, RejectListingErrors, RejectListingResponses, ReplaceContactChannelData, ReplaceContactChannelErrors, ReplaceContactChannelResponses, ReplaceConversationBlockData, ReplaceConversationBlockErrors, ReplaceConversationBlockResponses, ReplaceMyDraftListingData, ReplaceMyDraftListingErrors, ReplaceMyDraftListingResponses, ReplaceNotificationPreferencesData, ReplaceNotificationPreferencesErrors, ReplaceNotificationPreferencesResponses, ReplaceProviderProfileData, ReplaceProviderProfileErrors, ReplaceProviderProfileResponses, ReportConversationData, ReportConversationErrors, ReportConversationResponses, RevealListingContactData, RevealListingContactErrors, RevealListingContactResponses, SearchPublicListingsData, SearchPublicListingsErrors, SearchPublicListingsResponses, SendConversationMessageData, SendConversationMessageErrors, SendConversationMessageResponses, StartListingConversationData, StartListingConversationErrors, StartListingConversationResponses, SubmitListingForReviewData, SubmitListingForReviewErrors, SubmitListingForReviewResponses, SubmitQuotationProposalData, SubmitQuotationProposalErrors, SubmitQuotationProposalResponses, TransitionBookingData, TransitionBookingErrors, TransitionBookingResponses, UpdateAccountCapabilitiesData, UpdateAccountCapabilitiesErrors, UpdateAccountCapabilitiesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -441,4 +441,48 @@ export const acceptQuotationProposal = <ThrowOnError extends boolean = false>(op
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/me/quotation-requests/{requestId}/proposals/{proposalId}/accept',
     ...options
+});
+
+/**
+ * List bookings where the authenticated user is a participant.
+ */
+export const listMyBookings = <ThrowOnError extends boolean = false>(options?: Options<ListMyBookingsData, ThrowOnError>) => (options?.client ?? client).get<ListMyBookingsResponses, ListMyBookingsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/bookings',
+    ...options
+});
+
+/**
+ * Create an idempotent booking from a proposal, listing, or direct agreement.
+ */
+export const createBooking = <ThrowOnError extends boolean = false>(options: Options<CreateBookingData, ThrowOnError>) => (options.client ?? client).post<CreateBookingResponses, CreateBookingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/bookings',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Read one participant-only booking including its private service location.
+ */
+export const getMyBooking = <ThrowOnError extends boolean = false>(options: Options<GetMyBookingData, ThrowOnError>) => (options.client ?? client).get<GetMyBookingResponses, GetMyBookingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/bookings/{bookingId}',
+    ...options
+});
+
+/**
+ * Apply one compare-and-set booking transition with an audit event.
+ */
+export const transitionBooking = <ThrowOnError extends boolean = false>(options: Options<TransitionBookingData, ThrowOnError>) => (options.client ?? client).post<TransitionBookingResponses, TransitionBookingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/bookings/{bookingId}/transitions',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });

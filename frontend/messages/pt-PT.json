@@ -50,7 +50,8 @@
       "manageListings": "Gerir anúncios",
       "manageMessages": "Ver mensagens",
       "manageNotifications": "Gerir notificações",
-      "manageQuotations": "Pedidos e propostas"
+      "manageQuotations": "Pedidos e propostas",
+      "manageBookings": "Gerir reservas"
     }
   },
   "ProviderProfile": {
@@ -181,7 +182,9 @@
     "requestPublished": "Novo pedido de orçamento publicado",
     "proposalReceived": "Nova proposta recebida",
     "proposalAccepted": "A sua proposta foi aceite",
-    "proposalRejected": "A sua proposta não foi selecionada"
+    "proposalRejected": "A sua proposta não foi selecionada",
+    "bookingCreated": "Nova reserva criada",
+    "bookingUpdated": "Estado da reserva atualizado"
   },
   "Quotations": {
     "title": "Pedidos e propostas",
@@ -211,6 +214,32 @@
     "created": "Pedido publicado.",
     "submitted": "Proposta enviada.",
     "accepted": "Proposta aceite."
+  },
+  "Bookings": {
+    "title": "Reservas",
+    "description": "Acompanhe acordos, datas, locais privados e estados do serviço.",
+    "newBooking": "Nova reserva",
+    "sourceType": "Origem do acordo",
+    "proposal": "Proposta aceite",
+    "listing": "Anúncio",
+    "direct": "Acordo direto",
+    "sourceId": "Identificador da proposta ou anúncio",
+    "providerId": "Identificador do prestador para acordo direto",
+    "scheduledAt": "Data e hora",
+    "privateLocation": "Local privado do serviço",
+    "agreedPrice": "Preço acordado em cêntimos",
+    "create": "Criar reserva",
+    "loading": "A carregar reservas...",
+    "error": "Não foi possível carregar ou atualizar as reservas.",
+    "empty": "Ainda não tem reservas.",
+    "price": "Preço",
+    "confirm": "Confirmar",
+    "schedule": "Agendar",
+    "start": "Iniciar serviço",
+    "complete": "Concluir",
+    "cancel": "Cancelar",
+    "dispute": "Abrir disputa",
+    "refund": "Marcar reembolso"
   },
   "Errors": {
     "title": "Algo não correu bem",
