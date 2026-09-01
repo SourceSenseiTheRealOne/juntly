@@ -81,6 +81,12 @@ export default async function AccountPage({ params }: AccountPageProps) {
           >
             {t("capabilities.manageBookings")}
           </a>
+          <a
+            className="market-button-secondary"
+            href={`/${locale}/account/reviews`}
+          >
+            {t("capabilities.manageReviews")}
+          </a>
         </nav>
       </section>
     </main>

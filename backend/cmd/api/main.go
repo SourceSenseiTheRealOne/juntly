@@ -29,6 +29,7 @@ import (
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/providers"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/quotations"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/reference"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/reviews"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/users"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -114,6 +115,7 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	messagingService := messaging.NewService(userService, messaging.NewSQLStore(database))
 	quotationService := quotations.NewService(userService, quotations.NewSQLStore(database), time.Now)
 	bookingService := bookings.NewService(userService, bookings.NewSQLStore(database))
+	reviewService := reviews.NewService(userService, reviews.NewSQLStore(database))
 	providerService := providers.NewService(providerAuthorizer, providers.NewEntRepository(client), referenceRepository)
 	listingRepository := listings.NewEntRepository(client)
 	listingDrafts := listings.NewService(providerAuthorizer, listingRepository)
@@ -123,5 +125,5 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	ownerListings := listings.NewOwnerService(listingDrafts, listingLifecycle, listingMedia)
 	moderationQueue := moderation.NewQueueService(moderatorAuthorizer, listingRepository)
 	moderationReview := moderation.NewReviewService(moderationQueue, listingLifecycle)
-	return httpapi.NewRouter(healthService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery, contactChannels, contactReveal, messagingService, quotationService, bookingService), client, nil
+	return httpapi.NewRouter(healthService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery, contactChannels, contactReveal, messagingService, quotationService, bookingService, reviewService), client, nil
 }
