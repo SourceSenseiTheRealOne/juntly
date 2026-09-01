@@ -698,6 +698,53 @@ paths:
         "403": { $ref: "#/components/responses/Forbidden" }
         "409": { $ref: "#/components/responses/Conflict" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/bookings:
+    get:
+      operationId: listMyBookings
+      summary: List bookings where the authenticated user is a participant.
+      security: [{ clerkSession: [] }]
+      responses:
+        "200": { description: Participant bookings, content: { application/json: { schema: { $ref: "#/components/schemas/BookingsResponse" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+    post:
+      operationId: createBooking
+      summary: Create an idempotent booking from a proposal, listing, or direct agreement.
+      security: [{ clerkSession: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateBooking" } } } }
+      responses:
+        "201": { description: Booking created or recovered, content: { application/json: { schema: { $ref: "#/components/schemas/Booking" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/bookings/{bookingId}:
+    get:
+      operationId: getMyBooking
+      summary: Read one participant-only booking including its private service location.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/BookingIdPath" }]
+      responses:
+        "200": { description: Participant booking, content: { application/json: { schema: { $ref: "#/components/schemas/Booking" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/bookings/{bookingId}/transitions:
+    post:
+      operationId: transitionBooking
+      summary: Apply one compare-and-set booking transition with an audit event.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/BookingIdPath" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/TransitionBooking" } } } }
+      responses:
+        "200": { description: Updated booking, content: { application/json: { schema: { $ref: "#/components/schemas/Booking" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
 components:
   securitySchemes:
     clerkSession:
@@ -741,6 +788,11 @@ components:
       schema: { type: string, format: uuid }
     QuotationProposalIdPath:
       name: proposalId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    BookingIdPath:
+      name: bookingId
       in: path
       required: true
       schema: { type: string, format: uuid }
@@ -805,6 +857,53 @@ components:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
   schemas:
+    CreateBooking:
+      type: object
+      additionalProperties: false
+      required: [sourceType, idempotencyKey, scheduledAt, privateLocation]
+      properties:
+        sourceType: { type: string, enum: [proposal, listing, direct] }
+        sourceId: { type: [string, "null"], format: uuid }
+        providerId: { type: [string, "null"], format: uuid }
+        idempotencyKey: { type: string, minLength: 8, maxLength: 128, pattern: "^[A-Za-z0-9._:-]+$" }
+        scheduledAt: { type: string, format: date-time }
+        privateLocation: { type: string, minLength: 5, maxLength: 500 }
+        agreedPriceMinor: { type: [integer, "null"], minimum: 1 }
+    BookingState:
+      type: string
+      enum: [draft, pending_provider_confirmation, confirmed, scheduled, in_progress, completed, cancelled, disputed, refunded]
+    TransitionBooking:
+      type: object
+      additionalProperties: false
+      required: [expectedState, targetState, revision]
+      properties:
+        expectedState: { $ref: "#/components/schemas/BookingState" }
+        targetState: { $ref: "#/components/schemas/BookingState" }
+        revision: { type: integer, minimum: 1 }
+        reason: { type: [string, "null"], minLength: 3, maxLength: 500 }
+    Booking:
+      type: object
+      additionalProperties: false
+      required: [id, customerId, providerId, sourceType, sourceId, state, revision, scheduledAt, privateLocation, agreedPriceMinor, currency, createdAt, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        customerId: { type: string, format: uuid }
+        providerId: { type: string, format: uuid }
+        sourceType: { type: string, enum: [proposal, listing, direct] }
+        sourceId: { type: [string, "null"], format: uuid }
+        state: { $ref: "#/components/schemas/BookingState" }
+        revision: { type: integer, minimum: 1 }
+        scheduledAt: { type: string, format: date-time }
+        privateLocation: { type: string, minLength: 5, maxLength: 500 }
+        agreedPriceMinor: { type: integer, minimum: 1 }
+        currency: { type: string, const: EUR }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    BookingsResponse:
+      type: object
+      additionalProperties: false
+      required: [bookings]
+      properties: { bookings: { type: array, items: { $ref: "#/components/schemas/Booking" } } }
     CreateQuotationRequest:
       type: object
       additionalProperties: false
@@ -945,7 +1044,7 @@ components:
       required: [id, kind, read, createdAt]
       properties:
         id: { type: string, format: uuid }
-        kind: { type: string, enum: [conversation_started, message_received, conversation_reported, request_published, proposal_received, proposal_accepted, proposal_rejected] }
+        kind: { type: string, enum: [conversation_started, message_received, conversation_reported, request_published, proposal_received, proposal_accepted, proposal_rejected, booking_created, booking_updated] }
         read: { type: boolean }
         createdAt: { type: string, format: date-time }
     NotificationsResponse:

@@ -4,6 +4,45 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8080' | (string & {});
 };
 
+export type CreateBooking = {
+    sourceType: 'proposal' | 'listing' | 'direct';
+    sourceId?: string | null;
+    providerId?: string | null;
+    idempotencyKey: string;
+    scheduledAt: string;
+    privateLocation: string;
+    agreedPriceMinor?: number | null;
+};
+
+export type BookingState = 'draft' | 'pending_provider_confirmation' | 'confirmed' | 'scheduled' | 'in_progress' | 'completed' | 'cancelled' | 'disputed' | 'refunded';
+
+export type TransitionBooking = {
+    expectedState: BookingState;
+    targetState: BookingState;
+    revision: number;
+    reason?: string | null;
+};
+
+export type Booking = {
+    id: string;
+    customerId: string;
+    providerId: string;
+    sourceType: 'proposal' | 'listing' | 'direct';
+    sourceId: string | null;
+    state: BookingState;
+    revision: number;
+    scheduledAt: string;
+    privateLocation: string;
+    agreedPriceMinor: number;
+    currency: 'EUR';
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type BookingsResponse = {
+    bookings: Array<Booking>;
+};
+
 export type CreateQuotationRequest = {
     title: string;
     description: string;
@@ -115,7 +154,7 @@ export type NotificationPreferences = {
 
 export type Notification = {
     id: string;
-    kind: 'conversation_started' | 'message_received' | 'conversation_reported' | 'request_published' | 'proposal_received' | 'proposal_accepted' | 'proposal_rejected';
+    kind: 'conversation_started' | 'message_received' | 'conversation_reported' | 'request_published' | 'proposal_received' | 'proposal_accepted' | 'proposal_rejected' | 'booking_created' | 'booking_updated';
     read: boolean;
     createdAt: string;
 };
@@ -389,6 +428,8 @@ export type NotificationIdPath = string;
 export type QuotationRequestIdPath = string;
 
 export type QuotationProposalIdPath = string;
+
+export type BookingIdPath = string;
 
 export type GetHealthData = {
     body?: never;
@@ -1991,3 +2032,155 @@ export type AcceptQuotationProposalResponses = {
 };
 
 export type AcceptQuotationProposalResponse = AcceptQuotationProposalResponses[keyof AcceptQuotationProposalResponses];
+
+export type ListMyBookingsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/bookings';
+};
+
+export type ListMyBookingsErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListMyBookingsError = ListMyBookingsErrors[keyof ListMyBookingsErrors];
+
+export type ListMyBookingsResponses = {
+    /**
+     * Participant bookings
+     */
+    200: BookingsResponse;
+};
+
+export type ListMyBookingsResponse = ListMyBookingsResponses[keyof ListMyBookingsResponses];
+
+export type CreateBookingData = {
+    body: CreateBooking;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/bookings';
+};
+
+export type CreateBookingErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type CreateBookingError = CreateBookingErrors[keyof CreateBookingErrors];
+
+export type CreateBookingResponses = {
+    /**
+     * Booking created or recovered
+     */
+    201: Booking;
+};
+
+export type CreateBookingResponse = CreateBookingResponses[keyof CreateBookingResponses];
+
+export type GetMyBookingData = {
+    body?: never;
+    path: {
+        bookingId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/bookings/{bookingId}';
+};
+
+export type GetMyBookingErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested public resource is not available.
+     */
+    404: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetMyBookingError = GetMyBookingErrors[keyof GetMyBookingErrors];
+
+export type GetMyBookingResponses = {
+    /**
+     * Participant booking
+     */
+    200: Booking;
+};
+
+export type GetMyBookingResponse = GetMyBookingResponses[keyof GetMyBookingResponses];
+
+export type TransitionBookingData = {
+    body: TransitionBooking;
+    path: {
+        bookingId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/bookings/{bookingId}/transitions';
+};
+
+export type TransitionBookingErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type TransitionBookingError = TransitionBookingErrors[keyof TransitionBookingErrors];
+
+export type TransitionBookingResponses = {
+    /**
+     * Updated booking
+     */
+    200: Booking;
+};
+
+export type TransitionBookingResponse = TransitionBookingResponses[keyof TransitionBookingResponses];

@@ -50,7 +50,8 @@
       "manageListings": "Gestionar anuncios",
       "manageMessages": "Ver mensajes",
       "manageNotifications": "Gestionar notificaciones",
-      "manageQuotations": "Solicitudes y propuestas"
+      "manageQuotations": "Solicitudes y propuestas",
+      "manageBookings": "Gestionar reservas"
     }
   },
   "ProviderProfile": {
@@ -181,7 +182,9 @@
     "requestPublished": "Nueva solicitud de presupuesto publicada",
     "proposalReceived": "Nueva propuesta recibida",
     "proposalAccepted": "Tu propuesta ha sido aceptada",
-    "proposalRejected": "Tu propuesta no ha sido seleccionada"
+    "proposalRejected": "Tu propuesta no ha sido seleccionada",
+    "bookingCreated": "Nueva reserva creada",
+    "bookingUpdated": "Estado de la reserva actualizado"
   },
   "Quotations": {
     "title": "Solicitudes y propuestas",
@@ -211,6 +214,32 @@
     "created": "Solicitud publicada.",
     "submitted": "Propuesta enviada.",
     "accepted": "Propuesta aceptada."
+  },
+  "Bookings": {
+    "title": "Reservas",
+    "description": "Gestiona acuerdos, fechas, ubicaciones privadas y estados del servicio.",
+    "newBooking": "Nueva reserva",
+    "sourceType": "Origen del acuerdo",
+    "proposal": "Propuesta aceptada",
+    "listing": "Anuncio",
+    "direct": "Acuerdo directo",
+    "sourceId": "Identificador de propuesta o anuncio",
+    "providerId": "Identificador del profesional para acuerdo directo",
+    "scheduledAt": "Fecha y hora",
+    "privateLocation": "Ubicación privada del servicio",
+    "agreedPrice": "Precio acordado en céntimos",
+    "create": "Crear reserva",
+    "loading": "Cargando reservas...",
+    "error": "No hemos podido cargar o actualizar las reservas.",
+    "empty": "Todavía no tienes reservas.",
+    "price": "Precio",
+    "confirm": "Confirmar",
+    "schedule": "Programar",
+    "start": "Iniciar servicio",
+    "complete": "Completar",
+    "cancel": "Cancelar",
+    "dispute": "Abrir disputa",
+    "refund": "Marcar reembolso"
   },
   "Errors": {
     "title": "Algo salió mal",
