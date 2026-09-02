@@ -241,6 +241,13 @@ body {
   transform: translateY(-1px);
 }
 
+.market-button-compact {
+  min-height: 2.5rem;
+  border-radius: 0.75rem;
+  padding-inline: 0.75rem;
+  font-size: 0.8125rem;
+}
+
 .market-button:active,
 .market-button-secondary:active {
   transform: translateY(1px) scale(0.99);

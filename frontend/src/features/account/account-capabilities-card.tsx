@@ -224,12 +224,17 @@ export function AccountCapabilitiesCard({
               aria-describedby="provider-capability-description"
               disabled={saving}
               onClick={() => void updateProviderCapability()}
-              className="relative min-h-11 min-w-16 justify-self-start rounded-full border border-line bg-surface p-1 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-4 focus-visible:ring-offset-canvas disabled:cursor-wait disabled:opacity-60 data-[enabled=true]:bg-accent motion-reduce:transition-none sm:justify-self-end"
+              className="relative h-11 w-14 justify-self-start rounded-full border-0 bg-transparent p-2 outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-wait disabled:opacity-60 sm:justify-self-end"
               data-enabled={account.providerEnabled}
             >
               <span
                 aria-hidden="true"
-                className="block h-8 w-8 rounded-full bg-canvas shadow-sm transition-transform data-[enabled=true]:translate-x-5 motion-reduce:transition-none"
+                className="absolute inset-x-1 inset-y-2 rounded-full border border-line bg-control transition-colors data-[enabled=true]:bg-accent motion-reduce:transition-none"
+                data-enabled={account.providerEnabled}
+              />
+              <span
+                aria-hidden="true"
+                className="relative z-10 block h-6 w-6 rounded-full bg-canvas shadow-sm transition-transform data-[enabled=true]:translate-x-4 motion-reduce:transition-none"
                 data-enabled={account.providerEnabled}
               />
             </button>
