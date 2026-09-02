@@ -19,7 +19,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
     <main className="market-page grid place-items-center px-5">
       <div className="market-panel max-w-lg p-8 text-center">
         <p className="text-sm font-semibold tracking-[0.16em] text-accent uppercase">
-          Juntly
+          Vila
         </p>
         <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em]">
           {t("title")}

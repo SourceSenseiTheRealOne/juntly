@@ -107,10 +107,10 @@ export function LandingShell({
             <div className="market-panel grid overflow-hidden lg:grid-cols-[0.72fr_1.28fr]">
               <div className="flex min-h-64 flex-col justify-between bg-accent-soft p-7 sm:p-10 lg:min-h-96">
                 <p
-                  aria-label="Juntly vision"
+                  aria-label="Vila vision"
                   className="text-5xl font-bold tracking-[-0.075em] text-ink sm:text-7xl"
                 >
-                  Juntly<span className="text-accent">.</span>
+                  Vila<span className="text-accent">.</span>
                 </p>
                 <span
                   aria-hidden="true"
@@ -256,7 +256,7 @@ export function LandingShell({
       <footer className="border-t border-line bg-surface text-ink">
         <div className="market-container flex flex-col gap-3 py-8 text-sm sm:flex-row sm:items-center sm:justify-between">
           <strong className="text-lg tracking-[-0.045em]">
-            Juntly<span className="text-accent">.</span>
+            Vila<span className="text-accent">.</span>
           </strong>
           <p className="text-muted">{footerLabel}</p>
         </div>

@@ -51,9 +51,9 @@ describe("AccountPage", () => {
           "capabilities.providerLabel": "Disponibilizar serviços",
           "capabilities.retry": "Tentar novamente",
           "capabilities.saving": "A guardar…",
-          "capabilities.title": "Como utiliza a Juntly",
+          "capabilities.title": "Como utiliza a Vila",
           description: "A sua sessão está ativa.",
-          title: "Conta Juntly",
+          title: "Conta Vila",
         })[key],
     );
 
@@ -65,7 +65,7 @@ describe("AccountPage", () => {
 
     expect(mocks.requireAuthenticatedUser).toHaveBeenCalledWith("pt-PT");
     expect(
-      screen.getByRole("heading", { name: "Conta Juntly" }),
+      screen.getByRole("heading", { name: "Conta Vila" }),
     ).toBeInTheDocument();
     expect(screen.getByText("A sua sessão está ativa.")).toBeInTheDocument();
     expect(screen.getByTestId("account-capabilities-card")).toHaveTextContent(
