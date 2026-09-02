@@ -201,28 +201,30 @@ export function QuotationsDashboard({
   }
   return (
     <section aria-labelledby="quotations-title">
-      <h1
-        id="quotations-title"
-        className="text-4xl font-bold tracking-[-0.05em]"
-      >
-        {copy.title}
-      </h1>
-      <p className="mt-3 text-lg leading-8 text-muted">{copy.description}</p>
-      {loading ? <p className="mt-8 text-muted">{copy.loading}</p> : null}
+      <div className="market-page-header">
+        <h1
+          id="quotations-title"
+          className="text-4xl font-bold tracking-[-0.055em] sm:text-5xl"
+        >
+          {copy.title}
+        </h1>
+        <p>{copy.description}</p>
+      </div>
+      {loading ? <p className="market-empty mt-8">{copy.loading}</p> : null}
       {failed ? (
-        <p role="alert" className="mt-6 text-earth">
+        <p role="alert" className="market-alert mt-6">
           {copy.error}
         </p>
       ) : null}
       {notice ? (
-        <p aria-live="polite" className="mt-6 font-semibold text-accent">
+        <p aria-live="polite" className="market-success mt-6 font-semibold">
           {notice}
         </p>
       ) : null}
       <div className="mt-8 grid gap-6 xl:grid-cols-2">
         <div>
           <h2 className="text-2xl font-bold">{copy.customerRequests}</h2>
-          <form className="market-card mt-4 grid gap-4 p-5" onSubmit={create}>
+          <form className="market-form-section mt-4" onSubmit={create}>
             <h3 className="font-bold">{copy.newRequest}</h3>
             <Field name="title" label={copy.requestTitle} />
             <label className="grid gap-2 font-semibold">
@@ -257,7 +259,7 @@ export function QuotationsDashboard({
           </form>
           <div className="mt-4 grid gap-3">
             {!loading && requests.length === 0 ? (
-              <p className="market-card p-5 text-muted">{copy.emptyRequests}</p>
+              <p className="market-empty">{copy.emptyRequests}</p>
             ) : (
               requests.map((item) => (
                 <article className="market-card p-5" key={item.id}>
@@ -275,7 +277,7 @@ export function QuotationsDashboard({
                       <h4 className="font-bold">{copy.proposals}</h4>
                       {proposals.map((proposal) => (
                         <div
-                          className="rounded-xl bg-control p-4"
+                          className="rounded-2xl border border-line bg-control p-4"
                           key={proposal.id}
                         >
                           <p className="font-semibold">
@@ -310,9 +312,7 @@ export function QuotationsDashboard({
           <h2 className="text-2xl font-bold">{copy.opportunities}</h2>
           <div className="mt-4 grid gap-3">
             {!loading && opportunities.length === 0 ? (
-              <p className="market-card p-5 text-muted">
-                {copy.emptyOpportunities}
-              </p>
+              <p className="market-empty">{copy.emptyOpportunities}</p>
             ) : (
               opportunities.map((item) => (
                 <article className="market-card p-5" key={item.id}>
@@ -329,7 +329,7 @@ export function QuotationsDashboard({
                   </button>
                   {proposalTarget === item.id ? (
                     <form
-                      className="mt-4 grid gap-4 border-t border-line pt-4"
+                      className="market-form-section mt-4"
                       onSubmit={(event) => void submitProposal(event, item.id)}
                     >
                       <Field

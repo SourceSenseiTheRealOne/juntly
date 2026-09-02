@@ -1,0 +1,3 @@
+# Image attribution
+
+`local-craft.jpg` is a free Unsplash photograph by Jean-Baptiste D. (`@jbonunsplash`), sourced from https://unsplash.com/photos/WCicoBA3Us8 for the Juntly marketplace landing page.

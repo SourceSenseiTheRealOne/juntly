@@ -148,21 +148,23 @@ export function NotificationsPanel({ copy }: { copy: NotificationsCopy }) {
                             : copy.promotionUpdated;
   return (
     <section aria-labelledby="notifications-title">
-      <h1
-        id="notifications-title"
-        className="text-4xl font-bold tracking-[-0.05em]"
-      >
-        {copy.title}
-      </h1>
-      <p className="mt-3 text-lg leading-8 text-muted">{copy.description}</p>
-      {loading ? <p className="mt-8 text-muted">{copy.loading}</p> : null}
+      <div className="market-page-header">
+        <h1
+          id="notifications-title"
+          className="text-4xl font-bold tracking-[-0.055em] sm:text-5xl"
+        >
+          {copy.title}
+        </h1>
+        <p>{copy.description}</p>
+      </div>
+      {loading ? <p className="market-empty mt-8">{copy.loading}</p> : null}
       {failed ? (
-        <p role="alert" className="mt-6 text-earth">
+        <p role="alert" className="market-alert mt-6">
           {copy.error}
         </p>
       ) : null}
       {preferences ? (
-        <form className="market-card mt-8 grid gap-4 p-5" onSubmit={save}>
+        <form className="market-form-section mt-8" onSubmit={save}>
           <label className="flex min-h-11 items-center gap-3">
             <input
               type="checkbox"
@@ -193,7 +195,10 @@ export function NotificationsPanel({ copy }: { copy: NotificationsCopy }) {
             {copy.save}
           </button>
           {saved ? (
-            <p aria-live="polite" className="text-sm font-semibold text-accent">
+            <p
+              aria-live="polite"
+              className="market-success text-sm font-semibold"
+            >
               {copy.saved}
             </p>
           ) : null}
@@ -201,11 +206,11 @@ export function NotificationsPanel({ copy }: { copy: NotificationsCopy }) {
       ) : null}
       <div className="mt-6 grid gap-3">
         {!loading && items.length === 0 ? (
-          <p className="market-card p-5 text-muted">{copy.empty}</p>
+          <p className="market-empty">{copy.empty}</p>
         ) : (
           items.map((item) => (
             <article
-              className="market-card flex items-center justify-between gap-4 p-5"
+              className={`market-card flex items-center justify-between gap-4 p-5 ${item.read ? "opacity-75" : "border-accent/20"}`}
               key={item.id}
             >
               <div>

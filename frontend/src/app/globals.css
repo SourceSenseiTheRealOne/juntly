@@ -1,31 +1,68 @@
 @import "tailwindcss";
 
 :root {
-  --canvas: #f5f7fb;
-  --surface: #ffffff;
-  --ink: #493941;
-  --muted: #6e6670;
-  --line: #dce2ec;
-  --accent: #b95163;
-  --accent-soft: #f5e8ec;
-  --earth: #9b634f;
-  --earth-soft: #f5e9e3;
-  --focus: #315fd8;
-  --control: #eaf0f7;
-  --control-strong: #dce7f3;
-  --shadow-card: 0 14px 34px rgba(56, 61, 73, 0.08);
+  color-scheme: light;
+  --canvas: #f7f6f2;
+  --surface: #fffefa;
+  --surface-raised: #ffffff;
+  --ink: #2d2429;
+  --muted: #6d6268;
+  --line: #ded9d5;
+  --line-strong: #c9c1bd;
+  --accent: #a53f59;
+  --accent-strong: #843047;
+  --accent-soft: #f5e5e9;
+  --earth: #8b503d;
+  --earth-soft: #f5e8e2;
+  --success: #316a55;
+  --success-soft: #e5f1eb;
+  --focus: #2456c6;
+  --control: #f0efeb;
+  --control-strong: #e4e1dd;
+  --shadow-card: 0 18px 50px rgba(55, 42, 48, 0.08);
+  --shadow-float: 0 24px 70px rgba(55, 42, 48, 0.13);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --canvas: #171316;
+    --surface: #211b1f;
+    --surface-raised: #292126;
+    --ink: #f4eef1;
+    --muted: #b9adb3;
+    --line: #3b3137;
+    --line-strong: #50434a;
+    --accent: #e28aa0;
+    --accent-strong: #f0a0b3;
+    --accent-soft: #40252e;
+    --earth: #d99a82;
+    --earth-soft: #3b2924;
+    --success: #7cc0a2;
+    --success-soft: #20382e;
+    --focus: #8caeff;
+    --control: #2b2528;
+    --control-strong: #393035;
+    --shadow-card: 0 18px 50px rgba(0, 0, 0, 0.22);
+    --shadow-float: 0 24px 70px rgba(0, 0, 0, 0.32);
+  }
 }
 
 @theme inline {
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
   --color-accent-soft: var(--accent-soft);
   --color-earth: var(--earth);
   --color-earth-soft: var(--earth-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
   --color-focus: var(--focus);
   --color-control: var(--control);
   --color-control-strong: var(--control-strong);
@@ -40,6 +77,7 @@
 html {
   min-height: 100%;
   scroll-behavior: smooth;
+  background: var(--canvas);
 }
 
 body {
@@ -48,36 +86,41 @@ body {
   background: var(--canvas);
   color: var(--ink);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-feature-settings:
+    "ss01" 1,
+    "cv11" 1;
+  text-rendering: optimizeLegibility;
 }
 
-a,
-button,
-input,
-select,
-textarea {
+:where(a, button, input, select, textarea) {
   -webkit-tap-highlight-color: transparent;
 }
 
-input,
-select,
-textarea {
+:where(button, a) {
+  touch-action: manipulation;
+}
+
+:where(input, select, textarea) {
   color: var(--ink);
 }
 
-input::placeholder,
-textarea::placeholder {
+:where(input, textarea)::placeholder {
   color: var(--muted);
-  opacity: 1;
+  opacity: 0.82;
+}
+
+:where(h1, h2, h3) {
+  text-wrap: balance;
 }
 
 .market-page {
-  min-height: calc(100vh - 4rem);
+  min-height: calc(100dvh - 4.5rem);
   background: var(--canvas);
   color: var(--ink);
 }
 
 .market-container {
-  width: min(100% - 2rem, 76rem);
+  width: min(100% - 2rem, 80rem);
   margin-inline: auto;
 }
 
@@ -90,35 +133,50 @@ textarea::placeholder {
 
 .market-card {
   border: 1px solid var(--line);
-  border-radius: 1.25rem;
-  background: var(--surface);
-  box-shadow: 0 5px 16px rgba(56, 61, 73, 0.04);
+  border-radius: 1.125rem;
+  background: var(--surface-raised);
+  box-shadow: 0 8px 28px rgba(55, 42, 48, 0.045);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
 
-.market-control {
-  min-height: 2.875rem;
-  border: 1px solid var(--line);
-  border-radius: 0.875rem;
-  background: var(--control);
-  padding-inline: 1rem;
-  outline: none;
+.market-card:hover {
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-2px);
 }
 
-.market-control:focus-visible {
-  border-color: var(--focus);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 20%, transparent);
-}
-
+.market-control,
 .market-panel
   :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
-  min-height: 2.875rem;
+  min-height: 3rem;
+  width: 100%;
   border: 1px solid var(--line);
   border-radius: 0.875rem;
   background: var(--control);
-  padding: 0.625rem 1rem;
+  padding: 0.6875rem 0.9375rem;
+  font: inherit;
   outline: none;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
 }
 
+.market-control:hover,
+.market-panel
+  :where(
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea
+  ):hover {
+  border-color: var(--line-strong);
+  background: var(--surface-raised);
+}
+
+.market-control:focus-visible,
 .market-panel
   :where(
     input:not([type="checkbox"]):not([type="radio"]),
@@ -126,79 +184,286 @@ textarea::placeholder {
     textarea
   ):focus-visible {
   border-color: var(--focus);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 20%, transparent);
+  background: var(--surface-raised);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 22%, transparent);
 }
 
-.market-button {
-  display: inline-flex;
-  min-height: 2.875rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.875rem;
-  background: var(--ink);
-  padding-inline: 1.125rem;
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: var(--surface);
-  outline: none;
-  transition:
-    background-color 160ms ease,
-    transform 160ms ease;
+:where(input[type="checkbox"], input[type="radio"]) {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--accent);
 }
 
-.market-button:hover {
-  background: color-mix(in srgb, var(--ink) 88%, black);
-  transform: translateY(-1px);
-}
-.market-button:focus-visible {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 30%, transparent);
-}
-.market-button:disabled {
-  cursor: wait;
-  opacity: 0.6;
-  transform: none;
-}
-
+.market-button,
 .market-button-secondary {
   display: inline-flex;
   min-height: 2.875rem;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--line);
   border-radius: 0.875rem;
-  background: var(--surface);
   padding-inline: 1.125rem;
   font-size: 0.875rem;
-  font-weight: 700;
-  color: var(--ink);
+  font-weight: 750;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
   outline: none;
   transition:
     background-color 160ms ease,
-    border-color 160ms ease;
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.market-button {
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--surface);
+  box-shadow: 0 8px 20px rgba(45, 36, 41, 0.12);
+}
+
+.market-button:hover {
+  background: color-mix(in srgb, var(--ink) 88%, var(--accent));
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(45, 36, 41, 0.17);
+}
+
+.market-button-secondary {
+  border: 1px solid var(--line-strong);
+  background: color-mix(in srgb, var(--surface-raised) 92%, transparent);
+  color: var(--ink);
 }
 
 .market-button-secondary:hover {
+  border-color: var(--ink);
   background: var(--control);
+  transform: translateY(-1px);
 }
+
+.market-button:active,
+.market-button-secondary:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.market-button:focus-visible,
 .market-button-secondary:focus-visible {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 30%, transparent);
+}
+
+.market-button:disabled,
+.market-button-secondary:disabled {
+  cursor: wait;
+  opacity: 0.58;
+  transform: none;
+  box-shadow: none;
 }
 
 .market-chip {
   display: inline-flex;
   min-height: 2rem;
   align-items: center;
+  border: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
   border-radius: 999px;
   background: var(--control);
   padding-inline: 0.75rem;
   font-size: 0.75rem;
   font-weight: 700;
+  line-height: 1;
   color: var(--muted);
+  white-space: nowrap;
+}
+
+.market-page-header {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 48rem;
+}
+
+.market-page-header > p:last-child {
+  max-width: 42rem;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+.market-panel > section {
+  min-width: 0;
+}
+
+.market-panel > section > h1 {
+  max-width: 48rem;
+  font-size: clamp(2.25rem, 5vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: -0.055em;
+}
+
+.market-panel > section > h1 + p {
+  max-width: 42rem;
+  margin-top: 0.75rem;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+.market-panel > section > form:not(.market-card) > label {
+  display: grid;
+  gap: 0.5rem;
+  font-weight: 650;
+}
+
+.market-panel > section > form > fieldset {
+  display: grid;
+  gap: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 1.125rem;
+  background: color-mix(in srgb, var(--surface) 78%, var(--control));
+  padding: 1rem;
+}
+
+.market-panel > section > form > fieldset > legend {
+  padding-inline: 0.25rem;
+  font-weight: 700;
+}
+
+.market-panel > section > form > fieldset > label {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 0.75rem;
+  padding-inline: 0.625rem;
+  transition: background-color 160ms ease;
+}
+
+.market-panel > section > form > fieldset > label:hover {
+  background: var(--surface);
+}
+
+.market-panel > section > form > button[type="submit"]:not([class]) {
+  min-height: 2.875rem;
+  justify-self: start;
+  border: 1px solid var(--ink);
+  border-radius: 0.875rem;
+  background: var(--ink);
+  padding-inline: 1.125rem;
+  font-weight: 750;
+  color: var(--surface);
+}
+
+.market-kicker {
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.market-toolbar {
+  border: 1px solid var(--line);
+  border-radius: 1.125rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+.market-empty {
+  display: grid;
+  min-height: 10rem;
+  place-items: center;
+  border: 1px dashed var(--line-strong);
+  border-radius: 1.125rem;
+  background: color-mix(in srgb, var(--surface) 72%, var(--control));
+  padding: 2rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.market-alert {
+  border: 1px solid color-mix(in srgb, var(--earth) 35%, var(--line));
+  border-radius: 0.875rem;
+  background: var(--earth-soft);
+  padding: 0.875rem 1rem;
+  color: var(--ink);
+}
+
+.market-success {
+  border: 1px solid color-mix(in srgb, var(--success) 32%, var(--line));
+  border-radius: 0.875rem;
+  background: var(--success-soft);
+  padding: 0.875rem 1rem;
+  color: var(--ink);
+}
+
+.market-form-section {
+  display: grid;
+  gap: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1.125rem;
+  background: color-mix(in srgb, var(--surface) 78%, var(--control));
+  padding: 1.125rem;
+}
+
+form.market-card > label,
+.market-form-section > label {
+  display: grid;
+  gap: 0.5rem;
+  font-weight: 650;
+}
+
+form.market-card > button[type="submit"]:not([class]),
+.market-form-section > button[type="submit"]:not([class]) {
+  min-height: 2.875rem;
+  justify-self: start;
+  border: 1px solid var(--ink);
+  border-radius: 0.875rem;
+  background: var(--ink);
+  padding-inline: 1.125rem;
+  font-weight: 750;
+  color: var(--surface);
+}
+
+.market-data-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+}
+
+.market-data-grid > * {
+  min-width: 0;
 }
 
 ::selection {
   background: var(--accent-soft);
   color: var(--ink);
+}
+
+@media (max-width: 639px) {
+  .market-container {
+    width: min(100% - 1.25rem, 80rem);
+  }
+
+  .market-panel {
+    border-radius: 1.125rem;
+  }
+
+  .market-card {
+    border-radius: 1rem;
+  }
+
+  .market-button,
+  .market-button-secondary {
+    min-height: 3rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .market-panel > section > form > fieldset {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .market-panel > section > form > fieldset > legend {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -210,12 +475,13 @@ textarea::placeholder {
   *::before,
   *::after {
     scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
+    animation: none !important;
     transition-duration: 0.01ms !important;
   }
 
-  .market-button {
-    transition: none;
+  .market-card:hover,
+  .market-button:hover,
+  .market-button-secondary:hover {
+    transform: none;
   }
 }

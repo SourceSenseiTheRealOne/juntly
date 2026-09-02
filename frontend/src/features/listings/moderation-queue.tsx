@@ -118,12 +118,20 @@ export function ModerationQueue({ copy }: { copy: ModerationQueueCopy }) {
   }
 
   if (listings === null && !failed)
-    return <p aria-live="polite">{copy.loading}</p>;
+    return (
+      <p className="market-empty" aria-live="polite">
+        {copy.loading}
+      </p>
+    );
   if (failed && listings === null)
     return (
-      <div role="alert">
+      <div className="market-alert grid justify-items-start gap-3" role="alert">
         <p>{copy.error}</p>
-        <button type="button" onClick={() => void load()}>
+        <button
+          className="market-button-secondary"
+          type="button"
+          onClick={() => void load()}
+        >
           {copy.retry}
         </button>
       </div>
@@ -133,18 +141,22 @@ export function ModerationQueue({ copy }: { copy: ModerationQueueCopy }) {
     <section aria-labelledby="moderation-title">
       <h1
         id="moderation-title"
-        className="text-4xl font-bold tracking-[-0.05em]"
+        className="text-4xl font-bold tracking-[-0.055em] sm:text-5xl"
       >
         {copy.title}
       </h1>
-      {failed ? <p role="alert">{copy.error}</p> : null}
+      {failed ? (
+        <p className="market-alert mt-5" role="alert">
+          {copy.error}
+        </p>
+      ) : null}
       <div className="mt-6 grid gap-4">
         {listings?.length ? (
           listings.map((item) => (
             <article key={item.id} className="market-card p-5">
               <h2 className="font-semibold">{item.title}</h2>
               <p className="mt-2 text-muted">{item.description}</p>
-              <p className="mt-2">{item.state}</p>
+              <span className="market-chip mt-3">{item.state}</span>
               <button
                 disabled={saving}
                 type="button"
@@ -159,7 +171,7 @@ export function ModerationQueue({ copy }: { copy: ModerationQueueCopy }) {
                   value={reason}
                   maxLength={500}
                   onChange={(event) => setReason(event.target.value)}
-                  className="min-h-11 rounded-xl border border-line bg-surface px-3"
+                  className="market-control"
                 />
               </label>
               <button
@@ -173,7 +185,7 @@ export function ModerationQueue({ copy }: { copy: ModerationQueueCopy }) {
             </article>
           ))
         ) : (
-          <p>{copy.empty}</p>
+          <p className="market-empty">{copy.empty}</p>
         )}
       </div>
     </section>

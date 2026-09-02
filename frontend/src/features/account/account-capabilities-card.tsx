@@ -123,7 +123,7 @@ export function AccountCapabilitiesCard({
   if (loading && !account) {
     return (
       <section
-        className="mt-8 rounded-2xl border border-line bg-canvas p-5 text-sm text-muted"
+        className="market-empty mt-8 text-sm"
         aria-live="polite"
         aria-busy="true"
       >
@@ -134,14 +134,11 @@ export function AccountCapabilitiesCard({
 
   if (!account) {
     return (
-      <section
-        className="mt-8 rounded-2xl border border-line bg-canvas p-5"
-        role="alert"
-      >
+      <section className="market-alert mt-8" role="alert">
         <p className="text-sm text-muted">{copy.loadError}</p>
         <button
           type="button"
-          className="mt-4 min-h-11 rounded-full bg-ink px-5 text-sm font-semibold text-canvas outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-4 focus-visible:ring-offset-canvas"
+          className="market-button mt-4"
           onClick={() => void loadAccount()}
         >
           {copy.retry}
@@ -151,10 +148,7 @@ export function AccountCapabilitiesCard({
   }
 
   return (
-    <section
-      className="mt-8 border-t border-line pt-8"
-      aria-labelledby="account-capabilities-title"
-    >
+    <section className="mt-8" aria-labelledby="account-capabilities-title">
       <h2 id="account-capabilities-title" className="text-xl font-semibold">
         {copy.title}
       </h2>
@@ -169,8 +163,8 @@ export function AccountCapabilitiesCard({
         </p>
       ) : null}
 
-      <div className="mt-6 grid gap-4">
-        <div className="rounded-2xl border border-line bg-canvas p-5">
+      <div className="mt-6 grid gap-4 xl:grid-cols-2">
+        <div className="market-card p-5">
           <div className="flex items-start justify-between gap-4">
             <div>
               <h3 className="font-semibold">{copy.customerLabel}</h3>
@@ -184,8 +178,8 @@ export function AccountCapabilitiesCard({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-line bg-canvas p-5">
-          <div className="flex items-center justify-between gap-5">
+        <div className="market-card p-5">
+          <div className="flex items-start justify-between gap-5">
             <div>
               <h3 id="provider-capability-label" className="font-semibold">
                 {copy.providerLabel}
@@ -209,16 +203,13 @@ export function AccountCapabilitiesCard({
               {account.providerEnabled && providerProfileUrl ? (
                 <a
                   href={providerProfileUrl}
-                  className="mt-3 inline-flex min-h-11 items-center rounded-full border border-line px-4 text-sm font-semibold text-ink outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  className="market-button-secondary mt-3 mr-2"
                 >
                   {copy.manageProvider}
                 </a>
               ) : null}
               {account.providerEnabled && listingsUrl ? (
-                <a
-                  href={listingsUrl}
-                  className="mt-3 inline-flex min-h-11 items-center rounded-full border border-line px-4 text-sm font-semibold text-ink outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                >
+                <a href={listingsUrl} className="market-button-secondary mt-3">
                   {copy.manageListings}
                 </a>
               ) : null}

@@ -16,8 +16,20 @@ export default async function SignUpPage({ params }: AuthPageProps) {
   }
 
   return (
-    <main className="market-page grid place-items-center px-5 py-12">
+    <main className="market-page grid place-items-center px-4 py-10 sm:px-6 sm:py-16">
       <SignUp
+        appearance={{
+          variables: {
+            colorPrimary: "var(--accent)",
+            colorBackground: "var(--surface)",
+            borderRadius: "0.875rem",
+          },
+          elements: {
+            rootBox: "w-full max-w-md",
+            cardBox:
+              "w-full rounded-3xl border border-line shadow-[var(--shadow-card)]",
+          },
+        }}
         fallbackRedirectUrl={`/${locale}/account`}
         signInUrl={`/${locale}/sign-in`}
       />

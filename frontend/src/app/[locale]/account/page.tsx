@@ -39,61 +39,65 @@ export default async function AccountPage({ params }: AccountPageProps) {
   };
 
   return (
-    <main className="market-page px-4 py-8 sm:px-6 sm:py-10">
-      <section className="market-panel mx-auto w-full max-w-3xl p-6 sm:p-8">
-        <p className="text-sm font-semibold tracking-[0.16em] text-accent uppercase">
-          Juntly
-        </p>
-        <h1 className="mt-3 text-4xl font-bold tracking-[-0.05em]">
-          {t("title")}
-        </h1>
-        <p className="mt-4 text-lg leading-8 text-muted">{t("description")}</p>
-        <AccountCapabilitiesCard
-          copy={capabilityCopy}
-          providerProfileUrl={`/${locale}/account/provider-profile`}
-          listingsUrl={`/${locale}/account/listings`}
-        />
-        <nav
-          aria-label={t("title")}
-          className="mt-6 grid gap-3 border-t border-line pt-6 sm:grid-cols-2"
-        >
-          <a
-            className="market-button-secondary"
-            href={`/${locale}/account/messages`}
+    <main className="market-page px-4 py-8 sm:px-6 sm:py-12">
+      <section className="market-panel mx-auto w-full max-w-6xl overflow-hidden p-6 sm:p-8 lg:p-10">
+        <div className="market-page-header border-b border-line pb-8">
+          <p className="market-kicker">Juntly</p>
+          <h1 className="text-4xl font-bold tracking-[-0.055em] sm:text-5xl">
+            {t("title")}
+          </h1>
+          <p>{t("description")}</p>
+        </div>
+        <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
+          <div>
+            <AccountCapabilitiesCard
+              copy={capabilityCopy}
+              providerProfileUrl={`/${locale}/account/provider-profile`}
+              listingsUrl={`/${locale}/account/listings`}
+            />
+          </div>
+          <nav
+            aria-label={t("title")}
+            className="grid content-start gap-3 border-t border-line pt-8 lg:border-t-0 lg:border-l lg:pl-10"
           >
-            {t("capabilities.manageMessages")}
-          </a>
-          <a
-            className="market-button-secondary"
-            href={`/${locale}/account/notifications`}
-          >
-            {t("capabilities.manageNotifications")}
-          </a>
-          <a
-            className="market-button-secondary"
-            href={`/${locale}/account/quotations`}
-          >
-            {t("capabilities.manageQuotations")}
-          </a>
-          <a
-            className="market-button-secondary"
-            href={`/${locale}/account/bookings`}
-          >
-            {t("capabilities.manageBookings")}
-          </a>
-          <a
-            className="market-button-secondary"
-            href={`/${locale}/account/reviews`}
-          >
-            {t("capabilities.manageReviews")}
-          </a>
-          <a
-            className="market-button-secondary"
-            href={`/${locale}/account/entitlements`}
-          >
-            {t("capabilities.manageEntitlements")}
-          </a>
-        </nav>
+            <a
+              className="market-button-secondary justify-between px-4"
+              href={`/${locale}/account/messages`}
+            >
+              {t("capabilities.manageMessages")}
+            </a>
+            <a
+              className="market-button-secondary justify-between px-4"
+              href={`/${locale}/account/notifications`}
+            >
+              {t("capabilities.manageNotifications")}
+            </a>
+            <a
+              className="market-button-secondary justify-between px-4"
+              href={`/${locale}/account/quotations`}
+            >
+              {t("capabilities.manageQuotations")}
+            </a>
+            <a
+              className="market-button-secondary justify-between px-4"
+              href={`/${locale}/account/bookings`}
+            >
+              {t("capabilities.manageBookings")}
+            </a>
+            <a
+              className="market-button-secondary justify-between px-4"
+              href={`/${locale}/account/reviews`}
+            >
+              {t("capabilities.manageReviews")}
+            </a>
+            <a
+              className="market-button-secondary justify-between px-4"
+              href={`/${locale}/account/entitlements`}
+            >
+              {t("capabilities.manageEntitlements")}
+            </a>
+          </nav>
+        </div>
       </section>
     </main>
   );
