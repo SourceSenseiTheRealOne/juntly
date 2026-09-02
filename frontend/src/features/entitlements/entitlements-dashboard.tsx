@@ -117,31 +117,31 @@ export function EntitlementsDashboard({ copy }: { copy: EntitlementsCopy }) {
         : value === "cancelled"
           ? copy.cancelled
           : copy.expired;
-  if (loading) return <p className="text-muted">{copy.loading}</p>;
+  if (loading) return <p className="market-empty">{copy.loading}</p>;
   return (
     <section aria-labelledby="entitlements-title">
-      <h1
-        id="entitlements-title"
-        className="text-4xl font-bold tracking-[-0.05em]"
-      >
-        {copy.title}
-      </h1>
-      <p className="mt-3 max-w-3xl text-lg leading-8 text-muted">
-        {copy.description}
-      </p>
+      <div className="market-page-header">
+        <h1
+          id="entitlements-title"
+          className="text-4xl font-bold tracking-[-0.055em] sm:text-5xl"
+        >
+          {copy.title}
+        </h1>
+        <p>{copy.description}</p>
+      </div>
       {failed ? (
-        <p className="mt-6 text-earth" role="alert">
+        <p className="market-alert mt-6" role="alert">
           {copy.error}
         </p>
       ) : null}
       {notice ? (
-        <p className="mt-6 font-semibold text-accent" aria-live="polite">
+        <p className="market-success mt-6 font-semibold" aria-live="polite">
           {notice}
         </p>
       ) : null}
       {mine ? (
-        <div className="market-card mt-8 grid gap-4 p-5 sm:grid-cols-3">
-          <h2 className="text-xl font-bold sm:col-span-3">{copy.access}</h2>
+        <div className="market-card market-data-grid mt-8 p-5 sm:p-6">
+          <h2 className="text-xl font-bold sm:col-span-full">{copy.access}</h2>
           <Metric
             label={copy.activeListings}
             value={String(mine.access.maxActiveListings)}
@@ -154,7 +154,7 @@ export function EntitlementsDashboard({ copy }: { copy: EntitlementsCopy }) {
             label={copy.analytics}
             value={mine.access.analyticsEnabled ? copy.enabled : copy.disabled}
           />
-          <p className="text-sm text-muted sm:col-span-3">
+          <p className="border-t border-line pt-4 text-sm text-muted sm:col-span-full">
             {copy.current}:{" "}
             {mine.subscription ? status(mine.subscription.status) : copy.none}
           </p>
@@ -186,7 +186,7 @@ export function EntitlementsDashboard({ copy }: { copy: EntitlementsCopy }) {
           </article>
         ))}
       </div>
-      <form className="market-card mt-10 grid gap-4 p-5" onSubmit={promote}>
+      <form className="market-form-section mt-10" onSubmit={promote}>
         <h2 className="text-2xl font-bold">{copy.promotion}</h2>
         <label className="grid gap-2 font-semibold">
           {copy.listingId}

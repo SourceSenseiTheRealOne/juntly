@@ -20,11 +20,14 @@ export function AuthNavigation({
   return (
     <nav aria-label={navigationLabel}>
       <Show when="signed-out">
-        <div className="flex items-center gap-2">
-          <a href={signInUrl} className="market-button-secondary min-h-11 px-4">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <a
+            href={signInUrl}
+            className="market-button-secondary hidden min-h-11 px-4 sm:inline-flex"
+          >
             {signInLabel}
           </a>
-          <a href={signUpUrl} className="market-button min-h-11 px-4">
+          <a href={signUpUrl} className="market-button min-h-11 px-3 sm:px-4">
             {signUpLabel}
           </a>
         </div>

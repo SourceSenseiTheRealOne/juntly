@@ -104,13 +104,18 @@ export function BookingDashboard({ copy }: { copy: BookingsCopy }) {
   }
   return (
     <section aria-labelledby="bookings-title">
-      <h1 id="bookings-title" className="text-4xl font-bold tracking-[-0.05em]">
-        {copy.title}
-      </h1>
-      <p className="mt-3 text-lg leading-8 text-muted">{copy.description}</p>
-      {loading ? <p className="mt-8 text-muted">{copy.loading}</p> : null}
+      <div className="market-page-header">
+        <h1
+          id="bookings-title"
+          className="text-4xl font-bold tracking-[-0.055em] sm:text-5xl"
+        >
+          {copy.title}
+        </h1>
+        <p>{copy.description}</p>
+      </div>
+      {loading ? <p className="market-empty mt-8">{copy.loading}</p> : null}
       {failed ? (
-        <p role="alert" className="mt-6 text-earth">
+        <p role="alert" className="market-alert mt-6">
           {copy.error}
         </p>
       ) : null}
@@ -122,7 +127,7 @@ export function BookingDashboard({ copy }: { copy: BookingsCopy }) {
         {copy.newBooking}
       </button>
       {creating ? (
-        <form className="market-card mt-5 grid gap-4 p-5" onSubmit={create}>
+        <form className="market-form-section mt-5" onSubmit={create}>
           <label className="grid gap-2 font-semibold">
             {copy.sourceType}
             <select className="market-control" name="sourceType">
@@ -150,15 +155,15 @@ export function BookingDashboard({ copy }: { copy: BookingsCopy }) {
           </button>
         </form>
       ) : null}
-      <div className="mt-8 grid gap-4">
+      <div className="mt-8 grid gap-4 xl:grid-cols-2">
         {!loading && items.length === 0 ? (
-          <p className="market-card p-5 text-muted">{copy.empty}</p>
+          <p className="market-empty xl:col-span-2">{copy.empty}</p>
         ) : (
           items.map((item) => (
-            <article className="market-card p-5" key={item.id}>
+            <article className="market-card p-5 sm:p-6" key={item.id}>
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="font-bold">{item.state}</p>
+                  <span className="market-chip text-ink">{item.state}</span>
                   <time
                     className="mt-1 block text-sm text-muted"
                     dateTime={item.scheduledAt}

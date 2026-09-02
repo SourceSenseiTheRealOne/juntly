@@ -38,6 +38,10 @@ contracts.
 - Restrained radii/shadows and minimal animation.
 - Motion never carries essential information and respects `prefers-reduced-motion`.
 
+## 2026-09-01 modernization
+
+The approved marketplace language is now applied consistently across public, authenticated, moderation, and administration surfaces. The system retains the off-white canvas, cool-mist controls, plum-charcoal ink, and one berry accent while strengthening contrast, typography, spacing, responsive hierarchy, focus treatment, dark-mode parity, alerts, empty states, and form grouping. The landing page uses real craft photography instead of simulated product UI. Business logic, routes, field names, auth, privacy, and API contracts remain unchanged.
+
 ## Component architecture
 
 - Primitive: Button, Link, Input, Textarea, Select, Checkbox, Dialog, Menu, Field, Badge.

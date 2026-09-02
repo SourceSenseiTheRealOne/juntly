@@ -1,13 +1,13 @@
 {
   "Metadata": {
-    "title": "Juntly — Local services, real skills",
+    "title": "Juntly: Local services, real skills",
     "description": "Find local people and services near you. Juntly brings communities, customers and trusted providers closer together."
   },
   "Landing": {
     "eyebrow": "Local people. Real skills.",
     "tagline": "Find someone who knows how.",
     "heading": "Local services, closer to home.",
-    "description": "A simple way to find people with real skills in your community — starting in rural Portugal.",
+    "description": "A simple way to find people with real skills in your community, starting in rural Portugal.",
     "statusLabel": "The platform is taking shape.",
     "healthStatus": {
       "checking": "Checking the API.",
@@ -18,7 +18,7 @@
     "visionTitle": "Built for genuine local connections",
     "visionDescription": "Discovery, contact and trust without taking choice away from people. Juntly connects those who need help with those who know how.",
     "showcaseTitle": "Local, made easier.",
-    "footerLabel": "Juntly — born in Portugal."
+    "footerLabel": "Juntly, born in Portugal."
   },
   "Auth": {
     "signIn": "Sign in",

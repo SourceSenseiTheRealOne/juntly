@@ -19,7 +19,7 @@ const copy = {
   visionDescription:
     "Descoberta, contacto e confiança sem retirar a escolha às pessoas.",
   showcaseTitle: "Fazer local, mais simples.",
-  footerLabel: "Juntly — com origem em Portugal.",
+  footerLabel: "Juntly, com origem em Portugal.",
 };
 
 describe("LandingShell", () => {

@@ -85,47 +85,53 @@ export function PublicDiscovery({
   }, [locale]);
 
   if (listings === null && !failed)
-    return <p aria-live="polite">{copy.loading}</p>;
+    return (
+      <p className="market-empty" aria-live="polite">
+        {copy.loading}
+      </p>
+    );
   if (failed && listings === null)
     return (
-      <div role="alert">
+      <div className="market-alert grid justify-items-start gap-3" role="alert">
         <p>{copy.error}</p>
-        <button type="button" onClick={() => void load()}>
+        <button
+          className="market-button-secondary"
+          type="button"
+          onClick={() => void load()}
+        >
           {copy.retry}
         </button>
       </div>
     );
 
   return (
-    <section aria-labelledby="discovery-title" className="pb-12">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <p className="text-xs font-bold tracking-[0.14em] text-accent uppercase">
-            {copy.marketplaceLabel}
-          </p>
+    <section aria-labelledby="discovery-title" className="pb-16">
+      <div className="grid gap-6 border-b border-line pb-8 sm:grid-cols-[1fr_auto] sm:items-end">
+        <div className="market-page-header">
+          <p className="market-kicker">{copy.marketplaceLabel}</p>
           <h1
             id="discovery-title"
-            className="mt-2 text-4xl font-bold tracking-[-0.05em] sm:text-5xl"
+            className="text-4xl font-bold tracking-[-0.055em] sm:text-5xl"
           >
             {copy.title}
           </h1>
-          <p className="mt-3 max-w-2xl text-lg leading-8 text-muted">
-            {copy.description}
-          </p>
+          <p>{copy.description}</p>
         </div>
-        <span className="market-chip shrink-0">
+        <span className="text-sm font-semibold text-muted sm:pb-1">
           {copy.locationContextLabel}
         </span>
       </div>
       <form
-        className="market-panel mt-8 flex flex-col gap-3 p-3 sm:flex-row sm:items-end"
+        className="market-toolbar mt-6 flex flex-col gap-3 p-3 sm:flex-row sm:items-end"
         onSubmit={(event) => {
           event.preventDefault();
           void load();
         }}
       >
         <label className="grid flex-1 gap-1">
-          <span className="px-1 text-sm font-semibold">{copy.searchLabel}</span>
+          <span className="px-1 text-sm font-semibold text-ink">
+            {copy.searchLabel}
+          </span>
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -142,43 +148,48 @@ export function PublicDiscovery({
         </button>
       </form>
       {failed ? (
-        <p role="alert" className="mt-4 text-earth">
+        <p role="alert" className="market-alert mt-4">
           {copy.error}
         </p>
       ) : null}
-      <div className="mt-6 flex flex-wrap gap-2" aria-label={copy.filtersLabel}>
+      <div
+        className="mt-5 flex max-w-full gap-2 overflow-x-auto pb-2"
+        aria-label={copy.filtersLabel}
+      >
         <span className="market-chip">{copy.categoryLabel}</span>
         <span className="market-chip">{copy.localityLabel}</span>
         <span className="market-chip">{copy.radiusLabel}</span>
         <span className="market-chip">{copy.priceLabel}</span>
         <span className="market-chip">{copy.modeLabel}</span>
       </div>
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
+      <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {listings?.length ? (
           listings.map((listing) => (
             <article
               key={listing.id}
-              className="market-card group overflow-hidden p-0"
+              className="market-card group flex min-h-64 flex-col overflow-hidden p-0"
             >
-              <div className="flex min-h-24 items-end justify-between gap-3 bg-control p-5">
-                <span className="market-chip bg-surface text-ink">
+              <div className="flex items-center justify-between gap-3 border-b border-line bg-control/70 px-5 py-3">
+                <span className="text-xs font-bold tracking-[0.08em] text-muted uppercase">
                   {listing.categoryName}
                 </span>
                 {listing.promoted ? (
-                  <span className="market-chip">{copy.promoted}</span>
+                  <span className="market-chip border-accent/20 bg-accent-soft text-accent">
+                    {copy.promoted}
+                  </span>
                 ) : null}
               </div>
-              <div className="p-5">
+              <div className="flex flex-1 flex-col p-5">
                 <p className="text-sm font-medium text-muted">
                   {listing.localityName}
                 </p>
-                <h2 className="mt-2 text-xl font-bold tracking-[-0.03em]">
+                <h2 className="mt-2 text-xl font-bold tracking-[-0.035em] group-hover:text-accent">
                   {listing.title}
                 </h2>
                 <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted">
                   {listing.description}
                 </p>
-                <div className="mt-5 flex items-center justify-between gap-4 border-t border-line pt-4">
+                <div className="mt-auto flex items-center justify-between gap-4 pt-6">
                   <p className="min-w-0 truncate text-sm font-semibold">
                     {listing.providerDisplayName}
                   </p>
@@ -193,7 +204,9 @@ export function PublicDiscovery({
             </article>
           ))
         ) : (
-          <p>{copy.empty}</p>
+          <p className="market-empty md:col-span-2 xl:col-span-3">
+            {copy.empty}
+          </p>
         )}
       </div>
     </section>

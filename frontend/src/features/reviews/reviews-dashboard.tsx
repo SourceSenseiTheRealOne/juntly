@@ -83,21 +83,26 @@ export function ReviewsDashboard({ copy }: { copy: ReviewsCopy }) {
   }
   return (
     <section aria-labelledby="reviews-title">
-      <h1 id="reviews-title" className="text-4xl font-bold tracking-[-0.05em]">
-        {copy.title}
-      </h1>
-      <p className="mt-3 text-lg leading-8 text-muted">{copy.description}</p>
+      <div className="market-page-header">
+        <h1
+          id="reviews-title"
+          className="text-4xl font-bold tracking-[-0.055em] sm:text-5xl"
+        >
+          {copy.title}
+        </h1>
+        <p>{copy.description}</p>
+      </div>
       {failed ? (
-        <p role="alert" className="mt-6 text-earth">
+        <p role="alert" className="market-alert mt-6">
           {copy.error}
         </p>
       ) : null}
       {notice ? (
-        <p aria-live="polite" className="mt-6 font-semibold text-accent">
+        <p aria-live="polite" className="market-success mt-6 font-semibold">
           {notice}
         </p>
       ) : null}
-      <form className="market-card mt-8 grid gap-4 p-5" onSubmit={create}>
+      <form className="market-form-section mt-8" onSubmit={create}>
         <h2 className="text-xl font-bold">{copy.newReview}</h2>
         <Field name="bookingId" label={copy.bookingId} />
         <label className="grid gap-2 font-semibold">
@@ -123,10 +128,10 @@ export function ReviewsDashboard({ copy }: { copy: ReviewsCopy }) {
         </button>
       </form>
       <h2 className="mt-8 text-2xl font-bold">{copy.received}</h2>
-      {loading ? <p className="mt-4 text-muted">{copy.loading}</p> : null}
-      <div className="mt-4 grid gap-4">
+      {loading ? <p className="market-empty mt-4">{copy.loading}</p> : null}
+      <div className="mt-4 grid gap-4 xl:grid-cols-2">
         {!loading && items.length === 0 ? (
-          <p className="market-card p-5 text-muted">{copy.empty}</p>
+          <p className="market-empty xl:col-span-2">{copy.empty}</p>
         ) : (
           items.map((item) => (
             <article className="market-card p-5" key={item.id}>

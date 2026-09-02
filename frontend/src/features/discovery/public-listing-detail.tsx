@@ -81,64 +81,86 @@ export function PublicListingDetail({
   }, [locale, listingId]);
 
   if (listing === null && !failed)
-    return <p aria-live="polite">{copy.loading}</p>;
+    return (
+      <p className="market-empty" aria-live="polite">
+        {copy.loading}
+      </p>
+    );
   if (failed || listing === null)
     return (
-      <div role="alert">
+      <div className="market-alert grid justify-items-start gap-3" role="alert">
         <p>{copy.error}</p>
-        <button type="button" onClick={() => void load()}>
+        <button
+          className="market-button-secondary"
+          type="button"
+          onClick={() => void load()}
+        >
           {copy.retry}
         </button>
       </div>
     );
 
   return (
-    <article className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
-      <div className="market-panel overflow-hidden">
-        <div className="min-h-44 bg-control p-6 sm:p-8">
-          <span className="market-chip bg-surface text-ink">
+    <article className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)] lg:gap-6">
+      <div className="market-panel overflow-hidden p-6 sm:p-8 lg:p-10">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="market-chip bg-control text-ink">
             {listing.categoryName}
           </span>
         </div>
-        <div className="p-6 sm:p-8">
-          <p className="text-sm font-medium text-muted">{copy.category}</p>
-          <h1 className="mt-2 text-4xl font-bold tracking-[-0.05em]">
+        <div className="mt-8 max-w-3xl">
+          <p className="text-sm font-medium text-muted">
+            {listing.localityName}
+          </p>
+          <h1 className="mt-3 text-4xl font-bold tracking-[-0.055em] sm:text-5xl">
             {listing.title}
           </h1>
-          <p className="mt-5 max-w-2xl leading-7 text-muted">
+          <p className="mt-6 max-w-2xl text-lg leading-8 text-muted">
             {listing.description}
           </p>
         </div>
       </div>
-      <aside className="market-panel h-fit p-6" aria-label={copy.provider}>
-        <dl className="grid gap-5">
-          <div className="border-b border-line pb-5">
-            <dt className="text-xs font-bold tracking-[0.12em] text-muted uppercase">
-              {copy.provider}
-            </dt>
-            <dd className="mt-2 font-bold">{listing.providerDisplayName}</dd>
+      <aside
+        className="market-panel h-fit overflow-hidden"
+        aria-label={copy.provider}
+      >
+        <div className="border-b border-line bg-control/70 px-6 py-4">
+          <p className="text-sm font-semibold text-muted">{copy.provider}</p>
+        </div>
+        <div className="p-6">
+          <dl className="grid gap-5">
+            <div>
+              <dt className="text-xs font-bold tracking-[0.1em] text-muted uppercase">
+                {copy.provider}
+              </dt>
+              <dd className="mt-2 text-lg font-bold">
+                {listing.providerDisplayName}
+              </dd>
+            </div>
+            <div className="border-t border-line pt-5">
+              <dt className="text-xs font-bold tracking-[0.1em] text-muted uppercase">
+                {copy.locality}
+              </dt>
+              <dd className="mt-2 font-semibold">{listing.localityName}</dd>
+            </div>
+          </dl>
+          <div className="mt-6 border-t border-line pt-3">
+            <ContactRevealControl
+              listingId={listing.id}
+              copy={{
+                phone: copy.phone,
+                whatsapp: copy.whatsapp,
+                error: copy.revealError,
+              }}
+            />
           </div>
-          <div>
-            <dt className="text-xs font-bold tracking-[0.12em] text-muted uppercase">
-              {copy.locality}
-            </dt>
-            <dd className="mt-2 font-semibold">{listing.localityName}</dd>
-          </div>
-        </dl>
-        <ContactRevealControl
-          listingId={listing.id}
-          copy={{
-            phone: copy.phone,
-            whatsapp: copy.whatsapp,
-            error: copy.revealError,
-          }}
-        />
-        <StartConversationControl
-          listingId={listing.id}
-          label={copy.message}
-          error={copy.messageError}
-          messagesUrl={`/${locale}/account/messages`}
-        />
+          <StartConversationControl
+            listingId={listing.id}
+            label={copy.message}
+            error={copy.messageError}
+            messagesUrl={`/${locale}/account/messages`}
+          />
+        </div>
       </aside>
     </article>
   );

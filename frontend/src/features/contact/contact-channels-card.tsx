@@ -132,7 +132,7 @@ export function ContactChannelsCard({ copy }: { copy: ContactChannelsCopy }) {
               {status.channel === "phone" ? copy.phone : copy.whatsapp}
             </span>
             <span className="market-chip">
-              {status.enabled && status.revealConsent ? copy.enabled : "—"}
+              {status.enabled && status.revealConsent ? copy.enabled : "-"}
             </span>
           </li>
         ))}

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import type { HealthStatusLabels } from "./health-status-indicator";
 import { HealthStatusIndicator } from "./health-status-indicator";
 
@@ -27,80 +29,59 @@ export function LandingShell({
   footerLabel,
 }: LandingShellProps) {
   return (
-    <div className="market-page flex min-h-screen flex-col overflow-hidden">
+    <div className="market-page flex min-h-[100dvh] flex-col overflow-hidden">
       <main id="content" className="flex-1">
-        <section className="relative isolate">
-          <div
-            className="absolute inset-0 -z-10 overflow-hidden"
-            aria-hidden="true"
-          >
-            <div className="absolute -top-36 right-[-9rem] h-96 w-96 rounded-full bg-control blur-3xl" />
-            <div className="absolute bottom-[-12rem] left-[-10rem] h-80 w-80 rounded-full bg-accent-soft blur-3xl" />
-          </div>
-
-          <div className="market-container grid min-h-[68vh] items-center gap-12 py-16 sm:py-20 lg:grid-cols-[1.2fr_0.8fr] lg:py-24">
-            <div className="max-w-3xl">
-              <p className="mb-5 text-xs font-bold tracking-[0.16em] text-accent uppercase">
-                {tagline}
-              </p>
-              <h1 className="text-5xl leading-[0.98] font-bold tracking-[-0.06em] text-balance text-ink sm:text-6xl lg:text-7xl">
+        <section className="border-b border-line bg-surface">
+          <div className="market-container grid min-h-[calc(100dvh-4.5rem)] items-center gap-10 py-12 sm:py-16 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16 lg:py-20">
+            <div className="max-w-2xl lg:py-8">
+              <p className="market-kicker mb-5">{tagline}</p>
+              <h1 className="text-5xl leading-[0.98] font-bold tracking-[-0.065em] text-balance text-ink sm:text-6xl lg:text-7xl">
                 {heading}
               </h1>
-              <p className="mt-7 max-w-2xl text-lg leading-8 text-pretty text-muted sm:text-xl">
+              <p className="mt-6 max-w-xl text-lg leading-8 text-pretty text-muted sm:text-xl">
                 {description}
               </p>
-              <div className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+              <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
                 <a href="#vision" className="market-button">
                   {visionLinkLabel}
-                  <span className="ml-2" aria-hidden="true">
-                    ↓
-                  </span>
                 </a>
-                <span className="inline-flex min-h-11 items-center rounded-xl border border-line bg-surface px-5 text-sm font-medium text-muted shadow-sm">
-                  <span
-                    className="mr-3 h-2.5 w-2.5 rounded-full bg-accent"
-                    aria-hidden="true"
-                  />
+                <span className="inline-flex min-h-11 items-center rounded-xl border border-line bg-control px-4 text-sm font-medium text-muted">
                   {statusLabel}
                 </span>
+              </div>
+              <div className="mt-4">
                 <HealthStatusIndicator labels={healthStatusLabels} />
               </div>
             </div>
 
-            <div className="market-panel relative mx-auto hidden w-full max-w-md overflow-hidden p-5 lg:block">
-              <div className="grid min-h-96 grid-cols-[0.8fr_1.2fr] gap-4 rounded-2xl bg-control p-4">
-                <div className="rounded-xl bg-ink p-5 text-surface">
-                  <p className="text-xs font-bold tracking-[0.14em] text-accent-soft uppercase">
-                    Juntly
-                  </p>
-                  <p className="mt-20 text-3xl leading-none font-bold tracking-[-0.06em]">
-                    {showcaseTitle}
-                  </p>
-                </div>
-                <div className="space-y-3">
-                  <div className="h-28 rounded-xl bg-surface" />
-                  <div className="h-20 rounded-xl border border-line bg-surface p-4">
-                    <div className="h-2 w-20 rounded-full bg-control-strong" />
-                    <div className="mt-3 h-3 w-full rounded-full bg-control" />
-                    <div className="mt-2 h-3 w-3/4 rounded-full bg-control" />
-                  </div>
-                  <div className="h-20 rounded-xl bg-accent-soft" />
-                </div>
+            <figure className="relative mx-auto w-full max-w-2xl lg:ml-auto">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] border border-line bg-control shadow-[var(--shadow-float)] sm:aspect-[16/11]">
+                <Image
+                  alt=""
+                  className="object-cover"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 54vw"
+                  src="/images/local-craft.jpg"
+                />
               </div>
-            </div>
+              <figcaption className="mt-4 border-b border-line pb-4 text-sm text-muted">
+                <span className="font-semibold text-ink">{showcaseTitle}</span>
+              </figcaption>
+            </figure>
           </div>
         </section>
 
-        <section id="vision" className="border-y border-line bg-surface">
-          <div className="market-container grid gap-7 py-16 sm:py-20 lg:grid-cols-[0.8fr_1.2fr]">
-            <p className="text-sm font-semibold tracking-[0.16em] text-accent uppercase">
+        <section id="vision" className="scroll-mt-24 bg-canvas">
+          <div className="market-container grid gap-8 py-16 sm:py-24 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
+            <p className="max-w-xs text-sm leading-6 font-semibold text-muted">
               Juntly
             </p>
-            <div>
-              <h2 className="text-3xl font-semibold tracking-[-0.035em] text-balance sm:text-4xl">
+            <div className="max-w-3xl">
+              <h2 className="text-3xl font-semibold tracking-[-0.045em] text-balance sm:text-5xl">
                 {visionTitle}
               </h2>
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-muted">
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-muted">
                 {visionDescription}
               </p>
             </div>
@@ -108,10 +89,12 @@ export function LandingShell({
         </section>
       </main>
 
-      <footer className="bg-ink text-surface">
+      <footer className="border-t border-line bg-surface text-ink">
         <div className="market-container flex flex-col gap-3 py-8 text-sm sm:flex-row sm:items-center sm:justify-between">
-          <strong className="text-lg tracking-[-0.03em]">Juntly.</strong>
-          <p className="text-surface/70">{footerLabel}</p>
+          <strong className="text-lg tracking-[-0.045em]">
+            Juntly<span className="text-accent">.</span>
+          </strong>
+          <p className="text-muted">{footerLabel}</p>
         </div>
       </footer>
     </div>
