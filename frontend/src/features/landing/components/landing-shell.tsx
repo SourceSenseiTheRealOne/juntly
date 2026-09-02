@@ -1,18 +1,34 @@
 import Image from "next/image";
 
-import type { HealthStatusLabels } from "./health-status-indicator";
-import { HealthStatusIndicator } from "./health-status-indicator";
+type ContentBlock = { title: string; description: string };
 
 type LandingShellProps = {
   tagline: string;
   heading: string;
   description: string;
-  statusLabel: string;
-  healthStatusLabels: HealthStatusLabels;
   visionLinkLabel: string;
+  discoverLinkLabel: string;
+  discoverUrl: string;
+  accountUrl: string;
+  signUpUrl: string;
   visionTitle: string;
   visionDescription: string;
   showcaseTitle: string;
+  howTitle: string;
+  howDescription: string;
+  discoverBlock: ContentBlock;
+  compareBlock: ContentBlock;
+  contactBlock: ContentBlock;
+  customerBlock: ContentBlock & { action: string };
+  providerBlock: ContentBlock & { action: string };
+  trustTitle: string;
+  trustDescription: string;
+  privacyBlock: ContentBlock;
+  localBlock: ContentBlock;
+  reputationBlock: ContentBlock;
+  closingTitle: string;
+  closingDescription: string;
+  closingAction: string;
   footerLabel: string;
 };
 
@@ -20,12 +36,29 @@ export function LandingShell({
   tagline,
   heading,
   description,
-  statusLabel,
-  healthStatusLabels,
   visionLinkLabel,
+  discoverLinkLabel,
+  discoverUrl,
+  accountUrl,
+  signUpUrl,
   visionTitle,
   visionDescription,
   showcaseTitle,
+  howTitle,
+  howDescription,
+  discoverBlock,
+  compareBlock,
+  contactBlock,
+  customerBlock,
+  providerBlock,
+  trustTitle,
+  trustDescription,
+  privacyBlock,
+  localBlock,
+  reputationBlock,
+  closingTitle,
+  closingDescription,
+  closingAction,
   footerLabel,
 }: LandingShellProps) {
   return (
@@ -41,16 +74,13 @@ export function LandingShell({
               <p className="mt-6 max-w-xl text-lg leading-8 text-pretty text-muted sm:text-xl">
                 {description}
               </p>
-              <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-                <a href="#vision" className="market-button">
+              <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+                <a href={discoverUrl} className="market-button">
+                  {discoverLinkLabel}
+                </a>
+                <a href="#vision" className="market-button-secondary">
                   {visionLinkLabel}
                 </a>
-                <span className="inline-flex min-h-11 items-center rounded-xl border border-line bg-control px-4 text-sm font-medium text-muted">
-                  {statusLabel}
-                </span>
-              </div>
-              <div className="mt-4">
-                <HealthStatusIndicator labels={healthStatusLabels} />
               </div>
             </div>
 
@@ -85,6 +115,118 @@ export function LandingShell({
                 {visionDescription}
               </p>
             </div>
+          </div>
+        </section>
+
+        <section className="border-y border-line bg-surface">
+          <div className="market-container py-16 sm:py-24">
+            <div className="market-page-header">
+              <h2 className="text-3xl font-semibold tracking-[-0.045em] sm:text-5xl">
+                {howTitle}
+              </h2>
+              <p>{howDescription}</p>
+            </div>
+            <div className="mt-10 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+              <article className="market-card flex min-h-72 flex-col justify-between bg-accent-soft p-6 sm:p-8 lg:row-span-2">
+                <span className="market-chip w-fit border-accent/20 bg-surface text-accent">
+                  {discoverLinkLabel}
+                </span>
+                <div className="mt-16 max-w-xl">
+                  <h3 className="text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">
+                    {discoverBlock.title}
+                  </h3>
+                  <p className="mt-4 leading-7 text-muted">
+                    {discoverBlock.description}
+                  </p>
+                </div>
+              </article>
+              <article className="market-card p-6 sm:p-8">
+                <h3 className="text-xl font-semibold tracking-[-0.025em]">
+                  {compareBlock.title}
+                </h3>
+                <p className="mt-3 leading-7 text-muted">
+                  {compareBlock.description}
+                </p>
+              </article>
+              <article className="market-card bg-control p-6 sm:p-8">
+                <h3 className="text-xl font-semibold tracking-[-0.025em]">
+                  {contactBlock.title}
+                </h3>
+                <p className="mt-3 leading-7 text-muted">
+                  {contactBlock.description}
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-canvas">
+          <div className="market-container grid gap-5 py-16 sm:py-24 lg:grid-cols-2">
+            <article className="market-panel flex flex-col items-start p-6 sm:p-8 lg:p-10">
+              <h2 className="text-3xl font-semibold tracking-[-0.045em]">
+                {customerBlock.title}
+              </h2>
+              <p className="mt-5 max-w-xl leading-7 text-muted">
+                {customerBlock.description}
+              </p>
+              <a className="market-button mt-8" href={discoverUrl}>
+                {customerBlock.action}
+              </a>
+            </article>
+            <article className="market-panel flex flex-col items-start bg-ink p-6 text-surface sm:p-8 lg:p-10">
+              <h2 className="text-3xl font-semibold tracking-[-0.045em]">
+                {providerBlock.title}
+              </h2>
+              <p className="mt-5 max-w-xl leading-7 text-surface/75">
+                {providerBlock.description}
+              </p>
+              <a
+                className="market-button-secondary mt-8 border-surface/30 bg-transparent text-surface hover:bg-surface/10"
+                href={accountUrl}
+              >
+                {providerBlock.action}
+              </a>
+            </article>
+          </div>
+        </section>
+
+        <section className="border-y border-line bg-surface">
+          <div className="market-container grid gap-10 py-16 sm:py-24 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+            <div className="market-page-header">
+              <h2 className="text-3xl font-semibold tracking-[-0.045em] sm:text-5xl">
+                {trustTitle}
+              </h2>
+              <p>{trustDescription}</p>
+            </div>
+            <div className="grid gap-3">
+              {[privacyBlock, localBlock, reputationBlock].map((item) => (
+                <article
+                  className="border-b border-line py-5 first:pt-0 last:border-b-0"
+                  key={item.title}
+                >
+                  <h3 className="text-lg font-semibold">{item.title}</h3>
+                  <p className="mt-2 leading-7 text-muted">
+                    {item.description}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-accent-soft">
+          <div className="market-container flex flex-col items-start gap-8 py-16 sm:py-24 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <h2 className="text-4xl font-semibold tracking-[-0.055em] sm:text-6xl">
+                {closingTitle}
+              </h2>
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-muted">
+                {closingDescription}
+              </p>
+            </div>
+            <a className="market-button shrink-0" href={signUpUrl}>
+              {closingAction}
+            </a>
           </div>
         </section>
       </main>
