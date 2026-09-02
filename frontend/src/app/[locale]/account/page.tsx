@@ -42,7 +42,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
     <main className="market-page px-4 py-8 sm:px-6 sm:py-12">
       <section className="market-panel mx-auto w-full max-w-6xl overflow-hidden p-6 sm:p-8 lg:p-10">
         <div className="market-page-header border-b border-line pb-8">
-          <p className="market-kicker">Juntly</p>
+          <p className="market-kicker">Vila</p>
           <h1 className="text-4xl font-bold tracking-[-0.055em] sm:text-5xl">
             {t("title")}
           </h1>

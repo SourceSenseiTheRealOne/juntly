@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { AccountCapabilitiesCard } from "./account-capabilities-card";
 
 const copy = {
-  title: "Como utiliza a Juntly",
+  title: "Como utiliza a Vila",
   description: "Escolha se também pretende disponibilizar serviços.",
   customerLabel: "Encontrar serviços",
   customerDescription: "A sua conta pode sempre procurar prestadores.",

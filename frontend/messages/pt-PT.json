@@ -1,7 +1,7 @@
 {
   "Metadata": {
-    "title": "Juntly: Serviços locais, competências reais",
-    "description": "Encontre pessoas e serviços locais perto de si. A Juntly aproxima comunidades, clientes e prestadores de confiança."
+    "title": "Vila: Serviços locais, competências reais",
+    "description": "Encontre pessoas e serviços locais perto de si. A Vila aproxima comunidades, clientes e prestadores de confiança."
   },
   "Landing": {
     "eyebrow": "Local people. Real skills.",
@@ -11,11 +11,11 @@
     "visionLinkLabel": "Conhecer a visão",
     "discoverLinkLabel": "Explorar serviços",
     "visionTitle": "Criada para ligações locais reais",
-    "visionDescription": "Descoberta, contacto e confiança sem retirar a escolha às pessoas. A Juntly liga quem precisa a quem sabe fazer.",
+    "visionDescription": "Descoberta, contacto e confiança sem retirar a escolha às pessoas. A Vila liga quem precisa a quem sabe fazer.",
     "showcaseTitle": "Fazer local, mais simples.",
     "how": {
       "title": "Da necessidade à solução, sem complicações.",
-      "description": "A Juntly organiza a procura, a comparação e o contacto num percurso claro.",
+      "description": "A Vila organiza a procura, a comparação e o contacto num percurso claro.",
       "discover": {
         "title": "Procure pelo que precisa",
         "description": "Encontre serviços ativos por categoria e localidade, com informação suficiente para decidir o próximo passo."
@@ -63,7 +63,7 @@
       "description": "Crie uma conta para pedir ajuda, disponibilizar competências ou acompanhar cada conversa e reserva num só lugar.",
       "action": "Criar conta"
     },
-    "footerLabel": "Juntly, com origem em Portugal."
+    "footerLabel": "Vila, com origem em Portugal."
   },
   "Auth": {
     "signIn": "Entrar",
@@ -78,10 +78,10 @@
     "marketplace": "Navegação do mercado"
   },
   "Account": {
-    "title": "Conta Juntly",
-    "description": "A sua sessão está ativa. Configure como pretende utilizar a Juntly.",
+    "title": "Conta Vila",
+    "description": "A sua sessão está ativa. Configure como pretende utilizar a Vila.",
     "capabilities": {
-      "title": "Como utiliza a Juntly",
+      "title": "Como utiliza a Vila",
       "description": "A sua conta pode encontrar serviços e, se quiser, também disponibilizá-los.",
       "customerLabel": "Encontrar serviços",
       "customerDescription": "A sua conta está sempre pronta para procurar e contactar prestadores.",
@@ -170,7 +170,7 @@
     "priceLabel": "Tipo de preço",
     "modeLabel": "Modo de serviço",
     "details": "Ver anúncio",
-    "marketplaceLabel": "Marketplace Juntly",
+    "marketplaceLabel": "Marketplace Vila",
     "locationContextLabel": "Portugal",
     "filtersLabel": "Filtros disponíveis",
     "promoted": "Promovido",
@@ -232,7 +232,7 @@
   },
   "Notifications": {
     "title": "Notificações",
-    "description": "Escolha como recebe atualizações da Juntly.",
+    "description": "Escolha como recebe atualizações da Vila.",
     "empty": "Não tem notificações.",
     "loading": "A carregar notificações...",
     "error": "Não foi possível carregar ou guardar as notificações.",
@@ -389,6 +389,6 @@
     "home": "Voltar ao início"
   },
   "Loading": {
-    "label": "A carregar a Juntly…"
+    "label": "A carregar a Vila…"
   }
 }

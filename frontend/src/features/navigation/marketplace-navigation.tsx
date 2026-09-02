@@ -35,11 +35,11 @@ export function MarketplaceNavigation({
     <header className="sticky top-0 z-20 border-b border-line bg-surface/95 backdrop-blur-xl">
       <div className="mx-auto flex min-h-[4.5rem] w-full max-w-[80rem] items-center gap-2 px-3 sm:gap-5 sm:px-6 lg:px-8">
         <a
-          aria-label="Juntly"
+          aria-label="Vila"
           className="shrink-0 rounded-lg text-xl font-bold tracking-[-0.065em] text-ink transition-colors outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 sm:text-2xl"
           href={localeRoot}
         >
-          Juntly<span className="text-accent">.</span>
+          Vila<span className="text-accent">.</span>
         </a>
         <nav
           aria-label={navigationLabel}

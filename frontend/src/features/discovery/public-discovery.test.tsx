@@ -18,7 +18,7 @@ const copy = {
   priceLabel: "Tipo de preço",
   modeLabel: "Modo de serviço",
   details: "Ver anúncio",
-  marketplaceLabel: "Marketplace Juntly",
+  marketplaceLabel: "Marketplace Vila",
   locationContextLabel: "Portugal",
   filtersLabel: "Filtros disponíveis",
   promoted: "Promovido",
@@ -89,7 +89,7 @@ describe("PublicDiscovery", () => {
         screen.getByRole("heading", { name: "Canalização local" }),
       ).toBeInTheDocument(),
     );
-    expect(screen.getByText("Marketplace Juntly")).toBeInTheDocument();
+    expect(screen.getByText("Marketplace Vila")).toBeInTheDocument();
     expect(screen.getByText("Portugal")).toBeInTheDocument();
     expect(screen.getByText("Promovido")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ver anúncio" })).toHaveAttribute(
