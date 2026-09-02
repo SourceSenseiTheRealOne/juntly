@@ -42,6 +42,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         title: t("audience.provider.title"),
         description: t("audience.provider.description"),
         action: t("audience.provider.action"),
+        imageAlt: t("audience.provider.imageAlt"),
       }}
       trustTitle={t("trust.title")}
       trustDescription={t("trust.description")}

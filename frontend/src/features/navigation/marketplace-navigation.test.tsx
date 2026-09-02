@@ -29,6 +29,8 @@ describe("MarketplaceNavigation", () => {
         accountLabel="A minha conta"
         accountUrl="/pt-PT/account"
         accountNavigationLabel="Opções da conta"
+        createServiceLabel="Criar serviço"
+        createServiceUrl="/pt-PT/account/listings"
         discoverLabel="Encontrar serviços"
         discoverUrl="/pt-PT/discover"
         navigationLabel="Navegação do mercado"
@@ -53,6 +55,10 @@ describe("MarketplaceNavigation", () => {
     expect(screen.getByRole("link", { name: "A minha conta" })).toHaveAttribute(
       "href",
       "/pt-PT/account",
+    );
+    expect(screen.getByRole("link", { name: "Criar serviço" })).toHaveAttribute(
+      "href",
+      "/pt-PT/account/listings",
     );
     expect(screen.getByRole("link", { name: "Entrar" })).toHaveAttribute(
       "href",

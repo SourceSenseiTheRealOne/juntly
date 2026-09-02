@@ -6,6 +6,8 @@ type MarketplaceNavigationProps = {
   discoverLabel: string;
   discoverUrl: string;
   accountNavigationLabel: string;
+  createServiceLabel: string;
+  createServiceUrl: string;
   navigationLabel: string;
   signInLabel: string;
   signInUrl: string;
@@ -19,6 +21,8 @@ export function MarketplaceNavigation({
   discoverLabel,
   discoverUrl,
   accountNavigationLabel,
+  createServiceLabel,
+  createServiceUrl,
   navigationLabel,
   signInLabel,
   signInUrl,
@@ -42,7 +46,7 @@ export function MarketplaceNavigation({
           className="flex min-w-0 flex-1 items-center gap-1 sm:gap-2"
         >
           <a
-            className="inline-flex min-h-11 items-center rounded-xl px-3 text-sm font-semibold text-ink transition-colors outline-none hover:bg-control focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 sm:px-4"
+            className="hidden min-h-11 items-center rounded-xl px-3 text-sm font-semibold text-ink transition-colors outline-none hover:bg-control focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 sm:inline-flex sm:px-4"
             href={discoverUrl}
           >
             {discoverLabel}
@@ -54,6 +58,12 @@ export function MarketplaceNavigation({
             {accountLabel}
           </a>
         </nav>
+        <a
+          className="market-button shrink-0 px-3 text-sm sm:px-4"
+          href={createServiceUrl}
+        >
+          {createServiceLabel}
+        </a>
         <AuthNavigation
           navigationLabel={accountNavigationLabel}
           signInLabel={signInLabel}

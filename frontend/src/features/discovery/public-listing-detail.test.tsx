@@ -18,6 +18,8 @@ const copy = {
   revealError: "Não foi possível revelar o contacto.",
   message: "Enviar mensagem",
   messageError: "Não foi possível iniciar a conversa.",
+  ownListing: "Este anúncio é seu.",
+  manageListing: "Gerir anúncio",
 };
 
 afterEach(() => vi.restoreAllMocks());
@@ -70,5 +72,78 @@ describe("PublicListingDetail", () => {
     expect(
       screen.queryByText(/internalUserId|phone|email|objectReference|bio/),
     ).not.toBeInTheDocument();
+  });
+
+  it("replaces forbidden self-contact actions with listing management", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes("/api/v1/me/listings")) {
+          return Response.json({
+            listings: [
+              {
+                id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+                categoryId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+                primaryLocalityId: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+                title: "Canalização local",
+                description:
+                  "Reparações domésticas de canalização para pequenos trabalhos locais.",
+                priceType: "fixed",
+                priceMinor: 5000,
+                currency: "EUR",
+                travelsToCustomer: true,
+                receivesCustomer: false,
+                remoteServices: false,
+                state: "active",
+                revision: 3,
+                createdAt: "2026-08-24T11:00:00Z",
+                updatedAt: "2026-08-24T12:00:00Z",
+              },
+            ],
+          });
+        }
+        return Response.json({
+          id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          title: "Canalização local",
+          description:
+            "Reparações domésticas de canalização para pequenos trabalhos locais.",
+          categoryId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          categorySlug: "plumbing",
+          categoryName: "Canalização",
+          primaryLocalityId: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          localitySlug: "zebreira",
+          localityName: "Zebreira",
+          priceType: "fixed",
+          priceMinor: 5000,
+          currency: "EUR",
+          travelsToCustomer: true,
+          receivesCustomer: false,
+          remoteServices: false,
+          providerDisplayName: "Prestador local",
+          providerType: "professional",
+          promoted: false,
+          updatedAt: "2026-08-24T12:00:00Z",
+        });
+      }),
+    );
+    render(
+      <PublicListingDetail
+        copy={copy}
+        locale="pt-PT"
+        listingId="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+      />,
+    );
+
+    expect(await screen.findByText(copy.ownListing)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: copy.phone }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: copy.message }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: copy.manageListing }),
+    ).toHaveAttribute("href", "/pt-PT/account/listings");
   });
 });
