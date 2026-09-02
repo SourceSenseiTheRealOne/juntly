@@ -43,7 +43,7 @@ const copy = {
   closingTitle: "Comece pela sua comunidade.",
   closingDescription: "Crie uma conta.",
   closingAction: "Criar conta",
-  footerLabel: "Juntly, com origem em Portugal.",
+  footerLabel: "Vila, com origem em Portugal.",
 };
 
 describe("LandingShell", () => {
@@ -64,7 +64,7 @@ describe("LandingShell", () => {
     expect(
       screen.getByRole("heading", { name: copy.closingTitle }),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText("Juntly vision")).toHaveTextContent("Juntly.");
+    expect(screen.getByLabelText("Vila vision")).toHaveTextContent("Vila.");
     expect(
       screen.getByRole("img", { name: copy.providerBlock.imageAlt }),
     ).toHaveAttribute("src", expect.stringContaining("local-provider.jpg"));

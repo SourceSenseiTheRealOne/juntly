@@ -39,7 +39,7 @@ export async function generateMetadata({
   return {
     title: t("title"),
     description: t("description"),
-    applicationName: "Juntly",
+    applicationName: "Vila",
     alternates: {
       languages: Object.fromEntries(
         routing.locales.map((supportedLocale) => [

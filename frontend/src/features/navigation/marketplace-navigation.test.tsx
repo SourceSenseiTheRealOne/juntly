@@ -45,7 +45,7 @@ describe("MarketplaceNavigation", () => {
     expect(
       screen.getByRole("navigation", { name: "Navegação do mercado" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Juntly" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Vila" })).toHaveAttribute(
       "href",
       "/pt-PT",
     );
