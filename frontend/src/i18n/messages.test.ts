@@ -56,6 +56,14 @@ describe("locale messages", () => {
     }
   });
 
+  it("uses the Vila product brand in every user-facing locale", () => {
+    for (const messages of Object.values(locales)) {
+      const copy = Object.values(messages).join(" ");
+      expect(copy).toContain("Vila");
+      expect(copy).not.toContain("Juntly");
+    }
+  });
+
   it("defines the complete account capability copy in every locale", () => {
     const capabilityKeys = [
       "Account.capabilities.customerDescription",
