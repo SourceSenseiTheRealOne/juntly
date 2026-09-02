@@ -90,6 +90,8 @@ export default async function LocaleLayout({
               accountLabel={navigation("account")}
               accountUrl={`/${locale}/account`}
               accountNavigationLabel={navigation("accountNavigation")}
+              createServiceLabel={navigation("createService")}
+              createServiceUrl={`/${locale}/account/listings`}
               discoverLabel={navigation("discover")}
               discoverUrl={`/${locale}/discover`}
               navigationLabel={navigation("marketplace")}

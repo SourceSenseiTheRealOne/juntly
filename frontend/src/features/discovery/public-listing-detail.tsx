@@ -38,6 +38,8 @@ export type PublicListingDetailCopy = {
   revealError: string;
   message: string;
   messageError: string;
+  ownListing: string;
+  manageListing: string;
 };
 
 export function PublicListingDetail({
@@ -50,6 +52,7 @@ export function PublicListingDetail({
   listingId: string;
 }) {
   const [listing, setListing] = useState<Listing | null>(null);
+  const [owned, setOwned] = useState(false);
   const [failed, setFailed] = useState(false);
   const generation = useRef(0);
 
@@ -57,8 +60,14 @@ export function PublicListingDetail({
     const current = ++generation.current;
     setFailed(false);
     try {
-      const value = await fetchListing(locale, listingId);
-      if (current === generation.current) setListing(value);
+      const [value, isOwned] = await Promise.all([
+        fetchListing(locale, listingId),
+        ownsListing(listingId),
+      ]);
+      if (current === generation.current) {
+        setListing(value);
+        setOwned(isOwned);
+      }
     } catch {
       if (current === generation.current) setFailed(true);
     }
@@ -68,8 +77,14 @@ export function PublicListingDetail({
     const current = ++generation.current;
     async function loadInitial() {
       try {
-        const value = await fetchListing(locale, listingId);
-        if (current === generation.current) setListing(value);
+        const [value, isOwned] = await Promise.all([
+          fetchListing(locale, listingId),
+          ownsListing(listingId),
+        ]);
+        if (current === generation.current) {
+          setListing(value);
+          setOwned(isOwned);
+        }
       } catch {
         if (current === generation.current) setFailed(true);
       }
@@ -144,22 +159,36 @@ export function PublicListingDetail({
               <dd className="mt-2 font-semibold">{listing.localityName}</dd>
             </div>
           </dl>
-          <div className="mt-6 border-t border-line pt-3">
-            <ContactRevealControl
-              listingId={listing.id}
-              copy={{
-                phone: copy.phone,
-                whatsapp: copy.whatsapp,
-                error: copy.revealError,
-              }}
-            />
-          </div>
-          <StartConversationControl
-            listingId={listing.id}
-            label={copy.message}
-            error={copy.messageError}
-            messagesUrl={`/${locale}/account/messages`}
-          />
+          {owned ? (
+            <div className="market-alert mt-6 grid justify-items-start gap-4">
+              <p>{copy.ownListing}</p>
+              <a
+                className="market-button-secondary"
+                href={`/${locale}/account/listings`}
+              >
+                {copy.manageListing}
+              </a>
+            </div>
+          ) : (
+            <>
+              <div className="mt-6 border-t border-line pt-3">
+                <ContactRevealControl
+                  listingId={listing.id}
+                  copy={{
+                    phone: copy.phone,
+                    whatsapp: copy.whatsapp,
+                    error: copy.revealError,
+                  }}
+                />
+              </div>
+              <StartConversationControl
+                listingId={listing.id}
+                label={copy.message}
+                error={copy.messageError}
+                messagesUrl={`/${locale}/account/messages`}
+              />
+            </>
+          )}
         </div>
       </aside>
     </article>
@@ -177,6 +206,27 @@ async function fetchListing(
   const value: unknown = await response.json();
   if (!response.ok || !validListing(value)) throw new Error();
   return value;
+}
+
+async function ownsListing(listingId: string): Promise<boolean> {
+  try {
+    const response = await fetch("/api/v1/me/listings");
+    if (!response.ok) return false;
+    const value: unknown = await response.json();
+    return (
+      exact(value, ["listings"]) &&
+      Array.isArray(value.listings) &&
+      value.listings.some(
+        (item) =>
+          item !== null &&
+          typeof item === "object" &&
+          !Array.isArray(item) &&
+          (item as Record<string, unknown>).id === listingId,
+      )
+    );
+  } catch {
+    return false;
+  }
 }
 
 function validListing(value: unknown): value is Listing {

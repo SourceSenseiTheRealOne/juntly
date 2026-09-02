@@ -65,3 +65,20 @@ export function correlated(
 ): boolean {
   return !!response && response.headers.get(requestIDHeader) === id;
 }
+
+export function correlatedError(
+  value: unknown,
+  code: ErrorResponse["error"]["code"],
+  id: string,
+): value is ErrorResponse {
+  return (
+    exact(value, ["error"]) &&
+    exact((value as { error: unknown }).error, [
+      "code",
+      "message",
+      "requestId",
+    ]) &&
+    (value as ErrorResponse).error.code === code &&
+    (value as ErrorResponse).error.requestId === id
+  );
+}

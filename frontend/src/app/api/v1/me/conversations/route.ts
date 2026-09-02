@@ -9,6 +9,7 @@ import type {
 import {
   authorizedHeaders,
   correlated,
+  correlatedError,
   dateTime,
   exact,
   fail,
@@ -66,6 +67,24 @@ export async function POST(request: Request): Promise<Response> {
       body: { listingId: value.listingId },
       headers: authorizedHeaders(token, id),
     });
+    if (
+      upstream.response?.status === 403 &&
+      correlated(upstream.response, id) &&
+      correlatedError(upstream.error, "FORBIDDEN", id)
+    )
+      return Response.json(upstream.error, {
+        status: 403,
+        headers: { [requestIDHeader]: id },
+      });
+    if (
+      upstream.response?.status === 404 &&
+      correlated(upstream.response, id) &&
+      correlatedError(upstream.error, "NOT_FOUND", id)
+    )
+      return Response.json(upstream.error, {
+        status: 404,
+        headers: { [requestIDHeader]: id },
+      });
     if (
       upstream.error ||
       upstream.response?.status !== 201 ||

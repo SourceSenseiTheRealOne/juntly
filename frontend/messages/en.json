@@ -38,7 +38,8 @@
       "provider": {
         "title": "For people who know how",
         "description": "Build a clear profile, publish services, answer requests and grow a reputation through completed work.",
-        "action": "Set up a profile"
+        "action": "Set up a profile",
+        "imageAlt": "Professional working with wood in a workshop"
       }
     },
     "trust": {
@@ -71,6 +72,7 @@
   "Navigation": {
     "skipToContent": "Skip to content",
     "discover": "Find services",
+    "createService": "Create service",
     "account": "My account",
     "accountNavigation": "Account options",
     "marketplace": "Marketplace navigation"
@@ -171,7 +173,20 @@
     "marketplaceLabel": "Juntly marketplace",
     "locationContextLabel": "Portugal",
     "filtersLabel": "Available filters",
-    "promoted": "Promoted"
+    "promoted": "Promoted",
+    "allCategories": "All categories",
+    "allLocalities": "All localities",
+    "anyPrice": "Any price",
+    "anyMode": "Any service mode",
+    "priceFixed": "Fixed price",
+    "priceHourly": "Hourly",
+    "priceDaily": "Daily",
+    "priceQuote": "Quote",
+    "priceNegotiable": "Negotiable",
+    "modeTravels": "Travels to customer",
+    "modeReceives": "Receives customers",
+    "modeRemote": "Remote",
+    "applyFilters": "Apply filters"
   },
   "PublicListing": {
     "loading": "Loading listing…",
@@ -184,7 +199,9 @@
     "whatsapp": "Reveal WhatsApp",
     "revealError": "We could not reveal this contact.",
     "message": "Send message",
-    "messageError": "We could not start the conversation."
+    "messageError": "We could not start the conversation.",
+    "ownListing": "This listing is yours. Contact and messaging actions are for customers.",
+    "manageListing": "Manage listing"
   },
   "ContactChannels": {
     "title": "Contact channels",
@@ -276,6 +293,9 @@
     "listing": "Listing",
     "direct": "Direct agreement",
     "sourceId": "Proposal or listing identifier",
+    "selectListing": "Select service",
+    "loadingListings": "Loading services...",
+    "emptyListings": "No services available",
     "providerId": "Provider identifier for a direct agreement",
     "scheduledAt": "Date and time",
     "privateLocation": "Private service location",
@@ -323,6 +343,9 @@
     "choosePlan": "Choose plan",
     "promotion": "Promote a listing",
     "listingId": "Listing identifier",
+    "selectListing": "Select active listing",
+    "loadingListings": "Loading listings...",
+    "emptyListings": "No active listings available",
     "period": "Period",
     "promote": "Request promotion",
     "current": "Current subscription",

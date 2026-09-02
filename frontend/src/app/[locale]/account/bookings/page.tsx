@@ -16,6 +16,7 @@ export default async function BookingsPage({
     <main className="market-page px-4 py-8 sm:px-6 sm:py-10">
       <div className="market-panel mx-auto w-full max-w-5xl p-6 sm:p-8">
         <BookingDashboard
+          locale={locale}
           copy={{
             title: t("title"),
             description: t("description"),
@@ -25,6 +26,9 @@ export default async function BookingsPage({
             listing: t("listing"),
             direct: t("direct"),
             sourceId: t("sourceId"),
+            selectListing: t("selectListing"),
+            loadingListings: t("loadingListings"),
+            emptyListings: t("emptyListings"),
             providerId: t("providerId"),
             scheduledAt: t("scheduledAt"),
             privateLocation: t("privateLocation"),

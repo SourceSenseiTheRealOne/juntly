@@ -30,6 +30,7 @@ const copy = {
     title: "Para prestadores",
     description: "Disponibilize competências.",
     action: "Preparar perfil",
+    imageAlt: "Profissional a trabalhar numa oficina",
   },
   trustTitle: "Confiança construída no produto.",
   trustDescription: "Privacidade e contexto local.",
@@ -63,6 +64,10 @@ describe("LandingShell", () => {
     expect(
       screen.getByRole("heading", { name: copy.closingTitle }),
     ).toBeInTheDocument();
+    expect(screen.getByLabelText("Juntly vision")).toHaveTextContent("Juntly.");
+    expect(
+      screen.getByRole("img", { name: copy.providerBlock.imageAlt }),
+    ).toHaveAttribute("src", expect.stringContaining("local-provider.jpg"));
   });
 
   it("links to discovery, account onboarding, and the vision section", () => {
