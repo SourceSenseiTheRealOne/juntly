@@ -8,16 +8,60 @@
     "tagline": "Find someone who knows how.",
     "heading": "Local services, closer to home.",
     "description": "A simple way to find people with real skills in your community, starting in rural Portugal.",
-    "statusLabel": "The platform is taking shape.",
-    "healthStatus": {
-      "checking": "Checking the API.",
-      "available": "API available.",
-      "unavailable": "API temporarily unavailable."
-    },
     "visionLinkLabel": "Discover the vision",
+    "discoverLinkLabel": "Explore services",
     "visionTitle": "Built for genuine local connections",
     "visionDescription": "Discovery, contact and trust without taking choice away from people. Juntly connects those who need help with those who know how.",
     "showcaseTitle": "Local, made easier.",
+    "how": {
+      "title": "From need to solution, without the friction.",
+      "description": "Juntly brings search, comparison and contact into one clear journey.",
+      "discover": {
+        "title": "Search for what you need",
+        "description": "Find active services by category and location, with enough context to choose your next step."
+      },
+      "compare": {
+        "title": "Compare with confidence",
+        "description": "Review profiles, proposals, availability and feedback connected to real completed work."
+      },
+      "contact": {
+        "title": "Talk when it makes sense",
+        "description": "Send a message or reveal contact details only when you are ready to move forward."
+      }
+    },
+    "audience": {
+      "customer": {
+        "title": "For people who need help",
+        "description": "Discover local professionals, request proposals, book services and follow everything from your account.",
+        "action": "Find a service"
+      },
+      "provider": {
+        "title": "For people who know how",
+        "description": "Build a clear profile, publish services, answer requests and grow a reputation through completed work.",
+        "action": "Set up a profile"
+      }
+    },
+    "trust": {
+      "title": "Trust built into the product.",
+      "description": "The experience brings people closer without exposing more information than necessary.",
+      "privacy": {
+        "title": "Contact details stay controlled",
+        "description": "Contact information remains private until an authorized action reveals it."
+      },
+      "local": {
+        "title": "Local context comes first",
+        "description": "Categories, locations and service areas keep marketplace results genuinely relevant."
+      },
+      "reputation": {
+        "title": "History that means something",
+        "description": "Completed bookings support verified reviews and transparent provider responses."
+      }
+    },
+    "closing": {
+      "title": "Start with your community.",
+      "description": "Create an account to request help, offer your skills, or follow every conversation and booking in one place.",
+      "action": "Create account"
+    },
     "footerLabel": "Juntly, born in Portugal."
   },
   "Auth": {
