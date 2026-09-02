@@ -76,31 +76,31 @@ export function AdministrationDashboardView({
       setFailed(true);
     }
   }
-  if (!data && !failed) return <p>{copy.loading}</p>;
+  if (!data && !failed) return <p className="market-empty">{copy.loading}</p>;
   return (
     <section aria-labelledby="administration-title">
-      <h1
-        id="administration-title"
-        className="text-4xl font-bold tracking-[-0.05em]"
-      >
-        {copy.title}
-      </h1>
-      <p className="mt-3 max-w-3xl text-lg leading-8 text-muted">
-        {copy.description}
-      </p>
+      <div className="market-page-header">
+        <h1
+          id="administration-title"
+          className="text-4xl font-bold tracking-[-0.055em] sm:text-5xl"
+        >
+          {copy.title}
+        </h1>
+        <p>{copy.description}</p>
+      </div>
       {failed ? (
-        <p role="alert" className="mt-6 text-earth">
+        <p role="alert" className="market-alert mt-6">
           {copy.error}
         </p>
       ) : null}
       {saved ? (
-        <p aria-live="polite" className="mt-6 font-semibold text-accent">
+        <p aria-live="polite" className="market-success mt-6 font-semibold">
           {copy.saved}
         </p>
       ) : null}
       {data ? (
         <>
-          <div className="market-card mt-8 grid gap-5 p-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="market-card market-data-grid mt-8 p-5 sm:p-6">
             <Metric label={copy.users} value={data.metrics.users} />
             <Metric label={copy.providers} value={data.metrics.providers} />
             <Metric label={copy.listings} value={data.metrics.activeListings} />
@@ -117,7 +117,7 @@ export function AdministrationDashboardView({
           <h2 className="mt-10 text-2xl font-bold">{copy.reportQueue}</h2>
           <div className="mt-4 grid gap-4">
             {data.queue.reports.length === 0 ? (
-              <p className="market-card p-5 text-muted">{copy.empty}</p>
+              <p className="market-empty">{copy.empty}</p>
             ) : (
               data.queue.reports.map((item) => (
                 <ModerationForm
@@ -134,7 +134,7 @@ export function AdministrationDashboardView({
           <h2 className="mt-10 text-2xl font-bold">{copy.reviewQueue}</h2>
           <div className="mt-4 grid gap-4">
             {data.queue.reviews.length === 0 ? (
-              <p className="market-card p-5 text-muted">{copy.empty}</p>
+              <p className="market-empty">{copy.empty}</p>
             ) : (
               data.queue.reviews.map((item) => (
                 <ModerationForm

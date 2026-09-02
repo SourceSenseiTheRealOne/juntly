@@ -102,32 +102,37 @@ export function MessagingInbox({ copy }: { copy: MessagingCopy }) {
 
   return (
     <section aria-labelledby="messages-title">
-      <h1 id="messages-title" className="text-4xl font-bold tracking-[-0.05em]">
-        {copy.title}
-      </h1>
-      <p className="mt-3 text-lg leading-8 text-muted">{copy.description}</p>
+      <div className="market-page-header">
+        <h1
+          id="messages-title"
+          className="text-4xl font-bold tracking-[-0.055em] sm:text-5xl"
+        >
+          {copy.title}
+        </h1>
+        <p>{copy.description}</p>
+      </div>
 
-      {loading ? <p className="mt-8 text-muted">{copy.loading}</p> : null}
+      {loading ? <p className="market-empty mt-8">{copy.loading}</p> : null}
       {failed ? (
-        <p role="alert" className="mt-6 text-earth">
+        <p role="alert" className="market-alert mt-6">
           {copy.error}
         </p>
       ) : null}
       {!loading && conversations.length === 0 ? (
-        <p className="market-card mt-8 p-6 text-muted">{copy.empty}</p>
+        <p className="market-empty mt-8">{copy.empty}</p>
       ) : null}
 
       {conversations.length > 0 ? (
-        <div className="mt-8 grid gap-5 lg:grid-cols-[0.72fr_1.28fr]">
+        <div className="mt-8 grid gap-4 lg:grid-cols-[0.68fr_1.32fr]">
           <nav
             aria-label={copy.selectConversation}
-            className="market-card h-fit p-3"
+            className="market-card flex max-w-full gap-2 overflow-x-auto p-2 lg:block lg:h-fit lg:overflow-visible"
           >
             {conversations.map((conversation, index) => (
               <button
                 key={conversation.id}
                 type="button"
-                className={`min-h-11 w-full rounded-xl px-4 text-left text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-focus ${selected === conversation.id ? "bg-accent-soft text-ink" : "text-muted hover:bg-control"}`}
+                className={`min-h-11 min-w-40 rounded-xl px-4 text-left text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-focus lg:w-full ${selected === conversation.id ? "bg-accent-soft text-accent" : "text-muted hover:bg-control hover:text-ink"}`}
                 onClick={() => void openConversation(conversation.id)}
               >
                 {copy.conversation} {index + 1}
@@ -135,20 +140,26 @@ export function MessagingInbox({ copy }: { copy: MessagingCopy }) {
             ))}
           </nav>
 
-          <div className="market-card min-h-80 p-5">
+          <div className="market-card min-h-96 p-4 sm:p-6">
             {selected ? (
               <>
-                <div aria-live="polite" className="grid gap-3">
+                <div
+                  aria-live="polite"
+                  className="grid max-h-[28rem] gap-3 overflow-y-auto pr-1"
+                >
                   {messages.map((message) => (
                     <p
                       key={message.id}
-                      className="max-w-[85%] rounded-xl bg-control px-4 py-3 text-sm leading-6 text-ink"
+                      className="max-w-[88%] rounded-2xl rounded-bl-md bg-control px-4 py-3 text-sm leading-6 text-ink sm:max-w-[75%]"
                     >
                       {message.body}
                     </p>
                   ))}
                 </div>
-                <form className="mt-6 grid gap-3" onSubmit={send}>
+                <form
+                  className="mt-6 grid gap-3 border-t border-line pt-5"
+                  onSubmit={send}
+                >
                   <label className="grid gap-2 font-semibold">
                     {copy.messageLabel}
                     <textarea
@@ -168,7 +179,7 @@ export function MessagingInbox({ copy }: { copy: MessagingCopy }) {
                 </form>
               </>
             ) : (
-              <p className="text-muted">{copy.selectConversation}</p>
+              <p className="market-empty min-h-72">{copy.selectConversation}</p>
             )}
           </div>
         </div>

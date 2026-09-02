@@ -177,24 +177,37 @@ export function ListingDashboard({
     }
   }
   if (listings === null && !failed)
-    return <p aria-live="polite">{copy.loading}</p>;
+    return (
+      <p className="market-empty" aria-live="polite">
+        {copy.loading}
+      </p>
+    );
   if (failed && listings === null)
     return (
-      <div role="alert">
+      <div className="market-alert grid justify-items-start gap-3" role="alert">
         <p>{copy.error}</p>
-        <button type="button" onClick={() => void load()}>
+        <button
+          className="market-button-secondary"
+          type="button"
+          onClick={() => void load()}
+        >
           {copy.retry}
         </button>
       </div>
     );
   return (
     <section aria-labelledby="listings-title">
-      <h1 id="listings-title" className="text-4xl font-bold tracking-[-0.05em]">
-        {copy.title}
-      </h1>
-      <p className="mt-3 text-muted">{copy.description}</p>
+      <div className="market-page-header">
+        <h1
+          id="listings-title"
+          className="text-4xl font-bold tracking-[-0.055em] sm:text-5xl"
+        >
+          {copy.title}
+        </h1>
+        <p>{copy.description}</p>
+      </div>
       {failed ? (
-        <p role="alert" className="mt-4 text-earth">
+        <p role="alert" className="market-alert mt-5">
           {copy.error}
         </p>
       ) : null}
@@ -206,7 +219,7 @@ export function ListingDashboard({
         {copy.newListing}
       </button>
       {creating ? (
-        <form onSubmit={create} className="market-card mt-6 grid gap-4 p-5">
+        <form onSubmit={create} className="market-form-section mt-6">
           <label>
             {copy.titleLabel}
             <input
@@ -268,54 +281,58 @@ export function ListingDashboard({
               }
             />
           </label>
-          <button disabled={saving} type="submit">
+          <button className="market-button" disabled={saving} type="submit">
             {copy.create}
           </button>
         </form>
       ) : null}
-      <div className="mt-8 grid gap-4">
+      <div className="mt-8 grid gap-4 md:grid-cols-2">
         {listings?.length ? (
           listings.map((item) => (
-            <article key={item.id} className="market-card p-5">
-              <h2 className="font-semibold">{item.title}</h2>
+            <article key={item.id} className="market-card flex flex-col p-5">
+              <div className="flex items-start justify-between gap-4">
+                <h2 className="text-lg font-semibold">{item.title}</h2>
+                <span className="market-chip">{item.state}</span>
+              </div>
               <p className="mt-2 text-sm text-muted">{item.description}</p>
-              <p className="mt-3 text-sm font-semibold">{item.state}</p>
-              {item.state === "draft" ? (
-                <button
-                  disabled={saving}
-                  type="button"
-                  className="mt-3 min-h-11 rounded-full border border-line px-4"
-                  onClick={() => void submit(item.id, item.revision)}
-                >
-                  {copy.submit}
-                </button>
-              ) : null}
-              {item.state === "active" ? (
-                <button
-                  disabled={saving}
-                  type="button"
-                  className="mt-3 min-h-11 rounded-full border border-line px-4"
-                  onClick={() => void transition(item, "pause")}
-                >
-                  {copy.pause}
-                </button>
-              ) : null}
-              {["draft", "rejected", "active", "paused"].includes(
-                item.state,
-              ) ? (
-                <button
-                  disabled={saving}
-                  type="button"
-                  className="mt-3 min-h-11 rounded-full border border-line px-4"
-                  onClick={() => void transition(item, "archive")}
-                >
-                  {copy.archive}
-                </button>
-              ) : null}
+              <div className="mt-auto flex flex-wrap gap-2 pt-5">
+                {item.state === "draft" ? (
+                  <button
+                    disabled={saving}
+                    type="button"
+                    className="market-button-secondary"
+                    onClick={() => void submit(item.id, item.revision)}
+                  >
+                    {copy.submit}
+                  </button>
+                ) : null}
+                {item.state === "active" ? (
+                  <button
+                    disabled={saving}
+                    type="button"
+                    className="market-button-secondary"
+                    onClick={() => void transition(item, "pause")}
+                  >
+                    {copy.pause}
+                  </button>
+                ) : null}
+                {["draft", "rejected", "active", "paused"].includes(
+                  item.state,
+                ) ? (
+                  <button
+                    disabled={saving}
+                    type="button"
+                    className="market-button-secondary"
+                    onClick={() => void transition(item, "archive")}
+                  >
+                    {copy.archive}
+                  </button>
+                ) : null}
+              </div>
             </article>
           ))
         ) : (
-          <p>{copy.empty}</p>
+          <p className="market-empty md:col-span-2">{copy.empty}</p>
         )}
       </div>
       <p className="mt-6 text-sm text-muted">
