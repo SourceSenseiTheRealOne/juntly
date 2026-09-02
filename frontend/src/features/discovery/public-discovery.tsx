@@ -24,6 +24,16 @@ type Listing = {
   updatedAt: string;
 };
 
+type CategoryOption = { id: string; name: string };
+type LocalityOption = { id: string; name: string };
+type DiscoveryFilters = {
+  categoryId: string;
+  nearLocalityId: string;
+  radiusKm: string;
+  priceType: string;
+  serviceMode: string;
+};
+
 export type PublicDiscoveryCopy = {
   title: string;
   description: string;
@@ -43,6 +53,19 @@ export type PublicDiscoveryCopy = {
   locationContextLabel: string;
   filtersLabel: string;
   promoted: string;
+  allCategories: string;
+  allLocalities: string;
+  anyPrice: string;
+  anyMode: string;
+  priceFixed: string;
+  priceHourly: string;
+  priceDaily: string;
+  priceQuote: string;
+  priceNegotiable: string;
+  modeTravels: string;
+  modeReceives: string;
+  modeRemote: string;
+  applyFilters: string;
 };
 
 export function PublicDiscovery({
@@ -53,15 +76,24 @@ export function PublicDiscovery({
   locale: "pt-PT" | "en" | "es";
 }) {
   const [listings, setListings] = useState<Listing[] | null>(null);
+  const [categories, setCategories] = useState<CategoryOption[]>([]);
+  const [localities, setLocalities] = useState<LocalityOption[]>([]);
   const [failed, setFailed] = useState(false);
   const [query, setQuery] = useState("");
+  const [filters, setFilters] = useState<DiscoveryFilters>({
+    categoryId: "",
+    nearLocalityId: "",
+    radiusKm: "25",
+    priceType: "",
+    serviceMode: "",
+  });
   const generation = useRef(0);
 
-  async function load(nextQuery = query) {
+  async function load(nextQuery = query, nextFilters = filters) {
     const current = ++generation.current;
     setFailed(false);
     try {
-      const values = await fetchListings(locale, nextQuery);
+      const values = await fetchListings(locale, nextQuery, nextFilters);
       if (current === generation.current) setListings(values);
     } catch {
       if (current === generation.current) setFailed(true);
@@ -72,8 +104,21 @@ export function PublicDiscovery({
     const current = ++generation.current;
     async function loadInitial() {
       try {
-        const values = await fetchListings(locale, "");
-        if (current === generation.current) setListings(values);
+        const [values, references] = await Promise.all([
+          fetchListings(locale, "", {
+            categoryId: "",
+            nearLocalityId: "",
+            radiusKm: "25",
+            priceType: "",
+            serviceMode: "",
+          }),
+          fetchReferences(locale),
+        ]);
+        if (current === generation.current) {
+          setListings(values);
+          setCategories(references.categories);
+          setLocalities(references.localities);
+        }
       } catch {
         if (current === generation.current) setFailed(true);
       }
@@ -122,13 +167,14 @@ export function PublicDiscovery({
         </span>
       </div>
       <form
-        className="market-toolbar mt-6 flex flex-col gap-3 p-3 sm:flex-row sm:items-end"
+        aria-label={copy.filtersLabel}
+        className="market-toolbar mt-6 grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-6 lg:items-end"
         onSubmit={(event) => {
           event.preventDefault();
           void load();
         }}
       >
-        <label className="grid flex-1 gap-1">
+        <label className="grid gap-1 sm:col-span-2 lg:col-span-2">
           <span className="px-1 text-sm font-semibold text-ink">
             {copy.searchLabel}
           </span>
@@ -140,11 +186,65 @@ export function PublicDiscovery({
             className="market-control w-full"
           />
         </label>
-        <button
-          type="submit"
-          className="market-button w-full self-end sm:w-auto"
-        >
-          {copy.searchButton}
+        <FilterSelect
+          label={copy.categoryLabel}
+          value={filters.categoryId}
+          onChange={(categoryId) => setFilters({ ...filters, categoryId })}
+          options={categories.map((item) => ({
+            value: item.id,
+            label: item.name,
+          }))}
+          placeholder={copy.allCategories}
+        />
+        <FilterSelect
+          label={copy.localityLabel}
+          value={filters.nearLocalityId}
+          onChange={(nearLocalityId) =>
+            setFilters({ ...filters, nearLocalityId })
+          }
+          options={localities.map((item) => ({
+            value: item.id,
+            label: item.name,
+          }))}
+          placeholder={copy.allLocalities}
+        />
+        <FilterSelect
+          disabled={!filters.nearLocalityId}
+          label={copy.radiusLabel}
+          value={filters.radiusKm}
+          onChange={(radiusKm) => setFilters({ ...filters, radiusKm })}
+          options={[5, 10, 25, 50, 100, 200].map((radius) => ({
+            value: String(radius),
+            label: `${radius} km`,
+          }))}
+          placeholder={copy.radiusLabel}
+        />
+        <FilterSelect
+          label={copy.priceLabel}
+          value={filters.priceType}
+          onChange={(priceType) => setFilters({ ...filters, priceType })}
+          options={[
+            { value: "fixed", label: copy.priceFixed },
+            { value: "hourly", label: copy.priceHourly },
+            { value: "daily", label: copy.priceDaily },
+            { value: "quote", label: copy.priceQuote },
+            { value: "negotiable", label: copy.priceNegotiable },
+          ]}
+          placeholder={copy.anyPrice}
+        />
+        <FilterSelect
+          label={copy.modeLabel}
+          value={filters.serviceMode}
+          onChange={(serviceMode) => setFilters({ ...filters, serviceMode })}
+          options={[
+            { value: "travels_to_customer", label: copy.modeTravels },
+            { value: "receives_customer", label: copy.modeReceives },
+            { value: "remote_services", label: copy.modeRemote },
+          ]}
+          placeholder={copy.anyMode}
+        />
+        <button type="submit" className="market-button w-full lg:col-start-6">
+          {copy.applyFilters}
         </button>
       </form>
       {failed ? (
@@ -152,16 +252,7 @@ export function PublicDiscovery({
           {copy.error}
         </p>
       ) : null}
-      <div
-        className="mt-5 flex max-w-full gap-2 overflow-x-auto pb-2"
-        aria-label={copy.filtersLabel}
-      >
-        <span className="market-chip">{copy.categoryLabel}</span>
-        <span className="market-chip">{copy.localityLabel}</span>
-        <span className="market-chip">{copy.radiusLabel}</span>
-        <span className="market-chip">{copy.priceLabel}</span>
-        <span className="market-chip">{copy.modeLabel}</span>
-      </div>
+
       <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {listings?.length ? (
           listings.map((listing) => (
@@ -216,14 +307,101 @@ export function PublicDiscovery({
 async function fetchListings(
   locale: "pt-PT" | "en" | "es",
   query: string,
+  filters: DiscoveryFilters,
 ): Promise<Listing[]> {
   const params = new URLSearchParams({ locale });
   const normalized = query.trim().replace(/\s+/g, " ");
   if (normalized.length >= 2) params.set("q", normalized);
+  if (filters.categoryId) params.set("categoryId", filters.categoryId);
+  if (filters.nearLocalityId) {
+    params.set("nearLocalityId", filters.nearLocalityId);
+    params.set("radiusKm", filters.radiusKm);
+  }
+  if (filters.priceType) params.set("priceType", filters.priceType);
+  if (filters.serviceMode) params.set("serviceMode", filters.serviceMode);
   const response = await fetch(`/api/v1/discovery/listings?${params}`);
   const value: unknown = await response.json();
   if (!response.ok || !validListings(value)) throw new Error();
   return value.listings;
+}
+
+async function fetchReferences(locale: "pt-PT" | "en" | "es") {
+  const query = `?locale=${encodeURIComponent(locale)}`;
+  const [categoryResponse, localityResponse] = await Promise.all([
+    fetch(`/api/v1/catalog/categories${query}`),
+    fetch(`/api/v1/reference/localities${query}`),
+  ]);
+  const categories: unknown = await categoryResponse.json();
+  const localities: unknown = await localityResponse.json();
+  if (
+    !categoryResponse.ok ||
+    !localityResponse.ok ||
+    !validOptions(categories, "categories") ||
+    !validOptions(localities, "localities")
+  )
+    throw new Error();
+  return {
+    categories: categories.categories,
+    localities: localities.localities,
+  };
+}
+
+function FilterSelect({
+  disabled = false,
+  label,
+  onChange,
+  options,
+  placeholder,
+  value,
+}: {
+  disabled?: boolean;
+  label: string;
+  onChange: (value: string) => void;
+  options: Array<{ value: string; label: string }>;
+  placeholder: string;
+  value: string;
+}) {
+  return (
+    <label className="grid gap-1">
+      <span className="px-1 text-sm font-semibold text-ink">{label}</span>
+      <select
+        className="market-control w-full"
+        disabled={disabled}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      >
+        <option value="">{placeholder}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function validOptions(
+  value: unknown,
+  key: "categories" | "localities",
+): value is Record<
+  "categories" | "localities",
+  Array<{ id: string; name: string }>
+> {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Array.isArray((value as Record<string, unknown>)[key]) &&
+    ((value as Record<string, unknown>)[key] as unknown[]).every(
+      (item) =>
+        item !== null &&
+        typeof item === "object" &&
+        !Array.isArray(item) &&
+        uuid((item as Record<string, unknown>).id) &&
+        typeof (item as Record<string, unknown>).name === "string",
+    )
+  );
 }
 
 function validListings(value: unknown): value is { listings: Listing[] } {

@@ -9,6 +9,7 @@ import {
   validCatalog,
   validEntitlements,
 } from "@/features/entitlements/entitlement-bff";
+import { AvailableListingSelect } from "@/features/listings/available-listing-select";
 
 export type EntitlementsCopy = {
   title: string;
@@ -23,6 +24,9 @@ export type EntitlementsCopy = {
   choosePlan: string;
   promotion: string;
   listingId: string;
+  selectListing: string;
+  loadingListings: string;
+  emptyListings: string;
   period: string;
   promote: string;
   current: string;
@@ -35,7 +39,13 @@ export type EntitlementsCopy = {
   cancelled: string;
   expired: string;
 };
-export function EntitlementsDashboard({ copy }: { copy: EntitlementsCopy }) {
+export function EntitlementsDashboard({
+  copy,
+  locale,
+}: {
+  copy: EntitlementsCopy;
+  locale: "pt-PT" | "en" | "es";
+}) {
   const [catalog, setCatalog] = useState<EntitlementCatalog | null>(null),
     [mine, setMine] = useState<MyEntitlements | null>(null),
     [loading, setLoading] = useState(true),
@@ -188,10 +198,15 @@ export function EntitlementsDashboard({ copy }: { copy: EntitlementsCopy }) {
       </div>
       <form className="market-form-section mt-10" onSubmit={promote}>
         <h2 className="text-2xl font-bold">{copy.promotion}</h2>
-        <label className="grid gap-2 font-semibold">
-          {copy.listingId}
-          <input className="market-control" name="listingId" required />
-        </label>
+        <AvailableListingSelect
+          emptyLabel={copy.emptyListings}
+          label={copy.listingId}
+          loadingLabel={copy.loadingListings}
+          locale={locale}
+          name="listingId"
+          placeholder={copy.selectListing}
+          scope="mine"
+        />
         <label className="grid gap-2 font-semibold">
           {copy.period}
           <select className="market-control" name="periodId" required>

@@ -20,7 +20,7 @@ type LandingShellProps = {
   compareBlock: ContentBlock;
   contactBlock: ContentBlock;
   customerBlock: ContentBlock & { action: string };
-  providerBlock: ContentBlock & { action: string };
+  providerBlock: ContentBlock & { action: string; imageAlt: string };
   trustTitle: string;
   trustDescription: string;
   privacyBlock: ContentBlock;
@@ -103,17 +103,28 @@ export function LandingShell({
         </section>
 
         <section id="vision" className="scroll-mt-24 bg-canvas">
-          <div className="market-container grid gap-8 py-16 sm:py-24 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
-            <p className="max-w-xs text-sm leading-6 font-semibold text-muted">
-              Juntly
-            </p>
-            <div className="max-w-3xl">
-              <h2 className="text-3xl font-semibold tracking-[-0.045em] text-balance sm:text-5xl">
-                {visionTitle}
-              </h2>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-muted">
-                {visionDescription}
-              </p>
+          <div className="market-container py-16 sm:py-24">
+            <div className="market-panel grid overflow-hidden lg:grid-cols-[0.72fr_1.28fr]">
+              <div className="flex min-h-64 flex-col justify-between bg-accent-soft p-7 sm:p-10 lg:min-h-96">
+                <p
+                  aria-label="Juntly vision"
+                  className="text-5xl font-bold tracking-[-0.075em] text-ink sm:text-7xl"
+                >
+                  Juntly<span className="text-accent">.</span>
+                </p>
+                <span
+                  aria-hidden="true"
+                  className="mt-16 block h-2 w-24 rounded-full bg-accent"
+                />
+              </div>
+              <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-14">
+                <h2 className="max-w-3xl text-3xl font-semibold tracking-[-0.045em] text-balance sm:text-5xl">
+                  {visionTitle}
+                </h2>
+                <p className="mt-6 max-w-2xl text-lg leading-8 text-muted">
+                  {visionDescription}
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -173,19 +184,30 @@ export function LandingShell({
                 {customerBlock.action}
               </a>
             </article>
-            <article className="market-panel flex flex-col items-start bg-ink p-6 text-surface sm:p-8 lg:p-10">
-              <h2 className="text-3xl font-semibold tracking-[-0.045em]">
-                {providerBlock.title}
-              </h2>
-              <p className="mt-5 max-w-xl leading-7 text-surface/75">
-                {providerBlock.description}
-              </p>
-              <a
-                className="market-button-secondary mt-8 border-surface/30 bg-transparent text-surface hover:bg-surface/10"
-                href={accountUrl}
-              >
-                {providerBlock.action}
-              </a>
+            <article className="market-panel grid overflow-hidden bg-ink text-surface sm:grid-cols-[1.05fr_0.95fr]">
+              <div className="flex flex-col items-start p-6 sm:p-8 lg:p-10">
+                <h2 className="text-3xl font-semibold tracking-[-0.045em]">
+                  {providerBlock.title}
+                </h2>
+                <p className="mt-5 max-w-xl leading-7 text-surface/75">
+                  {providerBlock.description}
+                </p>
+                <a
+                  className="market-button-secondary mt-8 border-surface/30 bg-transparent text-surface hover:bg-surface/10"
+                  href={accountUrl}
+                >
+                  {providerBlock.action}
+                </a>
+              </div>
+              <div className="relative min-h-64 sm:min-h-full">
+                <Image
+                  alt={providerBlock.imageAlt}
+                  className="object-cover"
+                  fill
+                  sizes="(max-width: 640px) 100vw, 38vw"
+                  src="/images/local-provider.jpg"
+                />
+              </div>
             </article>
           </div>
         </section>

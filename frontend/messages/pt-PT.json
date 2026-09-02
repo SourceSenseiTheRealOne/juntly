@@ -38,7 +38,8 @@
       "provider": {
         "title": "Para quem sabe fazer",
         "description": "Crie um perfil claro, publique serviços, responda a pedidos e construa reputação através de trabalho concluído.",
-        "action": "Preparar perfil"
+        "action": "Preparar perfil",
+        "imageAlt": "Profissional a trabalhar madeira numa oficina"
       }
     },
     "trust": {
@@ -71,6 +72,7 @@
   "Navigation": {
     "skipToContent": "Saltar para o conteúdo",
     "discover": "Encontrar serviços",
+    "createService": "Criar serviço",
     "account": "A minha conta",
     "accountNavigation": "Opções da conta",
     "marketplace": "Navegação do mercado"
@@ -171,7 +173,20 @@
     "marketplaceLabel": "Marketplace Juntly",
     "locationContextLabel": "Portugal",
     "filtersLabel": "Filtros disponíveis",
-    "promoted": "Promovido"
+    "promoted": "Promovido",
+    "allCategories": "Todas as categorias",
+    "allLocalities": "Todas as localidades",
+    "anyPrice": "Qualquer preço",
+    "anyMode": "Qualquer modo",
+    "priceFixed": "Preço fixo",
+    "priceHourly": "À hora",
+    "priceDaily": "Ao dia",
+    "priceQuote": "Sob orçamento",
+    "priceNegotiable": "Negociável",
+    "modeTravels": "Desloca-se ao cliente",
+    "modeReceives": "Recebe clientes",
+    "modeRemote": "À distância",
+    "applyFilters": "Aplicar filtros"
   },
   "PublicListing": {
     "loading": "A carregar anúncio…",
@@ -184,7 +199,9 @@
     "whatsapp": "Revelar WhatsApp",
     "revealError": "Não foi possível revelar o contacto.",
     "message": "Enviar mensagem",
-    "messageError": "Não foi possível iniciar a conversa."
+    "messageError": "Não foi possível iniciar a conversa.",
+    "ownListing": "Este anúncio é seu. Os contactos e mensagens destinam-se aos clientes.",
+    "manageListing": "Gerir anúncio"
   },
   "ContactChannels": {
     "title": "Canais de contacto",
@@ -276,6 +293,9 @@
     "listing": "Anúncio",
     "direct": "Acordo direto",
     "sourceId": "Identificador da proposta ou anúncio",
+    "selectListing": "Selecionar serviço",
+    "loadingListings": "A carregar serviços...",
+    "emptyListings": "Sem serviços disponíveis",
     "providerId": "Identificador do prestador para acordo direto",
     "scheduledAt": "Data e hora",
     "privateLocation": "Local privado do serviço",
@@ -323,6 +343,9 @@
     "choosePlan": "Escolher plano",
     "promotion": "Promover um anúncio",
     "listingId": "Identificador do anúncio",
+    "selectListing": "Selecionar anúncio ativo",
+    "loadingListings": "A carregar anúncios...",
+    "emptyListings": "Sem anúncios ativos disponíveis",
     "period": "Período",
     "promote": "Pedir promoção",
     "current": "Subscrição atual",
