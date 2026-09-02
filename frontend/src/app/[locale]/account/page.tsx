@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { AccountCapabilitiesCard } from "@/features/account/account-capabilities-card";
 import { requireAuthenticatedUser } from "@/features/auth/require-session";
+import { currentUserIsSoleAdministrator } from "@/features/auth/sole-administrator";
 import { routing } from "@/i18n/routing";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +20,8 @@ export default async function AccountPage({ params }: AccountPageProps) {
     notFound();
   }
 
-  await requireAuthenticatedUser(locale);
+  const userId = await requireAuthenticatedUser(locale);
+  const soleAdministrator = await currentUserIsSoleAdministrator(userId);
   const t = await getTranslations("Account");
   const capabilityCopy = {
     title: t("capabilities.title"),
@@ -96,6 +98,14 @@ export default async function AccountPage({ params }: AccountPageProps) {
             >
               {t("capabilities.manageEntitlements")}
             </a>
+            {soleAdministrator ? (
+              <a
+                className="market-button justify-between px-4"
+                href={`/${locale}/admin/listings`}
+              >
+                {t("capabilities.manageModeration")}
+              </a>
+            ) : null}
           </nav>
         </div>
       </section>

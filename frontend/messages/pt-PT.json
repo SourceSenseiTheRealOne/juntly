@@ -100,7 +100,8 @@
       "manageQuotations": "Pedidos e propostas",
       "manageBookings": "Gerir reservas",
       "manageReviews": "Avaliações",
-      "manageEntitlements": "Planos e promoções"
+      "manageEntitlements": "Planos e promoções",
+      "manageModeration": "Aprovar anúncios"
     }
   },
   "ProviderProfile": {
