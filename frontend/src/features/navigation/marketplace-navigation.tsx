@@ -59,7 +59,7 @@ export function MarketplaceNavigation({
           </a>
         </nav>
         <a
-          className="market-button shrink-0 px-3 text-sm sm:px-4"
+          className="market-button market-button-compact shrink-0"
           href={createServiceUrl}
         >
           {createServiceLabel}
