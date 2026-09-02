@@ -31,6 +31,8 @@ export default async function PublicListingPage({
             revealError: t("revealError"),
             message: t("message"),
             messageError: t("messageError"),
+            ownListing: t("ownListing"),
+            manageListing: t("manageListing"),
           }}
         />
       </div>

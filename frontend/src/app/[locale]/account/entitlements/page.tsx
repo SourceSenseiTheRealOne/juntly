@@ -16,6 +16,7 @@ export default async function EntitlementsPage({
     <main className="market-page px-4 py-8 sm:px-6 sm:py-10">
       <div className="market-panel mx-auto w-full max-w-5xl p-6 sm:p-8">
         <EntitlementsDashboard
+          locale={locale}
           copy={{
             title: t("title"),
             description: t("description"),
@@ -29,6 +30,9 @@ export default async function EntitlementsPage({
             choosePlan: t("choosePlan"),
             promotion: t("promotion"),
             listingId: t("listingId"),
+            selectListing: t("selectListing"),
+            loadingListings: t("loadingListings"),
+            emptyListings: t("emptyListings"),
             period: t("period"),
             promote: t("promote"),
             current: t("current"),

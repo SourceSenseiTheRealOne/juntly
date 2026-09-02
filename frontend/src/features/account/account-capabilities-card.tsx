@@ -178,9 +178,9 @@ export function AccountCapabilitiesCard({
           </div>
         </div>
 
-        <div className="market-card p-5">
-          <div className="flex items-start justify-between gap-5">
-            <div>
+        <div className="market-card overflow-hidden p-5">
+          <div className="grid min-w-0 gap-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+            <div className="min-w-0">
               <h3 id="provider-capability-label" className="font-semibold">
                 {copy.providerLabel}
               </h3>
@@ -200,19 +200,21 @@ export function AccountCapabilitiesCard({
                     ? copy.enabled
                     : copy.disabled}
               </p>
-              {account.providerEnabled && providerProfileUrl ? (
-                <a
-                  href={providerProfileUrl}
-                  className="market-button-secondary mt-3 mr-2"
-                >
-                  {copy.manageProvider}
-                </a>
-              ) : null}
-              {account.providerEnabled && listingsUrl ? (
-                <a href={listingsUrl} className="market-button-secondary mt-3">
-                  {copy.manageListings}
-                </a>
-              ) : null}
+              <div className="mt-3 flex flex-wrap gap-2">
+                {account.providerEnabled && providerProfileUrl ? (
+                  <a
+                    href={providerProfileUrl}
+                    className="market-button-secondary"
+                  >
+                    {copy.manageProvider}
+                  </a>
+                ) : null}
+                {account.providerEnabled && listingsUrl ? (
+                  <a href={listingsUrl} className="market-button-secondary">
+                    {copy.manageListings}
+                  </a>
+                ) : null}
+              </div>
             </div>
             <button
               type="button"
@@ -222,7 +224,7 @@ export function AccountCapabilitiesCard({
               aria-describedby="provider-capability-description"
               disabled={saving}
               onClick={() => void updateProviderCapability()}
-              className="relative min-h-11 min-w-16 shrink-0 rounded-full border border-line bg-surface p-1 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-4 focus-visible:ring-offset-canvas disabled:cursor-wait disabled:opacity-60 data-[enabled=true]:bg-accent motion-reduce:transition-none"
+              className="relative min-h-11 min-w-16 justify-self-start rounded-full border border-line bg-surface p-1 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-4 focus-visible:ring-offset-canvas disabled:cursor-wait disabled:opacity-60 data-[enabled=true]:bg-accent motion-reduce:transition-none sm:justify-self-end"
               data-enabled={account.providerEnabled}
             >
               <span

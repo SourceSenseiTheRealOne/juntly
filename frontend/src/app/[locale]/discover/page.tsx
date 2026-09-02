@@ -37,6 +37,19 @@ export default async function DiscoverPage({
             locationContextLabel: t("locationContextLabel"),
             filtersLabel: t("filtersLabel"),
             promoted: t("promoted"),
+            allCategories: t("allCategories"),
+            allLocalities: t("allLocalities"),
+            anyPrice: t("anyPrice"),
+            anyMode: t("anyMode"),
+            priceFixed: t("priceFixed"),
+            priceHourly: t("priceHourly"),
+            priceDaily: t("priceDaily"),
+            priceQuote: t("priceQuote"),
+            priceNegotiable: t("priceNegotiable"),
+            modeTravels: t("modeTravels"),
+            modeReceives: t("modeReceives"),
+            modeRemote: t("modeRemote"),
+            applyFilters: t("applyFilters"),
           }}
         />
       </div>

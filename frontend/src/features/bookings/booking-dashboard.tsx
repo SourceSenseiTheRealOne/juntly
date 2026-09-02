@@ -1,6 +1,7 @@
 "use client";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import type { Booking, BookingState } from "@/shared/api/generated";
+import { AvailableListingSelect } from "@/features/listings/available-listing-select";
 export type BookingsCopy = {
   title: string;
   description: string;
@@ -10,6 +11,9 @@ export type BookingsCopy = {
   listing: string;
   direct: string;
   sourceId: string;
+  selectListing: string;
+  loadingListings: string;
+  emptyListings: string;
   providerId: string;
   scheduledAt: string;
   privateLocation: string;
@@ -27,11 +31,20 @@ export type BookingsCopy = {
   dispute: string;
   refund: string;
 };
-export function BookingDashboard({ copy }: { copy: BookingsCopy }) {
+export function BookingDashboard({
+  copy,
+  locale,
+}: {
+  copy: BookingsCopy;
+  locale: "pt-PT" | "en" | "es";
+}) {
   const [items, setItems] = useState<Booking[]>([]),
     [loading, setLoading] = useState(true),
     [failed, setFailed] = useState(false),
     [creating, setCreating] = useState(false),
+    [sourceType, setSourceType] = useState<"proposal" | "listing" | "direct">(
+      "proposal",
+    ),
     key = useRef(`booking-${crypto.randomUUID()}`);
   useEffect(() => {
     let active = true;
@@ -78,6 +91,7 @@ export function BookingDashboard({ copy }: { copy: BookingsCopy }) {
       setItems((current) => [v, ...current.filter((i) => i.id !== v.id)]);
       key.current = `booking-${crypto.randomUUID()}`;
       e.currentTarget.reset();
+      setSourceType("proposal");
       setCreating(false);
     } catch {
       setFailed(true);
@@ -130,14 +144,36 @@ export function BookingDashboard({ copy }: { copy: BookingsCopy }) {
         <form className="market-form-section mt-5" onSubmit={create}>
           <label className="grid gap-2 font-semibold">
             {copy.sourceType}
-            <select className="market-control" name="sourceType">
+            <select
+              className="market-control"
+              name="sourceType"
+              value={sourceType}
+              onChange={(event) =>
+                setSourceType(
+                  event.target.value as "proposal" | "listing" | "direct",
+                )
+              }
+            >
               <option value="proposal">{copy.proposal}</option>
               <option value="listing">{copy.listing}</option>
               <option value="direct">{copy.direct}</option>
             </select>
           </label>
-          <Field name="sourceId" label={copy.sourceId} />
-          <Field name="providerId" label={copy.providerId} />
+          {sourceType === "listing" ? (
+            <AvailableListingSelect
+              emptyLabel={copy.emptyListings}
+              label={copy.selectListing}
+              loadingLabel={copy.loadingListings}
+              locale={locale}
+              name="sourceId"
+              placeholder={copy.selectListing}
+              scope="public"
+            />
+          ) : sourceType === "proposal" ? (
+            <Field name="sourceId" label={copy.sourceId} required />
+          ) : (
+            <Field name="providerId" label={copy.providerId} required />
+          )}
           <Field
             name="scheduledAt"
             label={copy.scheduledAt}
