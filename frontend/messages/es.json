@@ -8,16 +8,60 @@
     "tagline": "Encuentra a quien sabe hacerlo.",
     "heading": "Servicios locales, más cerca de ti.",
     "description": "Una forma sencilla de encontrar personas con habilidades reales en tu comunidad, empezando en el Portugal rural.",
-    "statusLabel": "La plataforma está tomando forma.",
-    "healthStatus": {
-      "checking": "Comprobando la API.",
-      "available": "API disponible.",
-      "unavailable": "API temporalmente no disponible."
-    },
-    "visionLinkLabel": "Descubrir la visión",
+    "visionLinkLabel": "Conocer la visión",
+    "discoverLinkLabel": "Explorar servicios",
     "visionTitle": "Creada para conexiones locales reales",
     "visionDescription": "Descubrimiento, contacto y confianza sin quitar elección a las personas. Juntly conecta a quien necesita ayuda con quien sabe hacerla.",
     "showcaseTitle": "Lo local, más fácil.",
+    "how": {
+      "title": "De la necesidad a la solución, sin complicaciones.",
+      "description": "Juntly reúne búsqueda, comparación y contacto en un recorrido claro.",
+      "discover": {
+        "title": "Busca lo que necesitas",
+        "description": "Encuentra servicios activos por categoría y localidad, con contexto suficiente para decidir."
+      },
+      "compare": {
+        "title": "Compara con confianza",
+        "description": "Consulta perfiles, propuestas, disponibilidad y reseñas vinculadas a trabajos reales."
+      },
+      "contact": {
+        "title": "Habla cuando tenga sentido",
+        "description": "Envía un mensaje o revela un contacto solo cuando estés listo para avanzar."
+      }
+    },
+    "audience": {
+      "customer": {
+        "title": "Para quien necesita ayuda",
+        "description": "Descubre profesionales locales, pide propuestas, reserva servicios y sigue todo desde tu cuenta.",
+        "action": "Encontrar un servicio"
+      },
+      "provider": {
+        "title": "Para quien sabe hacerlo",
+        "description": "Crea un perfil claro, publica servicios, responde solicitudes y construye reputación con trabajo completado.",
+        "action": "Preparar perfil"
+      }
+    },
+    "trust": {
+      "title": "Confianza integrada en el producto.",
+      "description": "La experiencia acerca a las personas sin exponer más información de la necesaria.",
+      "privacy": {
+        "title": "Contactos bajo control",
+        "description": "Los datos de contacto siguen privados hasta que una acción autorizada los revela."
+      },
+      "local": {
+        "title": "El contexto local primero",
+        "description": "Categorías, localidades y zonas de servicio mantienen los resultados realmente relevantes."
+      },
+      "reputation": {
+        "title": "Un historial con significado",
+        "description": "Las reservas completadas respaldan reseñas verificadas y respuestas transparentes."
+      }
+    },
+    "closing": {
+      "title": "Empieza por tu comunidad.",
+      "description": "Crea una cuenta para pedir ayuda, ofrecer tus habilidades o seguir conversaciones y reservas en un solo lugar.",
+      "action": "Crear cuenta"
+    },
     "footerLabel": "Juntly, nacida en Portugal."
   },
   "Auth": {

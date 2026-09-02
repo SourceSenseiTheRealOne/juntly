@@ -8,16 +8,60 @@
     "tagline": "Encontra quem sabe fazer.",
     "heading": "Serviços locais, mais perto de si.",
     "description": "Uma forma simples de encontrar pessoas com competências reais na sua comunidade, começando no Portugal rural.",
-    "statusLabel": "A plataforma está a nascer.",
-    "healthStatus": {
-      "checking": "A verificar a API.",
-      "available": "API disponível.",
-      "unavailable": "API temporariamente indisponível."
-    },
     "visionLinkLabel": "Conhecer a visão",
+    "discoverLinkLabel": "Explorar serviços",
     "visionTitle": "Criada para ligações locais reais",
     "visionDescription": "Descoberta, contacto e confiança sem retirar a escolha às pessoas. A Juntly liga quem precisa a quem sabe fazer.",
     "showcaseTitle": "Fazer local, mais simples.",
+    "how": {
+      "title": "Da necessidade à solução, sem complicações.",
+      "description": "A Juntly organiza a procura, a comparação e o contacto num percurso claro.",
+      "discover": {
+        "title": "Procure pelo que precisa",
+        "description": "Encontre serviços ativos por categoria e localidade, com informação suficiente para decidir o próximo passo."
+      },
+      "compare": {
+        "title": "Compare com confiança",
+        "description": "Consulte perfis, propostas, disponibilidade e avaliações ligadas a trabalhos reais."
+      },
+      "contact": {
+        "title": "Fale quando fizer sentido",
+        "description": "Envie mensagens ou revele um contacto apenas quando estiver pronto para avançar."
+      }
+    },
+    "audience": {
+      "customer": {
+        "title": "Para quem precisa de ajuda",
+        "description": "Descubra profissionais locais, peça propostas, reserve serviços e acompanhe tudo na sua conta.",
+        "action": "Encontrar um serviço"
+      },
+      "provider": {
+        "title": "Para quem sabe fazer",
+        "description": "Crie um perfil claro, publique serviços, responda a pedidos e construa reputação através de trabalho concluído.",
+        "action": "Preparar perfil"
+      }
+    },
+    "trust": {
+      "title": "Confiança construída no próprio produto.",
+      "description": "A experiência foi pensada para aproximar pessoas sem expor mais informação do que o necessário.",
+      "privacy": {
+        "title": "Contactos sob controlo",
+        "description": "Os dados de contacto permanecem privados até existir uma ação autorizada para os revelar."
+      },
+      "local": {
+        "title": "Contexto local primeiro",
+        "description": "Categorias, localidades e áreas de serviço ajudam a encontrar opções realmente relevantes."
+      },
+      "reputation": {
+        "title": "Histórico com significado",
+        "description": "Reservas concluídas sustentam avaliações verificadas e respostas transparentes dos prestadores."
+      }
+    },
+    "closing": {
+      "title": "Comece pela sua comunidade.",
+      "description": "Crie uma conta para pedir ajuda, disponibilizar competências ou acompanhar cada conversa e reserva num só lugar.",
+      "action": "Criar conta"
+    },
     "footerLabel": "Juntly, com origem em Portugal."
   },
   "Auth": {
