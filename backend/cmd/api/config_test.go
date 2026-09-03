@@ -114,3 +114,39 @@ func TestLoadRuntimeConfigRejectsInvalidClerkClockSkew(t *testing.T) {
 		})
 	}
 }
+
+func TestLoadRuntimeConfigEnablesStripeOnlyWithCompleteServerConfiguration(t *testing.T) {
+	t.Parallel()
+	config, err := loadRuntimeConfig(func(key string) string {
+		return map[string]string{
+			"DATABASE_URL":             "postgresql://synthetic",
+			"CLERK_SECRET_KEY":         "synthetic-secret",
+			"CLERK_AUTHORIZED_PARTIES": "http://localhost:4200",
+			"STRIPE_SECRET_KEY":        "sk_test_synthetic",
+			"STRIPE_WEBHOOK_SECRET":    "whsec_synthetic",
+			"JUNTLY_PUBLIC_ORIGIN":     "https://vila.example",
+			"JUNTLY_PLATFORM_FEE_BPS":  "1000",
+		}[key]
+	})
+	if err != nil {
+		t.Fatalf("load runtime config: %v", err)
+	}
+	if config.paymentGateway == nil || config.platformFeeBPS != 1000 {
+		t.Fatalf("payment config = %#v/%d", config.paymentGateway, config.platformFeeBPS)
+	}
+}
+
+func TestLoadRuntimeConfigRejectsPartialStripeConfiguration(t *testing.T) {
+	t.Parallel()
+	_, err := loadRuntimeConfig(func(key string) string {
+		return map[string]string{
+			"DATABASE_URL":             "postgresql://synthetic",
+			"CLERK_SECRET_KEY":         "synthetic-secret",
+			"CLERK_AUTHORIZED_PARTIES": "http://localhost:4200",
+			"STRIPE_SECRET_KEY":        "sk_test_synthetic",
+		}[key]
+	})
+	if err == nil {
+		t.Fatal("partial Stripe configuration accepted")
+	}
+}

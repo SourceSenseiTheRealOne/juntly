@@ -36,7 +36,7 @@ Initial focus: Zebreira, Idanha-a-Nova, Penha Garcia, Monsanto, Castelo Branco, 
 
 ## Explicitly deferred until after initial validation
 
-Full protected payments/payouts, MB WAY-compatible payments, advanced verification and analytics, saved searches, web push, dispute automation, institutional dashboards, native mobile apps, and AI-assisted matching. Payment/provider abstractions may be designed earlier, but secondary features must not delay discovery, direct contact, chat, and quotations.
+Advanced verification and analytics, saved searches, web push, institutional dashboards, native mobile apps, and AI-assisted matching remain deferred. SourceSensei explicitly advanced protected Stripe Checkout/Connect payments, MB WAY-compatible checkout, durable refunds, and dispute synchronization into the current implementation scope. These capabilities remain disabled until production identity, legal, Stripe, webhook, monitoring, and live test-mode activation gates are satisfied.
 
 ## Non-functional requirements
 

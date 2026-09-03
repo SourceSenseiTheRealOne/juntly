@@ -100,7 +100,10 @@
       "manageQuotations": "Solicitudes y propuestas",
       "manageBookings": "Gestionar reservas",
       "manageReviews": "Reseñas",
-      "manageEntitlements": "Planes y promociones"
+      "manageEntitlements": "Planes y promociones",
+      "manageModeration": "Aprobar anuncios",
+      "managePayouts": "Pagos y cobros",
+      "managePaymentsAdmin": "Gestionar pagos y disputas"
     }
   },
   "ProviderProfile": {
@@ -311,7 +314,43 @@
     "complete": "Completar",
     "cancel": "Cancelar",
     "dispute": "Abrir disputa",
-    "refund": "Marcar reembolso"
+    "refund": "Marcar reembolso",
+    "preparePayment": "Preparar pago",
+    "continuePayment": "Continuar al pago seguro",
+    "paymentStatus": "Estado del pago",
+    "platformFee": "Comisión de la plataforma",
+    "providerNet": "Importe previsto para el profesional",
+    "paymentUnavailable": "El pago seguro no está disponible en este momento.",
+    "paymentTerms": "Consultar pagos, cancelaciones y reembolsos"
+  },
+  "Payouts": {
+    "title": "Cobros del profesional",
+    "description": "Completa la verificación alojada por Stripe antes de que Vila pueda enviarte pagos. Vila nunca recopila tus datos bancarios.",
+    "loading": "Cargando el estado de cobros…",
+    "unavailable": "La configuración de cobros no está disponible en este momento.",
+    "notStarted": "La configuración de cobros aún no ha comenzado.",
+    "ready": "Tu cuenta está lista para aceptar pagos y recibir cobros.",
+    "incomplete": "Stripe todavía necesita información antes de activar los pagos.",
+    "charges": "Aceptar pagos",
+    "payouts": "Recibir cobros",
+    "details": "Identidad y datos profesionales",
+    "start": "Iniciar configuración segura con Stripe",
+    "continue": "Continuar configuración con Stripe"
+  },
+  "PaymentAdministration": {
+    "title": "Pagos y disputas",
+    "description": "Supervisa pagos protegidos, disputas y reembolsos íntegros.",
+    "loading": "Cargando pagos…",
+    "error": "No se pudieron cargar o actualizar los pagos.",
+    "empty": "No hay pagos protegidos.",
+    "booking": "Reserva",
+    "gross": "Total",
+    "fee": "Comisión de Vila",
+    "providerNet": "Importe del profesional",
+    "refund": "Reembolsar",
+    "refundConfirm": "¿Confirmar el reembolso íntegro al método de pago original?",
+    "refundPending": "El reembolso se ha enviado a Stripe.",
+    "state": "Estado"
   },
   "Reviews": {
     "title": "Reseñas",

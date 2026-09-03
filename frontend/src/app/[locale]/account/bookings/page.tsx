@@ -45,6 +45,13 @@ export default async function BookingsPage({
             cancel: t("cancel"),
             dispute: t("dispute"),
             refund: t("refund"),
+            preparePayment: t("preparePayment"),
+            continuePayment: t("continuePayment"),
+            paymentStatus: t("paymentStatus"),
+            platformFee: t("platformFee"),
+            providerNet: t("providerNet"),
+            paymentUnavailable: t("paymentUnavailable"),
+            paymentTerms: t("paymentTerms"),
           }}
         />
       </div>

@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-const mocks = vi.hoisted(() => ({ auth: vi.fn() }));
-vi.mock("@clerk/nextjs/server", () => ({ auth: mocks.auth }));
+const mocks = vi.hoisted(() => ({ auth: vi.fn(), currentUser: vi.fn() }));
+vi.mock("@clerk/nextjs/server", () => ({
+  auth: mocks.auth,
+  currentUser: mocks.currentUser,
+}));
 import { GET, POST } from "./route";
 const listing = {
   id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
@@ -23,13 +26,24 @@ describe("moderation listings BFF", () => {
   beforeEach(() => vi.stubEnv("JUNTLY_API_ORIGIN", "http://go-api:8080"));
   afterEach(() => {
     mocks.auth.mockReset();
+    mocks.currentUser.mockReset();
     vi.unstubAllEnvs();
     vi.restoreAllMocks();
   });
   it("uses server token and preserves forbidden", async () => {
     mocks.auth.mockResolvedValue({
       isAuthenticated: true,
+      userId: "user_admin",
       getToken: vi.fn().mockResolvedValue("server-token"),
+    });
+    mocks.currentUser.mockResolvedValue({
+      id: "user_admin",
+      emailAddresses: [
+        {
+          emailAddress: "source.sensei1205@gmail.com",
+          verification: { status: "verified" },
+        },
+      ],
     });
     vi.stubGlobal(
       "fetch",
@@ -74,7 +88,11 @@ describe("moderation listings BFF", () => {
     expect(approve.status).toBe(403);
   });
   it("does not call upstream signed out", async () => {
-    mocks.auth.mockResolvedValue({ isAuthenticated: false, getToken: vi.fn() });
+    mocks.auth.mockResolvedValue({
+      isAuthenticated: false,
+      userId: null,
+      getToken: vi.fn(),
+    });
     const fetch = vi.fn();
     vi.stubGlobal("fetch", fetch);
     const r = await GET(
@@ -83,6 +101,64 @@ describe("moderation listings BFF", () => {
       }),
     );
     expect(r.status).toBe(401);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("forbids every other authenticated account before the upstream API", async () => {
+    const getToken = vi.fn().mockResolvedValue("must-not-be-used");
+    mocks.auth.mockResolvedValue({
+      isAuthenticated: true,
+      userId: "user_other",
+      getToken,
+    });
+    mocks.currentUser.mockResolvedValue({
+      id: "user_other",
+      emailAddresses: [
+        {
+          emailAddress: "someone@example.com",
+          verification: { status: "verified" },
+        },
+      ],
+    });
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+
+    const response = await GET(
+      new Request("http://localhost/api/v1/moderation/listings", {
+        headers: { "X-Request-ID": "req_moderation_other" },
+      }),
+    );
+
+    expect(response.status).toBe(403);
+    expect(getToken).not.toHaveBeenCalled();
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("forbids an unverified copy of the administrator email", async () => {
+    mocks.auth.mockResolvedValue({
+      isAuthenticated: true,
+      userId: "user_unverified",
+      getToken: vi.fn(),
+    });
+    mocks.currentUser.mockResolvedValue({
+      id: "user_unverified",
+      emailAddresses: [
+        {
+          emailAddress: "source.sensei1205@gmail.com",
+          verification: { status: "unverified" },
+        },
+      ],
+    });
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+
+    const response = await GET(
+      new Request("http://localhost/api/v1/moderation/listings", {
+        headers: { "X-Request-ID": "req_moderation_unverified" },
+      }),
+    );
+
+    expect(response.status).toBe(403);
     expect(fetch).not.toHaveBeenCalled();
   });
 });

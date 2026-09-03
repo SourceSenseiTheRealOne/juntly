@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/authn"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/health"
@@ -35,7 +36,7 @@ func (h HealthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(h.service.Check(requestID))
 }
 
-func NewRouter(service health.Service, readinessService ReadinessService, verifier authn.Verifier, reconcileService ReconcileService, accountService AccountService, referenceService ReferenceService, providerProfileService ProviderProfileService, listingService ListingService, moderationListingService ModerationListingService, publicDiscoveryService PublicDiscoveryService, contactChannelService ContactChannelService, contactRevealService ContactRevealService, messagingService MessagingService, quotationService QuotationService, bookingService BookingService, reviewService ReviewService, entitlementService EntitlementService, administrationService AdministrationService) http.Handler {
+func NewRouter(service health.Service, readinessService ReadinessService, verifier authn.Verifier, reconcileService ReconcileService, accountService AccountService, referenceService ReferenceService, providerProfileService ProviderProfileService, listingService ListingService, moderationListingService ModerationListingService, publicDiscoveryService PublicDiscoveryService, contactChannelService ContactChannelService, contactRevealService ContactRevealService, messagingService MessagingService, quotationService QuotationService, bookingService BookingService, reviewService ReviewService, entitlementService EntitlementService, administrationService AdministrationService, paymentService PaymentService) http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("/api/v1/health", NewHealthHandler(service))
 	mux.Handle("/api/v1/ready", NewReadinessHandler(readinessService))
@@ -60,8 +61,10 @@ func NewRouter(service health.Service, readinessService ReadinessService, verifi
 	mux.Handle("/api/v1/me/quotation-requests", authn.RequireVerifiedIdentity(verifier, NewQuotationHandler(quotationService)))
 	mux.Handle("/api/v1/me/quotation-requests/", authn.RequireVerifiedIdentity(verifier, NewQuotationHandler(quotationService)))
 	mux.Handle("/api/v1/me/quotation-opportunities", authn.RequireVerifiedIdentity(verifier, NewQuotationHandler(quotationService)))
-	mux.Handle("/api/v1/me/bookings", authn.RequireVerifiedIdentity(verifier, NewBookingHandler(bookingService)))
-	mux.Handle("/api/v1/me/bookings/", authn.RequireVerifiedIdentity(verifier, NewBookingHandler(bookingService)))
+	bookingHandler := NewBookingHandler(bookingService)
+	paymentHandler := NewPaymentHandler(paymentService)
+	mux.Handle("/api/v1/me/bookings", authn.RequireVerifiedIdentity(verifier, bookingHandler))
+	mux.Handle("/api/v1/me/bookings/", authn.RequireVerifiedIdentity(verifier, dispatchCheckout(paymentHandler, bookingHandler)))
 	mux.Handle("/api/v1/me/reviews", authn.RequireVerifiedIdentity(verifier, NewReviewHandler(reviewService)))
 	mux.Handle("/api/v1/me/reviews/", authn.RequireVerifiedIdentity(verifier, NewReviewHandler(reviewService)))
 	mux.Handle("/api/v1/public/providers/", NewReviewHandler(reviewService))
@@ -71,7 +74,22 @@ func NewRouter(service health.Service, readinessService ReadinessService, verifi
 	mux.Handle("/api/v1/me/promotions", authn.RequireVerifiedIdentity(verifier, NewEntitlementHandler(entitlementService)))
 	mux.Handle("/api/v1/admin/dashboard", authn.RequireVerifiedIdentity(verifier, NewAdministrationHandler(administrationService)))
 	mux.Handle("/api/v1/admin/moderation", authn.RequireVerifiedIdentity(verifier, NewAdministrationHandler(administrationService)))
+	mux.Handle("/api/v1/me/payments", authn.RequireVerifiedIdentity(verifier, paymentHandler))
+	mux.Handle("/api/v1/me/payout-account", authn.RequireVerifiedIdentity(verifier, paymentHandler))
+	mux.Handle("/api/v1/admin/payments/", authn.RequireVerifiedIdentity(verifier, paymentHandler))
+	mux.Handle("/api/v1/admin/payments", authn.RequireVerifiedIdentity(verifier, paymentHandler))
+	mux.Handle("/api/v1/payments/webhooks/stripe", NewStripeWebhookHandler(paymentService))
 	return mux
+}
+
+func dispatchCheckout(payment, booking http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(strings.TrimSuffix(r.URL.Path, "/"), "/checkout") {
+			payment.ServeHTTP(w, r)
+			return
+		}
+		booking.ServeHTTP(w, r)
+	})
 }
 
 func requestIDFromHeader(value string) string {

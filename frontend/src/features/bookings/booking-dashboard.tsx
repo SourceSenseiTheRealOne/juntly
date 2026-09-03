@@ -2,6 +2,11 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import type { Booking, BookingState } from "@/shared/api/generated";
 import { AvailableListingSelect } from "@/features/listings/available-listing-select";
+import {
+  type PaymentOrder,
+  validCheckoutResult,
+  validPaymentOrders,
+} from "@/features/payments/payment-bff";
 export type BookingsCopy = {
   title: string;
   description: string;
@@ -30,6 +35,13 @@ export type BookingsCopy = {
   cancel: string;
   dispute: string;
   refund: string;
+  preparePayment: string;
+  continuePayment: string;
+  paymentStatus: string;
+  platformFee: string;
+  providerNet: string;
+  paymentUnavailable: string;
+  paymentTerms: string;
 };
 export function BookingDashboard({
   copy,
@@ -41,6 +53,9 @@ export function BookingDashboard({
   const [items, setItems] = useState<Booking[]>([]),
     [loading, setLoading] = useState(true),
     [failed, setFailed] = useState(false),
+    [paymentFailed, setPaymentFailed] = useState(false),
+    [orders, setOrders] = useState<PaymentOrder[]>([]),
+    [checkoutURLs, setCheckoutURLs] = useState<Record<string, string>>({}),
     [creating, setCreating] = useState(false),
     [sourceType, setSourceType] = useState<"proposal" | "listing" | "direct">(
       "proposal",
@@ -59,6 +74,15 @@ export function BookingDashboard({
       })
       .finally(() => {
         if (active) setLoading(false);
+      });
+    void fetch("/api/v1/me/payments")
+      .then(async (response) => {
+        const value: unknown = await response.json();
+        if (!response.ok || !validPaymentOrders(value)) throw new Error();
+        if (active) setOrders(value.orders);
+      })
+      .catch(() => {
+        if (active) setPaymentFailed(true);
       });
     return () => {
       active = false;
@@ -116,6 +140,31 @@ export function BookingDashboard({
       setFailed(true);
     }
   }
+  async function preparePayment(item: Booking) {
+    setPaymentFailed(false);
+    try {
+      const response = await fetch(`/api/v1/me/bookings/${item.id}/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          idempotencyKey: `checkout-${item.id}`,
+          locale,
+        }),
+      });
+      const value: unknown = await response.json();
+      if (!response.ok || !validCheckoutResult(value)) throw new Error();
+      setOrders((current) => [
+        value.order,
+        ...current.filter((order) => order.id !== value.order.id),
+      ]);
+      setCheckoutURLs((current) => ({
+        ...current,
+        [value.order.id]: value.url,
+      }));
+    } catch {
+      setPaymentFailed(true);
+    }
+  }
   return (
     <section aria-labelledby="bookings-title">
       <div className="market-page-header">
@@ -131,6 +180,11 @@ export function BookingDashboard({
       {failed ? (
         <p role="alert" className="market-alert mt-6">
           {copy.error}
+        </p>
+      ) : null}
+      {paymentFailed ? (
+        <p role="alert" className="market-alert mt-6">
+          {copy.paymentUnavailable}
         </p>
       ) : null}
       <button
@@ -195,39 +249,99 @@ export function BookingDashboard({
         {!loading && items.length === 0 ? (
           <p className="market-empty xl:col-span-2">{copy.empty}</p>
         ) : (
-          items.map((item) => (
-            <article className="market-card p-5 sm:p-6" key={item.id}>
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <span className="market-chip text-ink">{item.state}</span>
-                  <time
-                    className="mt-1 block text-sm text-muted"
-                    dateTime={item.scheduledAt}
-                  >
-                    {new Date(item.scheduledAt).toLocaleString()}
-                  </time>
-                  <p className="mt-2 text-sm text-muted">
-                    {item.privateLocation}
-                  </p>
-                  <p className="mt-2 font-semibold">
-                    {copy.price}: € {(item.agreedPriceMinor / 100).toFixed(2)}
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {nextStates(item.state).map((state) => (
-                    <button
-                      className="market-button-secondary"
-                      type="button"
-                      key={state}
-                      onClick={() => void transition(item, state)}
+          items.map((item) => {
+            const order = orders.find(
+              (candidate) => candidate.bookingId === item.id,
+            );
+            const checkoutURL = order ? checkoutURLs[order.id] : undefined;
+            return (
+              <article className="market-card p-5 sm:p-6" key={item.id}>
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <span className="market-chip text-ink">{item.state}</span>
+                    <time
+                      className="mt-1 block text-sm text-muted"
+                      dateTime={item.scheduledAt}
                     >
-                      {label(state, copy)}
-                    </button>
-                  ))}
+                      {new Date(item.scheduledAt).toLocaleString()}
+                    </time>
+                    <p className="mt-2 text-sm text-muted">
+                      {item.privateLocation}
+                    </p>
+                    <p className="mt-2 font-semibold">
+                      {copy.price}: € {(item.agreedPriceMinor / 100).toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {nextStates(item.state).map((state) => (
+                      <button
+                        className="market-button-secondary"
+                        type="button"
+                        key={state}
+                        onClick={() => void transition(item, state)}
+                      >
+                        {label(state, copy)}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))
+                {item.state === "confirmed" || item.state === "scheduled" ? (
+                  <div className="mt-5 border-t border-line pt-5">
+                    <a
+                      className="text-sm font-semibold text-accent underline underline-offset-4"
+                      href={`/${locale}/legal/payment-policy`}
+                    >
+                      {copy.paymentTerms}
+                    </a>
+                    {order ? (
+                      <dl className="grid gap-2 text-sm sm:grid-cols-2">
+                        <div>
+                          <dt className="text-muted">{copy.paymentStatus}</dt>
+                          <dd className="font-semibold">{order.state}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-muted">{copy.price}</dt>
+                          <dd className="font-semibold">
+                            € {(order.grossMinor / 100).toFixed(2)}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-muted">{copy.platformFee}</dt>
+                          <dd className="font-semibold">
+                            € {(order.platformFeeMinor / 100).toFixed(2)}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-muted">{copy.providerNet}</dt>
+                          <dd className="font-semibold">
+                            € {(order.providerNetMinor / 100).toFixed(2)}
+                          </dd>
+                        </div>
+                      </dl>
+                    ) : null}
+                    {checkoutURL ? (
+                      <a
+                        className="market-button mt-4"
+                        href={checkoutURL}
+                        rel="noreferrer"
+                      >
+                        {copy.continuePayment}
+                      </a>
+                    ) : order?.state === "paid" ||
+                      order?.state === "refunded" ? null : (
+                      <button
+                        className="market-button mt-4"
+                        type="button"
+                        onClick={() => void preparePayment(item)}
+                      >
+                        {copy.preparePayment}
+                      </button>
+                    )}
+                  </div>
+                ) : null}
+              </article>
+            );
+          })
         )}
       </div>
     </section>
