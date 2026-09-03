@@ -100,7 +100,10 @@
       "manageQuotations": "Requests and proposals",
       "manageBookings": "Manage bookings",
       "manageReviews": "Reviews",
-      "manageEntitlements": "Plans and promotions"
+      "manageEntitlements": "Plans and promotions",
+      "manageModeration": "Approve listings",
+      "managePayouts": "Payments and payouts",
+      "managePaymentsAdmin": "Manage payments and disputes"
     }
   },
   "ProviderProfile": {
@@ -311,7 +314,43 @@
     "complete": "Complete",
     "cancel": "Cancel",
     "dispute": "Open dispute",
-    "refund": "Mark refunded"
+    "refund": "Mark refunded",
+    "preparePayment": "Prepare payment",
+    "continuePayment": "Continue to secure payment",
+    "paymentStatus": "Payment status",
+    "platformFee": "Platform fee",
+    "providerNet": "Expected provider payout",
+    "paymentUnavailable": "Secure payment is currently unavailable.",
+    "paymentTerms": "Review payment, cancellation, and refund terms"
+  },
+  "Payouts": {
+    "title": "Provider payouts",
+    "description": "Complete Stripe-hosted verification before Vila can route customer payments to you. Vila never collects your bank details.",
+    "loading": "Loading payout readiness…",
+    "unavailable": "Payout onboarding is currently unavailable.",
+    "notStarted": "Payout onboarding has not started.",
+    "ready": "Your account is ready to accept payments and receive payouts.",
+    "incomplete": "Stripe still needs information before payments can be enabled.",
+    "charges": "Accept payments",
+    "payouts": "Receive payouts",
+    "details": "Identity and business details",
+    "start": "Start secure Stripe onboarding",
+    "continue": "Continue Stripe onboarding"
+  },
+  "PaymentAdministration": {
+    "title": "Payments and disputes",
+    "description": "Monitor protected payments, disputes, and full refunds.",
+    "loading": "Loading payments…",
+    "error": "Payments could not be loaded or updated.",
+    "empty": "There are no protected payments.",
+    "booking": "Booking",
+    "gross": "Total",
+    "fee": "Vila fee",
+    "providerNet": "Provider amount",
+    "refund": "Refund",
+    "refundConfirm": "Confirm the full refund to the original payment method?",
+    "refundPending": "The refund was submitted to Stripe.",
+    "state": "State"
   },
   "Reviews": {
     "title": "Reviews",

@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  currentUserIsSoleAdministrator: vi.fn(),
   getTranslations: vi.fn(),
   requireAuthenticatedUser: vi.fn(),
 }));
@@ -11,6 +12,9 @@ vi.mock("next-intl/server", () => ({
 }));
 vi.mock("@/features/auth/require-session", () => ({
   requireAuthenticatedUser: mocks.requireAuthenticatedUser,
+}));
+vi.mock("@/features/auth/sole-administrator", () => ({
+  currentUserIsSoleAdministrator: mocks.currentUserIsSoleAdministrator,
 }));
 vi.mock("@/features/account/account-capabilities-card", () => ({
   AccountCapabilitiesCard: ({ copy }: { copy: { providerLabel: string } }) => (
@@ -22,6 +26,7 @@ import AccountPage, { dynamic } from "./page";
 
 afterEach(() => {
   mocks.getTranslations.mockReset();
+  mocks.currentUserIsSoleAdministrator.mockReset();
   mocks.requireAuthenticatedUser.mockReset();
 });
 
@@ -32,6 +37,7 @@ describe("AccountPage", () => {
 
   it("requires a verified session before rendering the localized account confirmation", async () => {
     mocks.requireAuthenticatedUser.mockResolvedValue("user_verified_subject");
+    mocks.currentUserIsSoleAdministrator.mockResolvedValue(true);
     mocks.getTranslations.mockResolvedValue(
       (key: string) =>
         ({
@@ -46,6 +52,9 @@ describe("AccountPage", () => {
             "Não foi possível carregar as capacidades da conta.",
           "capabilities.loading": "A carregar as capacidades da conta…",
           "capabilities.manageProvider": "Gerir perfil de prestador",
+          "capabilities.manageModeration": "Aprovar anúncios",
+          "capabilities.managePaymentsAdmin": "Gerir pagamentos e disputas",
+          "capabilities.managePayouts": "Pagamentos e recebimentos",
           "capabilities.providerDescription":
             "Ative esta opção para preparar o seu perfil de prestador.",
           "capabilities.providerLabel": "Disponibilizar serviços",
@@ -71,5 +80,11 @@ describe("AccountPage", () => {
     expect(screen.getByTestId("account-capabilities-card")).toHaveTextContent(
       "Disponibilizar serviços",
     );
+    expect(
+      screen.getByRole("link", { name: "Aprovar anúncios" }),
+    ).toHaveAttribute("href", "/pt-PT/admin/listings");
+    expect(
+      screen.getByRole("link", { name: "Gerir pagamentos e disputas" }),
+    ).toHaveAttribute("href", "/pt-PT/admin/payments");
   });
 });

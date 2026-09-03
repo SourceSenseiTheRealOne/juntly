@@ -243,7 +243,10 @@ export function PublicDiscovery({
           ]}
           placeholder={copy.anyMode}
         />
-        <button type="submit" className="market-button w-full lg:col-start-6">
+        <button
+          type="submit"
+          className="market-button market-button-compact justify-self-start lg:col-start-6 lg:justify-self-end"
+        >
           {copy.applyFilters}
         </button>
       </form>

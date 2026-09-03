@@ -194,6 +194,56 @@ export type BookingsResponse = {
     bookings: Array<Booking>;
 };
 
+export type BeginCheckout = {
+    idempotencyKey: string;
+    locale: 'pt-PT' | 'en' | 'es';
+};
+
+export type PaymentState = 'pending_checkout' | 'checkout_created' | 'processing' | 'paid' | 'failed' | 'refund_pending' | 'refunded' | 'disputed' | 'dispute_won' | 'dispute_lost' | 'cancelled';
+
+export type PaymentOrder = {
+    id: string;
+    bookingId: string;
+    customerId: string;
+    providerId: string;
+    state: PaymentState;
+    grossMinor: number;
+    platformFeeMinor: number;
+    providerNetMinor: number;
+    currency: 'EUR';
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type PaymentOrders = {
+    orders: Array<PaymentOrder>;
+};
+
+export type CheckoutResult = {
+    order: PaymentOrder;
+    url: string;
+};
+
+export type PayoutAccount = {
+    detailsSubmitted: boolean;
+    chargesEnabled: boolean;
+    payoutsEnabled: boolean;
+    updatedAt: string;
+};
+
+export type PayoutOnboardingRequest = {
+    locale: 'pt-PT' | 'en' | 'es';
+};
+
+export type PayoutOnboardingResult = {
+    account: PayoutAccount;
+    url: string;
+};
+
+export type RefundPayment = {
+    idempotencyKey: string;
+};
+
 export type CreateQuotationRequest = {
     title: string;
     description: string;
@@ -2365,6 +2415,280 @@ export type TransitionBookingResponses = {
 };
 
 export type TransitionBookingResponse = TransitionBookingResponses[keyof TransitionBookingResponses];
+
+export type BeginBookingCheckoutData = {
+    body: BeginCheckout;
+    path: {
+        bookingId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/bookings/{bookingId}/checkout';
+};
+
+export type BeginBookingCheckoutErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested public resource is not available.
+     */
+    404: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type BeginBookingCheckoutError = BeginBookingCheckoutErrors[keyof BeginBookingCheckoutErrors];
+
+export type BeginBookingCheckoutResponses = {
+    /**
+     * Durable payment order and hosted Checkout URL
+     */
+    201: CheckoutResult;
+};
+
+export type BeginBookingCheckoutResponse = BeginBookingCheckoutResponses[keyof BeginBookingCheckoutResponses];
+
+export type ListMyPaymentsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/payments';
+};
+
+export type ListMyPaymentsErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListMyPaymentsError = ListMyPaymentsErrors[keyof ListMyPaymentsErrors];
+
+export type ListMyPaymentsResponses = {
+    /**
+     * Participant payment orders
+     */
+    200: PaymentOrders;
+};
+
+export type ListMyPaymentsResponse = ListMyPaymentsResponses[keyof ListMyPaymentsResponses];
+
+export type GetMyPayoutAccountData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/payout-account';
+};
+
+export type GetMyPayoutAccountErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested public resource is not available.
+     */
+    404: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetMyPayoutAccountError = GetMyPayoutAccountErrors[keyof GetMyPayoutAccountErrors];
+
+export type GetMyPayoutAccountResponses = {
+    /**
+     * Provider payout readiness
+     */
+    200: PayoutAccount;
+};
+
+export type GetMyPayoutAccountResponse = GetMyPayoutAccountResponses[keyof GetMyPayoutAccountResponses];
+
+export type BeginMyPayoutOnboardingData = {
+    body: PayoutOnboardingRequest;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/payout-account';
+};
+
+export type BeginMyPayoutOnboardingErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type BeginMyPayoutOnboardingError = BeginMyPayoutOnboardingErrors[keyof BeginMyPayoutOnboardingErrors];
+
+export type BeginMyPayoutOnboardingResponses = {
+    /**
+     * Payout readiness and one-time hosted onboarding URL
+     */
+    200: PayoutOnboardingResult;
+};
+
+export type BeginMyPayoutOnboardingResponse = BeginMyPayoutOnboardingResponses[keyof BeginMyPayoutOnboardingResponses];
+
+export type RefundPaymentOrderData = {
+    body: RefundPayment;
+    path: {
+        orderId: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/payments/{orderId}/refund';
+};
+
+export type RefundPaymentOrderErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested public resource is not available.
+     */
+    404: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type RefundPaymentOrderError = RefundPaymentOrderErrors[keyof RefundPaymentOrderErrors];
+
+export type RefundPaymentOrderResponses = {
+    /**
+     * Refund-pending payment order
+     */
+    200: PaymentOrder;
+};
+
+export type RefundPaymentOrderResponse = RefundPaymentOrderResponses[keyof RefundPaymentOrderResponses];
+
+export type ListAdministrativePaymentsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/payments';
+};
+
+export type ListAdministrativePaymentsErrors = {
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListAdministrativePaymentsError = ListAdministrativePaymentsErrors[keyof ListAdministrativePaymentsErrors];
+
+export type ListAdministrativePaymentsResponses = {
+    /**
+     * Latest payment orders
+     */
+    200: PaymentOrders;
+};
+
+export type ListAdministrativePaymentsResponse = ListAdministrativePaymentsResponses[keyof ListAdministrativePaymentsResponses];
+
+export type ReceiveStripeWebhookData = {
+    body: {
+        [key: string]: unknown;
+    };
+    headers: {
+        'Stripe-Signature': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/payments/webhooks/stripe';
+};
+
+export type ReceiveStripeWebhookErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ReceiveStripeWebhookError = ReceiveStripeWebhookErrors[keyof ReceiveStripeWebhookErrors];
+
+export type ReceiveStripeWebhookResponses = {
+    /**
+     * Event received idempotently
+     */
+    200: {
+        received: true;
+    };
+};
+
+export type ReceiveStripeWebhookResponse = ReceiveStripeWebhookResponses[keyof ReceiveStripeWebhookResponses];
 
 export type CreateBookingReviewData = {
     body: CreateReview;

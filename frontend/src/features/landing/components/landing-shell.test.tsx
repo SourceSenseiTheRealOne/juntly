@@ -15,7 +15,7 @@ const copy = {
   visionTitle: "Criada para ligações locais reais",
   visionDescription:
     "Descoberta, contacto e confiança sem retirar a escolha às pessoas.",
-  showcaseTitle: "Fazer local, mais simples.",
+  showcaseTitle: "Comércio local, mais simples.",
   howTitle: "Da necessidade à solução, sem complicações.",
   howDescription: "Um percurso claro.",
   discoverBlock: { title: "Procure", description: "Encontre serviços." },

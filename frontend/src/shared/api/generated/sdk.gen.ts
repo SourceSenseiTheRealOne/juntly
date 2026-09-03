@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AcceptQuotationProposalData, AcceptQuotationProposalErrors, AcceptQuotationProposalResponses, ApproveListingData, ApproveListingErrors, ApproveListingResponses, ArchiveListingData, ArchiveListingErrors, ArchiveListingResponses, CreateBookingData, CreateBookingErrors, CreateBookingResponses, CreateBookingReviewData, CreateBookingReviewErrors, CreateBookingReviewResponses, CreateListingData, CreateListingErrors, CreateListingMediaUploadIntentData, CreateListingMediaUploadIntentErrors, CreateListingMediaUploadIntentResponses, CreateListingResponses, CreateQuotationRequestData, CreateQuotationRequestErrors, CreateQuotationRequestResponses, GetAccountCapabilitiesData, GetAccountCapabilitiesErrors, GetAccountCapabilitiesResponses, GetAdministrationDashboardData, GetAdministrationDashboardErrors, GetAdministrationDashboardResponses, GetContactChannelStatusesData, GetContactChannelStatusesErrors, GetContactChannelStatusesResponses, GetEntitlementCatalogData, GetEntitlementCatalogErrors, GetEntitlementCatalogResponses, GetHealthData, GetHealthErrors, GetHealthResponses, GetMyBookingData, GetMyBookingErrors, GetMyBookingResponses, GetMyEntitlementsData, GetMyEntitlementsErrors, GetMyEntitlementsResponses, GetMyListingData, GetMyListingErrors, GetMyListingResponses, GetNotificationPreferencesData, GetNotificationPreferencesErrors, GetNotificationPreferencesResponses, GetProviderProfileData, GetProviderProfileErrors, GetProviderProfileResponses, GetProviderRatingData, GetProviderRatingErrors, GetProviderRatingResponses, GetPublicListingData, GetPublicListingErrors, GetPublicListingResponses, GetReadinessData, GetReadinessErrors, GetReadinessResponses, ListConversationMessagesData, ListConversationMessagesErrors, ListConversationMessagesResponses, ListConversationsData, ListConversationsErrors, ListConversationsResponses, ListLocalitiesData, ListLocalitiesErrors, ListLocalitiesResponses, ListMyBookingsData, ListMyBookingsErrors, ListMyBookingsResponses, ListMyListingsData, ListMyListingsErrors, ListMyListingsResponses, ListMyProviderReviewsData, ListMyProviderReviewsErrors, ListMyProviderReviewsResponses, ListMyQuotationRequestsData, ListMyQuotationRequestsErrors, ListMyQuotationRequestsResponses, ListNotificationsData, ListNotificationsErrors, ListNotificationsResponses, ListPendingModerationListingsData, ListPendingModerationListingsErrors, ListPendingModerationListingsResponses, ListQuotationOpportunitiesData, ListQuotationOpportunitiesErrors, ListQuotationOpportunitiesResponses, ListQuotationProposalsData, ListQuotationProposalsErrors, ListQuotationProposalsResponses, ListServiceCategoriesData, ListServiceCategoriesErrors, ListServiceCategoriesResponses, ListSpokenLanguagesData, ListSpokenLanguagesErrors, ListSpokenLanguagesResponses, MarkNotificationReadData, MarkNotificationReadErrors, MarkNotificationReadResponses, ModerateAdministrativeTargetData, ModerateAdministrativeTargetErrors, ModerateAdministrativeTargetResponses, PauseListingData, PauseListingErrors, PauseListingResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses, RejectListingData, RejectListingErrors, RejectListingResponses, ReplaceContactChannelData, ReplaceContactChannelErrors, ReplaceContactChannelResponses, ReplaceConversationBlockData, ReplaceConversationBlockErrors, ReplaceConversationBlockResponses, ReplaceMyDraftListingData, ReplaceMyDraftListingErrors, ReplaceMyDraftListingResponses, ReplaceNotificationPreferencesData, ReplaceNotificationPreferencesErrors, ReplaceNotificationPreferencesResponses, ReplaceProviderProfileData, ReplaceProviderProfileErrors, ReplaceProviderProfileResponses, ReportConversationData, ReportConversationErrors, ReportConversationResponses, RequestListingPromotionData, RequestListingPromotionErrors, RequestListingPromotionResponses, RequestSubscriptionData, RequestSubscriptionErrors, RequestSubscriptionResponses, RespondToReviewData, RespondToReviewErrors, RespondToReviewResponses, RevealListingContactData, RevealListingContactErrors, RevealListingContactResponses, SearchPublicListingsData, SearchPublicListingsErrors, SearchPublicListingsResponses, SendConversationMessageData, SendConversationMessageErrors, SendConversationMessageResponses, StartListingConversationData, StartListingConversationErrors, StartListingConversationResponses, SubmitListingForReviewData, SubmitListingForReviewErrors, SubmitListingForReviewResponses, SubmitQuotationProposalData, SubmitQuotationProposalErrors, SubmitQuotationProposalResponses, TransitionBookingData, TransitionBookingErrors, TransitionBookingResponses, UpdateAccountCapabilitiesData, UpdateAccountCapabilitiesErrors, UpdateAccountCapabilitiesResponses } from './types.gen';
+import type { AcceptQuotationProposalData, AcceptQuotationProposalErrors, AcceptQuotationProposalResponses, ApproveListingData, ApproveListingErrors, ApproveListingResponses, ArchiveListingData, ArchiveListingErrors, ArchiveListingResponses, BeginBookingCheckoutData, BeginBookingCheckoutErrors, BeginBookingCheckoutResponses, BeginMyPayoutOnboardingData, BeginMyPayoutOnboardingErrors, BeginMyPayoutOnboardingResponses, CreateBookingData, CreateBookingErrors, CreateBookingResponses, CreateBookingReviewData, CreateBookingReviewErrors, CreateBookingReviewResponses, CreateListingData, CreateListingErrors, CreateListingMediaUploadIntentData, CreateListingMediaUploadIntentErrors, CreateListingMediaUploadIntentResponses, CreateListingResponses, CreateQuotationRequestData, CreateQuotationRequestErrors, CreateQuotationRequestResponses, GetAccountCapabilitiesData, GetAccountCapabilitiesErrors, GetAccountCapabilitiesResponses, GetAdministrationDashboardData, GetAdministrationDashboardErrors, GetAdministrationDashboardResponses, GetContactChannelStatusesData, GetContactChannelStatusesErrors, GetContactChannelStatusesResponses, GetEntitlementCatalogData, GetEntitlementCatalogErrors, GetEntitlementCatalogResponses, GetHealthData, GetHealthErrors, GetHealthResponses, GetMyBookingData, GetMyBookingErrors, GetMyBookingResponses, GetMyEntitlementsData, GetMyEntitlementsErrors, GetMyEntitlementsResponses, GetMyListingData, GetMyListingErrors, GetMyListingResponses, GetMyPayoutAccountData, GetMyPayoutAccountErrors, GetMyPayoutAccountResponses, GetNotificationPreferencesData, GetNotificationPreferencesErrors, GetNotificationPreferencesResponses, GetProviderProfileData, GetProviderProfileErrors, GetProviderProfileResponses, GetProviderRatingData, GetProviderRatingErrors, GetProviderRatingResponses, GetPublicListingData, GetPublicListingErrors, GetPublicListingResponses, GetReadinessData, GetReadinessErrors, GetReadinessResponses, ListAdministrativePaymentsData, ListAdministrativePaymentsErrors, ListAdministrativePaymentsResponses, ListConversationMessagesData, ListConversationMessagesErrors, ListConversationMessagesResponses, ListConversationsData, ListConversationsErrors, ListConversationsResponses, ListLocalitiesData, ListLocalitiesErrors, ListLocalitiesResponses, ListMyBookingsData, ListMyBookingsErrors, ListMyBookingsResponses, ListMyListingsData, ListMyListingsErrors, ListMyListingsResponses, ListMyPaymentsData, ListMyPaymentsErrors, ListMyPaymentsResponses, ListMyProviderReviewsData, ListMyProviderReviewsErrors, ListMyProviderReviewsResponses, ListMyQuotationRequestsData, ListMyQuotationRequestsErrors, ListMyQuotationRequestsResponses, ListNotificationsData, ListNotificationsErrors, ListNotificationsResponses, ListPendingModerationListingsData, ListPendingModerationListingsErrors, ListPendingModerationListingsResponses, ListQuotationOpportunitiesData, ListQuotationOpportunitiesErrors, ListQuotationOpportunitiesResponses, ListQuotationProposalsData, ListQuotationProposalsErrors, ListQuotationProposalsResponses, ListServiceCategoriesData, ListServiceCategoriesErrors, ListServiceCategoriesResponses, ListSpokenLanguagesData, ListSpokenLanguagesErrors, ListSpokenLanguagesResponses, MarkNotificationReadData, MarkNotificationReadErrors, MarkNotificationReadResponses, ModerateAdministrativeTargetData, ModerateAdministrativeTargetErrors, ModerateAdministrativeTargetResponses, PauseListingData, PauseListingErrors, PauseListingResponses, ReceiveStripeWebhookData, ReceiveStripeWebhookErrors, ReceiveStripeWebhookResponses, ReconcileInternalUserData, ReconcileInternalUserErrors, ReconcileInternalUserResponses, RefundPaymentOrderData, RefundPaymentOrderErrors, RefundPaymentOrderResponses, RejectListingData, RejectListingErrors, RejectListingResponses, ReplaceContactChannelData, ReplaceContactChannelErrors, ReplaceContactChannelResponses, ReplaceConversationBlockData, ReplaceConversationBlockErrors, ReplaceConversationBlockResponses, ReplaceMyDraftListingData, ReplaceMyDraftListingErrors, ReplaceMyDraftListingResponses, ReplaceNotificationPreferencesData, ReplaceNotificationPreferencesErrors, ReplaceNotificationPreferencesResponses, ReplaceProviderProfileData, ReplaceProviderProfileErrors, ReplaceProviderProfileResponses, ReportConversationData, ReportConversationErrors, ReportConversationResponses, RequestListingPromotionData, RequestListingPromotionErrors, RequestListingPromotionResponses, RequestSubscriptionData, RequestSubscriptionErrors, RequestSubscriptionResponses, RespondToReviewData, RespondToReviewErrors, RespondToReviewResponses, RevealListingContactData, RevealListingContactErrors, RevealListingContactResponses, SearchPublicListingsData, SearchPublicListingsErrors, SearchPublicListingsResponses, SendConversationMessageData, SendConversationMessageErrors, SendConversationMessageResponses, StartListingConversationData, StartListingConversationErrors, StartListingConversationResponses, SubmitListingForReviewData, SubmitListingForReviewErrors, SubmitListingForReviewResponses, SubmitQuotationProposalData, SubmitQuotationProposalErrors, SubmitQuotationProposalResponses, TransitionBookingData, TransitionBookingErrors, TransitionBookingResponses, UpdateAccountCapabilitiesData, UpdateAccountCapabilitiesErrors, UpdateAccountCapabilitiesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -485,6 +485,84 @@ export const getMyBooking = <ThrowOnError extends boolean = false>(options: Opti
 export const transitionBooking = <ThrowOnError extends boolean = false>(options: Options<TransitionBookingData, ThrowOnError>): RequestResult<TransitionBookingResponses, TransitionBookingErrors, ThrowOnError> => (options.client ?? client).post<TransitionBookingResponses, TransitionBookingErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/me/bookings/{bookingId}/transitions',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Prepare one server-priced Stripe Checkout Session for an eligible booking.
+ */
+export const beginBookingCheckout = <ThrowOnError extends boolean = false>(options: Options<BeginBookingCheckoutData, ThrowOnError>): RequestResult<BeginBookingCheckoutResponses, BeginBookingCheckoutErrors, ThrowOnError> => (options.client ?? client).post<BeginBookingCheckoutResponses, BeginBookingCheckoutErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/bookings/{bookingId}/checkout',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List bounded payment orders where the authenticated user is customer or provider.
+ */
+export const listMyPayments = <ThrowOnError extends boolean = false>(options?: Options<ListMyPaymentsData, ThrowOnError>): RequestResult<ListMyPaymentsResponses, ListMyPaymentsErrors, ThrowOnError> => (options?.client ?? client).get<ListMyPaymentsResponses, ListMyPaymentsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/payments',
+    ...options
+});
+
+/**
+ * Refresh and read Stripe Connect payout readiness.
+ */
+export const getMyPayoutAccount = <ThrowOnError extends boolean = false>(options?: Options<GetMyPayoutAccountData, ThrowOnError>): RequestResult<GetMyPayoutAccountResponses, GetMyPayoutAccountErrors, ThrowOnError> => (options?.client ?? client).get<GetMyPayoutAccountResponses, GetMyPayoutAccountErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/payout-account',
+    ...options
+});
+
+/**
+ * Create or continue Stripe-hosted Connect onboarding without collecting bank data in Vila.
+ */
+export const beginMyPayoutOnboarding = <ThrowOnError extends boolean = false>(options: Options<BeginMyPayoutOnboardingData, ThrowOnError>): RequestResult<BeginMyPayoutOnboardingResponses, BeginMyPayoutOnboardingErrors, ThrowOnError> => (options.client ?? client).post<BeginMyPayoutOnboardingResponses, BeginMyPayoutOnboardingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/payout-account',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Initiate a moderator-authorized Stripe refund with transfer and application-fee reversal.
+ */
+export const refundPaymentOrder = <ThrowOnError extends boolean = false>(options: Options<RefundPaymentOrderData, ThrowOnError>): RequestResult<RefundPaymentOrderResponses, RefundPaymentOrderErrors, ThrowOnError> => (options.client ?? client).post<RefundPaymentOrderResponses, RefundPaymentOrderErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/admin/payments/{orderId}/refund',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List the latest bounded payment orders for moderator refund and dispute operations.
+ */
+export const listAdministrativePayments = <ThrowOnError extends boolean = false>(options?: Options<ListAdministrativePaymentsData, ThrowOnError>): RequestResult<ListAdministrativePaymentsResponses, ListAdministrativePaymentsErrors, ThrowOnError> => (options?.client ?? client).get<ListAdministrativePaymentsResponses, ListAdministrativePaymentsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/admin/payments',
+    ...options
+});
+
+/**
+ * Verify and idempotently apply an allowlisted Stripe event from the exact raw request body.
+ */
+export const receiveStripeWebhook = <ThrowOnError extends boolean = false>(options: Options<ReceiveStripeWebhookData, ThrowOnError>): RequestResult<ReceiveStripeWebhookResponses, ReceiveStripeWebhookErrors, ThrowOnError> => (options.client ?? client).post<ReceiveStripeWebhookResponses, ReceiveStripeWebhookErrors, ThrowOnError>({
+    url: '/api/v1/payments/webhooks/stripe',
     ...options,
     headers: {
         'Content-Type': 'application/json',

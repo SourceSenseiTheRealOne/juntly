@@ -1,7 +1,7 @@
 import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { requireAuthenticatedUser } from "@/features/auth/require-session";
+import { requireSoleAdministrator } from "@/features/auth/sole-administrator";
 import { ModerationQueue } from "@/features/listings/moderation-queue";
 import { routing } from "@/i18n/routing";
 export const dynamic = "force-dynamic";
@@ -12,7 +12,7 @@ export default async function ModerationListingsPage({
 }) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
-  await requireAuthenticatedUser(locale);
+  await requireSoleAdministrator(locale);
   const t = await getTranslations("Moderation");
   const keys = [
     "title",
