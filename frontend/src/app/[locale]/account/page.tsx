@@ -98,13 +98,27 @@ export default async function AccountPage({ params }: AccountPageProps) {
             >
               {t("capabilities.manageEntitlements")}
             </a>
+            <a
+              className="market-button-secondary justify-between px-4"
+              href={`/${locale}/account/payouts`}
+            >
+              {t("capabilities.managePayouts")}
+            </a>
             {soleAdministrator ? (
-              <a
-                className="market-button justify-between px-4"
-                href={`/${locale}/admin/listings`}
-              >
-                {t("capabilities.manageModeration")}
-              </a>
+              <>
+                <a
+                  className="market-button justify-between px-4"
+                  href={`/${locale}/admin/listings`}
+                >
+                  {t("capabilities.manageModeration")}
+                </a>
+                <a
+                  className="market-button justify-between px-4"
+                  href={`/${locale}/admin/payments`}
+                >
+                  {t("capabilities.managePaymentsAdmin")}
+                </a>
+              </>
             ) : null}
           </nav>
         </div>

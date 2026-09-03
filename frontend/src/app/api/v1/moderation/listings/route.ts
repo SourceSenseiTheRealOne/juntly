@@ -107,8 +107,7 @@ function accessError(
   status: "unauthenticated" | "forbidden" | "unavailable",
   id: string,
 ) {
-  if (status === "forbidden")
-    return error("FORBIDDEN", "Forbidden", 403, id);
+  if (status === "forbidden") return error("FORBIDDEN", "Forbidden", 403, id);
   if (status === "unavailable") return unavailable(id);
   return error("UNAUTHORIZED", "Unauthorized", 401, id);
 }

@@ -12,7 +12,7 @@
     "discoverLinkLabel": "Explorar serviços",
     "visionTitle": "Criada para ligações locais reais",
     "visionDescription": "Descoberta, contacto e confiança sem retirar a escolha às pessoas. A Vila liga quem precisa a quem sabe fazer.",
-    "showcaseTitle": "Fazer local, mais simples.",
+    "showcaseTitle": "Comércio local, mais simples.",
     "how": {
       "title": "Da necessidade à solução, sem complicações.",
       "description": "A Vila organiza a procura, a comparação e o contacto num percurso claro.",
@@ -101,7 +101,9 @@
       "manageBookings": "Gerir reservas",
       "manageReviews": "Avaliações",
       "manageEntitlements": "Planos e promoções",
-      "manageModeration": "Aprovar anúncios"
+      "manageModeration": "Aprovar anúncios",
+      "managePayouts": "Pagamentos e recebimentos",
+      "managePaymentsAdmin": "Gerir pagamentos e disputas"
     }
   },
   "ProviderProfile": {
@@ -312,7 +314,43 @@
     "complete": "Concluir",
     "cancel": "Cancelar",
     "dispute": "Abrir disputa",
-    "refund": "Marcar reembolso"
+    "refund": "Marcar reembolso",
+    "preparePayment": "Preparar pagamento",
+    "continuePayment": "Continuar para o pagamento seguro",
+    "paymentStatus": "Estado do pagamento",
+    "platformFee": "Taxa da plataforma",
+    "providerNet": "Valor previsto para o prestador",
+    "paymentUnavailable": "O pagamento seguro não está disponível neste momento.",
+    "paymentTerms": "Consultar pagamentos, cancelamentos e reembolsos"
+  },
+  "Payouts": {
+    "title": "Recebimentos do prestador",
+    "description": "Conclua a verificação alojada pela Stripe antes de a Vila encaminhar pagamentos de clientes. A Vila nunca recolhe os seus dados bancários.",
+    "loading": "A carregar o estado dos recebimentos…",
+    "unavailable": "A configuração de recebimentos não está disponível neste momento.",
+    "notStarted": "A configuração de recebimentos ainda não começou.",
+    "ready": "A sua conta está pronta para aceitar pagamentos e receber valores.",
+    "incomplete": "A Stripe ainda precisa de informação antes de ativar pagamentos.",
+    "charges": "Aceitar pagamentos",
+    "payouts": "Receber valores",
+    "details": "Identidade e dados profissionais",
+    "start": "Iniciar configuração segura na Stripe",
+    "continue": "Continuar configuração na Stripe"
+  },
+  "PaymentAdministration": {
+    "title": "Pagamentos e disputas",
+    "description": "Acompanhe pagamentos protegidos, disputas e reembolsos integrais.",
+    "loading": "A carregar pagamentos…",
+    "error": "Não foi possível carregar ou atualizar os pagamentos.",
+    "empty": "Não há pagamentos protegidos.",
+    "booking": "Reserva",
+    "gross": "Total",
+    "fee": "Taxa Vila",
+    "providerNet": "Valor do prestador",
+    "refund": "Reembolsar",
+    "refundConfirm": "Confirmar o reembolso integral para o método de pagamento original?",
+    "refundPending": "O reembolso foi enviado à Stripe.",
+    "state": "Estado"
   },
   "Reviews": {
     "title": "Avaliações",

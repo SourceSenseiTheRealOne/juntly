@@ -53,6 +53,8 @@ describe("AccountPage", () => {
           "capabilities.loading": "A carregar as capacidades da conta…",
           "capabilities.manageProvider": "Gerir perfil de prestador",
           "capabilities.manageModeration": "Aprovar anúncios",
+          "capabilities.managePaymentsAdmin": "Gerir pagamentos e disputas",
+          "capabilities.managePayouts": "Pagamentos e recebimentos",
           "capabilities.providerDescription":
             "Ative esta opção para preparar o seu perfil de prestador.",
           "capabilities.providerLabel": "Disponibilizar serviços",
@@ -78,9 +80,11 @@ describe("AccountPage", () => {
     expect(screen.getByTestId("account-capabilities-card")).toHaveTextContent(
       "Disponibilizar serviços",
     );
-    expect(screen.getByRole("link", { name: "Aprovar anúncios" })).toHaveAttribute(
-      "href",
-      "/pt-PT/admin/listings",
-    );
+    expect(
+      screen.getByRole("link", { name: "Aprovar anúncios" }),
+    ).toHaveAttribute("href", "/pt-PT/admin/listings");
+    expect(
+      screen.getByRole("link", { name: "Gerir pagamentos e disputas" }),
+    ).toHaveAttribute("href", "/pt-PT/admin/payments");
   });
 });

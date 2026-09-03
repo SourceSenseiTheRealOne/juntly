@@ -149,7 +149,10 @@ describe("PublicDiscovery", () => {
     fireEvent.change(screen.getByLabelText(copy.modeLabel), {
       target: { value: "travels_to_customer" },
     });
-    fireEvent.click(screen.getByRole("button", { name: copy.applyFilters }));
+    const applyButton = screen.getByRole("button", { name: copy.applyFilters });
+    expect(applyButton).toHaveClass("market-button-compact");
+    expect(applyButton).not.toHaveClass("w-full");
+    fireEvent.click(applyButton);
 
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(
