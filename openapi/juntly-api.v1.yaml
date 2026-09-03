@@ -752,6 +752,91 @@ paths:
         "403": { $ref: "#/components/responses/Forbidden" }
         "409": { $ref: "#/components/responses/Conflict" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/bookings/{bookingId}/checkout:
+    post:
+      operationId: beginBookingCheckout
+      summary: Prepare one server-priced Stripe Checkout Session for an eligible booking.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/BookingIdPath" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/BeginCheckout" } } } }
+      responses:
+        "201": { description: Durable payment order and hosted Checkout URL, content: { application/json: { schema: { $ref: "#/components/schemas/CheckoutResult" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/payments:
+    get:
+      operationId: listMyPayments
+      summary: List bounded payment orders where the authenticated user is customer or provider.
+      security: [{ clerkSession: [] }]
+      responses:
+        "200": { description: Participant payment orders, content: { application/json: { schema: { $ref: "#/components/schemas/PaymentOrders" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/payout-account:
+    get:
+      operationId: getMyPayoutAccount
+      summary: Refresh and read Stripe Connect payout readiness.
+      security: [{ clerkSession: [] }]
+      responses:
+        "200": { description: Provider payout readiness, content: { application/json: { schema: { $ref: "#/components/schemas/PayoutAccount" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+    post:
+      operationId: beginMyPayoutOnboarding
+      summary: Create or continue Stripe-hosted Connect onboarding without collecting bank data in Vila.
+      security: [{ clerkSession: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/PayoutOnboardingRequest" } } } }
+      responses:
+        "200": { description: Payout readiness and one-time hosted onboarding URL, content: { application/json: { schema: { $ref: "#/components/schemas/PayoutOnboardingResult" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/admin/payments/{orderId}/refund:
+    post:
+      operationId: refundPaymentOrder
+      summary: Initiate a moderator-authorized Stripe refund with transfer and application-fee reversal.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { name: orderId, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/RefundPayment" } } } }
+      responses:
+        "200": { description: Refund-pending payment order, content: { application/json: { schema: { $ref: "#/components/schemas/PaymentOrder" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/admin/payments:
+    get:
+      operationId: listAdministrativePayments
+      summary: List the latest bounded payment orders for moderator refund and dispute operations.
+      security: [{ clerkSession: [] }]
+      responses:
+        "200": { description: Latest payment orders, content: { application/json: { schema: { $ref: "#/components/schemas/PaymentOrders" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/payments/webhooks/stripe:
+    post:
+      operationId: receiveStripeWebhook
+      summary: Verify and idempotently apply an allowlisted Stripe event from the exact raw request body.
+      parameters:
+        - { name: Stripe-Signature, in: header, required: true, schema: { type: string, minLength: 8, maxLength: 4096 } }
+      requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }
+      responses:
+        "200": { description: Event received idempotently, content: { application/json: { schema: { type: object, additionalProperties: false, required: [received], properties: { received: { type: boolean, const: true } } } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
   /api/v1/me/reviews:
     post:
       operationId: createBookingReview
@@ -1219,6 +1304,71 @@ components:
       additionalProperties: false
       required: [bookings]
       properties: { bookings: { type: array, items: { $ref: "#/components/schemas/Booking" } } }
+    BeginCheckout:
+      type: object
+      additionalProperties: false
+      required: [idempotencyKey, locale]
+      properties:
+        idempotencyKey: { type: string, minLength: 8, maxLength: 128, pattern: "^[A-Za-z0-9._:-]+$" }
+        locale: { type: string, enum: [pt-PT, en, es] }
+    PaymentState:
+      type: string
+      enum: [pending_checkout, checkout_created, processing, paid, failed, refund_pending, refunded, disputed, dispute_won, dispute_lost, cancelled]
+    PaymentOrder:
+      type: object
+      additionalProperties: false
+      required: [id, bookingId, customerId, providerId, state, grossMinor, platformFeeMinor, providerNetMinor, currency, createdAt, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        bookingId: { type: string, format: uuid }
+        customerId: { type: string, format: uuid }
+        providerId: { type: string, format: uuid }
+        state: { $ref: "#/components/schemas/PaymentState" }
+        grossMinor: { type: integer, minimum: 1 }
+        platformFeeMinor: { type: integer, minimum: 0 }
+        providerNetMinor: { type: integer, minimum: 1 }
+        currency: { type: string, const: EUR }
+
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    PaymentOrders:
+      type: object
+      additionalProperties: false
+      required: [orders]
+      properties: { orders: { type: array, items: { $ref: "#/components/schemas/PaymentOrder" } } }
+    CheckoutResult:
+      type: object
+      additionalProperties: false
+      required: [order, url]
+      properties:
+        order: { $ref: "#/components/schemas/PaymentOrder" }
+        url: { type: string, format: uri, pattern: "^https://" }
+    PayoutAccount:
+      type: object
+      additionalProperties: false
+      required: [detailsSubmitted, chargesEnabled, payoutsEnabled, updatedAt]
+      properties:
+        detailsSubmitted: { type: boolean }
+        chargesEnabled: { type: boolean }
+        payoutsEnabled: { type: boolean }
+        updatedAt: { type: string, format: date-time }
+    PayoutOnboardingRequest:
+      type: object
+      additionalProperties: false
+      required: [locale]
+      properties: { locale: { type: string, enum: [pt-PT, en, es] } }
+    PayoutOnboardingResult:
+      type: object
+      additionalProperties: false
+      required: [account, url]
+      properties:
+        account: { $ref: "#/components/schemas/PayoutAccount" }
+        url: { type: string, format: uri, pattern: "^https://" }
+    RefundPayment:
+      type: object
+      additionalProperties: false
+      required: [idempotencyKey]
+      properties: { idempotencyKey: { type: string, minLength: 8, maxLength: 128, pattern: "^[A-Za-z0-9._:-]+$" } }
     CreateQuotationRequest:
       type: object
       additionalProperties: false
