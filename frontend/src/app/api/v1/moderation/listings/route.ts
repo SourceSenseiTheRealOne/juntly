@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { resolveSoleAdministratorSession } from "@/features/auth/sole-administrator";
 import {
   approveListing,
   listPendingModerationListings,
@@ -15,50 +15,50 @@ const header = "X-Request-ID";
 export const runtime = "nodejs";
 export async function GET(request: Request): Promise<Response> {
   const id = requestID(request.headers),
-    token = await tokenForSession();
-  if (!token) return error("UNAUTHORIZED", "Unauthorized", 401, id);
+    session = await resolveSoleAdministratorSession();
+  if (session.status !== "authorized") return accessError(session.status, id);
   return upstream(
     id,
-    token,
+    session.token,
     () =>
       listPendingModerationListings({
         baseUrl: origin(),
-        headers: headers(token, id),
+        headers: headers(session.token, id),
       }),
     validListings,
   );
 }
 export async function POST(request: Request): Promise<Response> {
   const id = requestID(request.headers),
-    token = await tokenForSession(),
+    session = await resolveSoleAdministratorSession(),
     listingID = idFrom(request);
-  if (!token) return error("UNAUTHORIZED", "Unauthorized", 401, id);
+  if (session.status !== "authorized") return accessError(session.status, id);
   if (!listingID) return error("INVALID_REQUEST", "Invalid request", 400, id);
   const action = new URL(request.url).pathname.split("/").pop(),
     body = await json(request);
   if (action === "approve" && revision(body))
     return upstream(
       id,
-      token,
+      session.token,
       () =>
         approveListing({
           baseUrl: origin(),
           path: { listingId: listingID },
           body: body as RevisionRequest,
-          headers: headers(token, id),
+          headers: headers(session.token, id),
         }),
       validListing,
     );
   if (action === "reject" && reject(body))
     return upstream(
       id,
-      token,
+      session.token,
       () =>
         rejectListing({
           baseUrl: origin(),
           path: { listingId: listingID },
           body: body as RejectListingRequest,
-          headers: headers(token, id),
+          headers: headers(session.token, id),
         }),
       validListing,
     );
@@ -103,13 +103,13 @@ async function upstream<T>(
     return unavailable(id);
   }
 }
-async function tokenForSession() {
-  try {
-    const s = await auth();
-    return s.isAuthenticated ? await s.getToken() : null;
-  } catch {
-    return null;
-  }
+function accessError(
+  status: "unauthenticated" | "forbidden" | "unavailable",
+  id: string,
+) {
+  if (status === "forbidden") return error("FORBIDDEN", "Forbidden", 403, id);
+  if (status === "unavailable") return unavailable(id);
+  return error("UNAUTHORIZED", "Unauthorized", 401, id);
 }
 async function json(r: Request) {
   try {

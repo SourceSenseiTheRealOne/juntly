@@ -27,6 +27,7 @@ import (
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/listings"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/messaging"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/moderation"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/payments"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/provideraccess"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/providers"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/quotations"
@@ -134,10 +135,11 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	listingRepository := listings.NewEntRepository(client)
 	listingDrafts := listings.NewService(providerAuthorizer, listingRepository)
 	moderatorAuthorizer := moderation.NewService(userService, moderation.NewEntRepository(client))
+	paymentService := payments.NewService(userService, moderatorAuthorizer, payments.NewSQLStore(database), config.paymentGateway, config.platformFeeBPS)
 	listingLifecycle := listings.NewLifecycleService(providerAuthorizer, moderatorAuthorizer, listingRepository)
 	listingMedia := listingmedia.NewService(providerAuthorizer, listingmedia.NewEntRepository(client), listingmedia.NewUnavailableStorage())
 	ownerListings := listings.NewOwnerService(listingDrafts, listingLifecycle, listingMedia)
 	moderationQueue := moderation.NewQueueService(moderatorAuthorizer, listingRepository)
 	moderationReview := moderation.NewReviewService(moderationQueue, listingLifecycle)
-	return httpapi.NewRouter(healthService, readinessService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery, contactChannels, contactReveal, messagingService, quotationService, bookingService, reviewService, entitlementService, administrationService), client, nil
+	return httpapi.NewRouter(healthService, readinessService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery, contactChannels, contactReveal, messagingService, quotationService, bookingService, reviewService, entitlementService, administrationService, paymentService), client, nil
 }
