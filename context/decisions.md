@@ -73,3 +73,17 @@
 - Decision: The first repository delivery contains durable context and a verified localized Next.js shell only.
 - Alternatives: complete Go/OpenAPI/Docker/Supabase tracer in the initial commit.
 - Consequences: matches the requested starting scope. Documentation and reports must not call the full-stack foundation complete until the later vertical tracer exists.
+
+## ADR-011: Vila user-facing brand with stable technical identifiers
+
+- Status: accepted
+- Date: 2026-09-02
+- Decision: Present the marketplace publicly as Vila and use `https://somosvila.com` as its canonical future public origin. Preserve Juntly repository, API, environment-variable, database, migration, and package identifiers unless a separate infrastructure migration is approved.
+- Consequences: customer-facing copy, metadata, and legal surfaces use Vila while deployed technical contracts remain backwards-compatible.
+
+## ADR-012: Advance protected Stripe marketplace payments
+
+- Status: accepted
+- Date: 2026-09-02
+- Decision: Implement optional protected payments now through Stripe-hosted Checkout and Connect destination charges, with server-owned EUR amounts and commission, durable payment/refund/dispute records, signed idempotent webhooks, and hosted provider onboarding. Cards and MB WAY are requested when eligible; external arrangements remain allowed and commission-free.
+- Consequences: payment routes fail closed without complete server configuration and a payout-ready provider. Production activation remains blocked on rotated secrets, production Clerk, Connect and payment-method enablement, legal operator details, test-mode transaction/refund/dispute evidence, monitoring, and explicit deployment approval. No custom escrow or browser-owned financial authority is introduced.
