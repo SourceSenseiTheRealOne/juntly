@@ -30,7 +30,7 @@ export default async function ModerationListingsPage({
   return (
     <main className="market-page px-4 py-8 sm:px-6 sm:py-10">
       <div className="market-panel mx-auto w-full max-w-4xl p-6 sm:p-8">
-        <ModerationQueue copy={copy} />
+        <ModerationQueue copy={copy} locale={locale} />
       </div>
     </main>
   );

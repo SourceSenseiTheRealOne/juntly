@@ -84,6 +84,127 @@ func (_u *ListingMediaUpdate) AddByteSize(v int64) *ListingMediaUpdate {
 	return _u
 }
 
+// SetVerifiedObjectReference sets the "verified_object_reference" field.
+func (_u *ListingMediaUpdate) SetVerifiedObjectReference(v string) *ListingMediaUpdate {
+	_u.mutation.SetVerifiedObjectReference(v)
+	return _u
+}
+
+// SetNillableVerifiedObjectReference sets the "verified_object_reference" field if the given value is not nil.
+func (_u *ListingMediaUpdate) SetNillableVerifiedObjectReference(v *string) *ListingMediaUpdate {
+	if v != nil {
+		_u.SetVerifiedObjectReference(*v)
+	}
+	return _u
+}
+
+// ClearVerifiedObjectReference clears the value of the "verified_object_reference" field.
+func (_u *ListingMediaUpdate) ClearVerifiedObjectReference() *ListingMediaUpdate {
+	_u.mutation.ClearVerifiedObjectReference()
+	return _u
+}
+
+// SetVerifiedChecksumSha256 sets the "verified_checksum_sha256" field.
+func (_u *ListingMediaUpdate) SetVerifiedChecksumSha256(v string) *ListingMediaUpdate {
+	_u.mutation.SetVerifiedChecksumSha256(v)
+	return _u
+}
+
+// SetNillableVerifiedChecksumSha256 sets the "verified_checksum_sha256" field if the given value is not nil.
+func (_u *ListingMediaUpdate) SetNillableVerifiedChecksumSha256(v *string) *ListingMediaUpdate {
+	if v != nil {
+		_u.SetVerifiedChecksumSha256(*v)
+	}
+	return _u
+}
+
+// ClearVerifiedChecksumSha256 clears the value of the "verified_checksum_sha256" field.
+func (_u *ListingMediaUpdate) ClearVerifiedChecksumSha256() *ListingMediaUpdate {
+	_u.mutation.ClearVerifiedChecksumSha256()
+	return _u
+}
+
+// SetVerifiedByteSize sets the "verified_byte_size" field.
+func (_u *ListingMediaUpdate) SetVerifiedByteSize(v int64) *ListingMediaUpdate {
+	_u.mutation.ResetVerifiedByteSize()
+	_u.mutation.SetVerifiedByteSize(v)
+	return _u
+}
+
+// SetNillableVerifiedByteSize sets the "verified_byte_size" field if the given value is not nil.
+func (_u *ListingMediaUpdate) SetNillableVerifiedByteSize(v *int64) *ListingMediaUpdate {
+	if v != nil {
+		_u.SetVerifiedByteSize(*v)
+	}
+	return _u
+}
+
+// AddVerifiedByteSize adds value to the "verified_byte_size" field.
+func (_u *ListingMediaUpdate) AddVerifiedByteSize(v int64) *ListingMediaUpdate {
+	_u.mutation.AddVerifiedByteSize(v)
+	return _u
+}
+
+// ClearVerifiedByteSize clears the value of the "verified_byte_size" field.
+func (_u *ListingMediaUpdate) ClearVerifiedByteSize() *ListingMediaUpdate {
+	_u.mutation.ClearVerifiedByteSize()
+	return _u
+}
+
+// SetPixelWidth sets the "pixel_width" field.
+func (_u *ListingMediaUpdate) SetPixelWidth(v int) *ListingMediaUpdate {
+	_u.mutation.ResetPixelWidth()
+	_u.mutation.SetPixelWidth(v)
+	return _u
+}
+
+// SetNillablePixelWidth sets the "pixel_width" field if the given value is not nil.
+func (_u *ListingMediaUpdate) SetNillablePixelWidth(v *int) *ListingMediaUpdate {
+	if v != nil {
+		_u.SetPixelWidth(*v)
+	}
+	return _u
+}
+
+// AddPixelWidth adds value to the "pixel_width" field.
+func (_u *ListingMediaUpdate) AddPixelWidth(v int) *ListingMediaUpdate {
+	_u.mutation.AddPixelWidth(v)
+	return _u
+}
+
+// ClearPixelWidth clears the value of the "pixel_width" field.
+func (_u *ListingMediaUpdate) ClearPixelWidth() *ListingMediaUpdate {
+	_u.mutation.ClearPixelWidth()
+	return _u
+}
+
+// SetPixelHeight sets the "pixel_height" field.
+func (_u *ListingMediaUpdate) SetPixelHeight(v int) *ListingMediaUpdate {
+	_u.mutation.ResetPixelHeight()
+	_u.mutation.SetPixelHeight(v)
+	return _u
+}
+
+// SetNillablePixelHeight sets the "pixel_height" field if the given value is not nil.
+func (_u *ListingMediaUpdate) SetNillablePixelHeight(v *int) *ListingMediaUpdate {
+	if v != nil {
+		_u.SetPixelHeight(*v)
+	}
+	return _u
+}
+
+// AddPixelHeight adds value to the "pixel_height" field.
+func (_u *ListingMediaUpdate) AddPixelHeight(v int) *ListingMediaUpdate {
+	_u.mutation.AddPixelHeight(v)
+	return _u
+}
+
+// ClearPixelHeight clears the value of the "pixel_height" field.
+func (_u *ListingMediaUpdate) ClearPixelHeight() *ListingMediaUpdate {
+	_u.mutation.ClearPixelHeight()
+	return _u
+}
+
 // SetState sets the "state" field.
 func (_u *ListingMediaUpdate) SetState(v listingmedia.State) *ListingMediaUpdate {
 	_u.mutation.SetState(v)
@@ -162,6 +283,31 @@ func (_u *ListingMediaUpdate) check() error {
 			return &ValidationError{Name: "byte_size", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.byte_size": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.VerifiedObjectReference(); ok {
+		if err := listingmedia.VerifiedObjectReferenceValidator(v); err != nil {
+			return &ValidationError{Name: "verified_object_reference", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.verified_object_reference": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.VerifiedChecksumSha256(); ok {
+		if err := listingmedia.VerifiedChecksumSha256Validator(v); err != nil {
+			return &ValidationError{Name: "verified_checksum_sha256", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.verified_checksum_sha256": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.VerifiedByteSize(); ok {
+		if err := listingmedia.VerifiedByteSizeValidator(v); err != nil {
+			return &ValidationError{Name: "verified_byte_size", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.verified_byte_size": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.PixelWidth(); ok {
+		if err := listingmedia.PixelWidthValidator(v); err != nil {
+			return &ValidationError{Name: "pixel_width", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.pixel_width": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.PixelHeight(); ok {
+		if err := listingmedia.PixelHeightValidator(v); err != nil {
+			return &ValidationError{Name: "pixel_height", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.pixel_height": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.State(); ok {
 		if err := listingmedia.StateValidator(v); err != nil {
 			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.state": %w`, err)}
@@ -196,6 +342,45 @@ func (_u *ListingMediaUpdate) sqlSave(ctx context.Context) (_node int, err error
 	}
 	if value, ok := _u.mutation.AddedByteSize(); ok {
 		_spec.AddField(listingmedia.FieldByteSize, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.VerifiedObjectReference(); ok {
+		_spec.SetField(listingmedia.FieldVerifiedObjectReference, field.TypeString, value)
+	}
+	if _u.mutation.VerifiedObjectReferenceCleared() {
+		_spec.ClearField(listingmedia.FieldVerifiedObjectReference, field.TypeString)
+	}
+	if value, ok := _u.mutation.VerifiedChecksumSha256(); ok {
+		_spec.SetField(listingmedia.FieldVerifiedChecksumSha256, field.TypeString, value)
+	}
+	if _u.mutation.VerifiedChecksumSha256Cleared() {
+		_spec.ClearField(listingmedia.FieldVerifiedChecksumSha256, field.TypeString)
+	}
+	if value, ok := _u.mutation.VerifiedByteSize(); ok {
+		_spec.SetField(listingmedia.FieldVerifiedByteSize, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedVerifiedByteSize(); ok {
+		_spec.AddField(listingmedia.FieldVerifiedByteSize, field.TypeInt64, value)
+	}
+	if _u.mutation.VerifiedByteSizeCleared() {
+		_spec.ClearField(listingmedia.FieldVerifiedByteSize, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.PixelWidth(); ok {
+		_spec.SetField(listingmedia.FieldPixelWidth, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedPixelWidth(); ok {
+		_spec.AddField(listingmedia.FieldPixelWidth, field.TypeInt, value)
+	}
+	if _u.mutation.PixelWidthCleared() {
+		_spec.ClearField(listingmedia.FieldPixelWidth, field.TypeInt)
+	}
+	if value, ok := _u.mutation.PixelHeight(); ok {
+		_spec.SetField(listingmedia.FieldPixelHeight, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedPixelHeight(); ok {
+		_spec.AddField(listingmedia.FieldPixelHeight, field.TypeInt, value)
+	}
+	if _u.mutation.PixelHeightCleared() {
+		_spec.ClearField(listingmedia.FieldPixelHeight, field.TypeInt)
 	}
 	if value, ok := _u.mutation.State(); ok {
 		_spec.SetField(listingmedia.FieldState, field.TypeEnum, value)
@@ -276,6 +461,127 @@ func (_u *ListingMediaUpdateOne) SetNillableByteSize(v *int64) *ListingMediaUpda
 // AddByteSize adds value to the "byte_size" field.
 func (_u *ListingMediaUpdateOne) AddByteSize(v int64) *ListingMediaUpdateOne {
 	_u.mutation.AddByteSize(v)
+	return _u
+}
+
+// SetVerifiedObjectReference sets the "verified_object_reference" field.
+func (_u *ListingMediaUpdateOne) SetVerifiedObjectReference(v string) *ListingMediaUpdateOne {
+	_u.mutation.SetVerifiedObjectReference(v)
+	return _u
+}
+
+// SetNillableVerifiedObjectReference sets the "verified_object_reference" field if the given value is not nil.
+func (_u *ListingMediaUpdateOne) SetNillableVerifiedObjectReference(v *string) *ListingMediaUpdateOne {
+	if v != nil {
+		_u.SetVerifiedObjectReference(*v)
+	}
+	return _u
+}
+
+// ClearVerifiedObjectReference clears the value of the "verified_object_reference" field.
+func (_u *ListingMediaUpdateOne) ClearVerifiedObjectReference() *ListingMediaUpdateOne {
+	_u.mutation.ClearVerifiedObjectReference()
+	return _u
+}
+
+// SetVerifiedChecksumSha256 sets the "verified_checksum_sha256" field.
+func (_u *ListingMediaUpdateOne) SetVerifiedChecksumSha256(v string) *ListingMediaUpdateOne {
+	_u.mutation.SetVerifiedChecksumSha256(v)
+	return _u
+}
+
+// SetNillableVerifiedChecksumSha256 sets the "verified_checksum_sha256" field if the given value is not nil.
+func (_u *ListingMediaUpdateOne) SetNillableVerifiedChecksumSha256(v *string) *ListingMediaUpdateOne {
+	if v != nil {
+		_u.SetVerifiedChecksumSha256(*v)
+	}
+	return _u
+}
+
+// ClearVerifiedChecksumSha256 clears the value of the "verified_checksum_sha256" field.
+func (_u *ListingMediaUpdateOne) ClearVerifiedChecksumSha256() *ListingMediaUpdateOne {
+	_u.mutation.ClearVerifiedChecksumSha256()
+	return _u
+}
+
+// SetVerifiedByteSize sets the "verified_byte_size" field.
+func (_u *ListingMediaUpdateOne) SetVerifiedByteSize(v int64) *ListingMediaUpdateOne {
+	_u.mutation.ResetVerifiedByteSize()
+	_u.mutation.SetVerifiedByteSize(v)
+	return _u
+}
+
+// SetNillableVerifiedByteSize sets the "verified_byte_size" field if the given value is not nil.
+func (_u *ListingMediaUpdateOne) SetNillableVerifiedByteSize(v *int64) *ListingMediaUpdateOne {
+	if v != nil {
+		_u.SetVerifiedByteSize(*v)
+	}
+	return _u
+}
+
+// AddVerifiedByteSize adds value to the "verified_byte_size" field.
+func (_u *ListingMediaUpdateOne) AddVerifiedByteSize(v int64) *ListingMediaUpdateOne {
+	_u.mutation.AddVerifiedByteSize(v)
+	return _u
+}
+
+// ClearVerifiedByteSize clears the value of the "verified_byte_size" field.
+func (_u *ListingMediaUpdateOne) ClearVerifiedByteSize() *ListingMediaUpdateOne {
+	_u.mutation.ClearVerifiedByteSize()
+	return _u
+}
+
+// SetPixelWidth sets the "pixel_width" field.
+func (_u *ListingMediaUpdateOne) SetPixelWidth(v int) *ListingMediaUpdateOne {
+	_u.mutation.ResetPixelWidth()
+	_u.mutation.SetPixelWidth(v)
+	return _u
+}
+
+// SetNillablePixelWidth sets the "pixel_width" field if the given value is not nil.
+func (_u *ListingMediaUpdateOne) SetNillablePixelWidth(v *int) *ListingMediaUpdateOne {
+	if v != nil {
+		_u.SetPixelWidth(*v)
+	}
+	return _u
+}
+
+// AddPixelWidth adds value to the "pixel_width" field.
+func (_u *ListingMediaUpdateOne) AddPixelWidth(v int) *ListingMediaUpdateOne {
+	_u.mutation.AddPixelWidth(v)
+	return _u
+}
+
+// ClearPixelWidth clears the value of the "pixel_width" field.
+func (_u *ListingMediaUpdateOne) ClearPixelWidth() *ListingMediaUpdateOne {
+	_u.mutation.ClearPixelWidth()
+	return _u
+}
+
+// SetPixelHeight sets the "pixel_height" field.
+func (_u *ListingMediaUpdateOne) SetPixelHeight(v int) *ListingMediaUpdateOne {
+	_u.mutation.ResetPixelHeight()
+	_u.mutation.SetPixelHeight(v)
+	return _u
+}
+
+// SetNillablePixelHeight sets the "pixel_height" field if the given value is not nil.
+func (_u *ListingMediaUpdateOne) SetNillablePixelHeight(v *int) *ListingMediaUpdateOne {
+	if v != nil {
+		_u.SetPixelHeight(*v)
+	}
+	return _u
+}
+
+// AddPixelHeight adds value to the "pixel_height" field.
+func (_u *ListingMediaUpdateOne) AddPixelHeight(v int) *ListingMediaUpdateOne {
+	_u.mutation.AddPixelHeight(v)
+	return _u
+}
+
+// ClearPixelHeight clears the value of the "pixel_height" field.
+func (_u *ListingMediaUpdateOne) ClearPixelHeight() *ListingMediaUpdateOne {
+	_u.mutation.ClearPixelHeight()
 	return _u
 }
 
@@ -370,6 +676,31 @@ func (_u *ListingMediaUpdateOne) check() error {
 			return &ValidationError{Name: "byte_size", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.byte_size": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.VerifiedObjectReference(); ok {
+		if err := listingmedia.VerifiedObjectReferenceValidator(v); err != nil {
+			return &ValidationError{Name: "verified_object_reference", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.verified_object_reference": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.VerifiedChecksumSha256(); ok {
+		if err := listingmedia.VerifiedChecksumSha256Validator(v); err != nil {
+			return &ValidationError{Name: "verified_checksum_sha256", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.verified_checksum_sha256": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.VerifiedByteSize(); ok {
+		if err := listingmedia.VerifiedByteSizeValidator(v); err != nil {
+			return &ValidationError{Name: "verified_byte_size", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.verified_byte_size": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.PixelWidth(); ok {
+		if err := listingmedia.PixelWidthValidator(v); err != nil {
+			return &ValidationError{Name: "pixel_width", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.pixel_width": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.PixelHeight(); ok {
+		if err := listingmedia.PixelHeightValidator(v); err != nil {
+			return &ValidationError{Name: "pixel_height", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.pixel_height": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.State(); ok {
 		if err := listingmedia.StateValidator(v); err != nil {
 			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.state": %w`, err)}
@@ -421,6 +752,45 @@ func (_u *ListingMediaUpdateOne) sqlSave(ctx context.Context) (_node *ListingMed
 	}
 	if value, ok := _u.mutation.AddedByteSize(); ok {
 		_spec.AddField(listingmedia.FieldByteSize, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.VerifiedObjectReference(); ok {
+		_spec.SetField(listingmedia.FieldVerifiedObjectReference, field.TypeString, value)
+	}
+	if _u.mutation.VerifiedObjectReferenceCleared() {
+		_spec.ClearField(listingmedia.FieldVerifiedObjectReference, field.TypeString)
+	}
+	if value, ok := _u.mutation.VerifiedChecksumSha256(); ok {
+		_spec.SetField(listingmedia.FieldVerifiedChecksumSha256, field.TypeString, value)
+	}
+	if _u.mutation.VerifiedChecksumSha256Cleared() {
+		_spec.ClearField(listingmedia.FieldVerifiedChecksumSha256, field.TypeString)
+	}
+	if value, ok := _u.mutation.VerifiedByteSize(); ok {
+		_spec.SetField(listingmedia.FieldVerifiedByteSize, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedVerifiedByteSize(); ok {
+		_spec.AddField(listingmedia.FieldVerifiedByteSize, field.TypeInt64, value)
+	}
+	if _u.mutation.VerifiedByteSizeCleared() {
+		_spec.ClearField(listingmedia.FieldVerifiedByteSize, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.PixelWidth(); ok {
+		_spec.SetField(listingmedia.FieldPixelWidth, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedPixelWidth(); ok {
+		_spec.AddField(listingmedia.FieldPixelWidth, field.TypeInt, value)
+	}
+	if _u.mutation.PixelWidthCleared() {
+		_spec.ClearField(listingmedia.FieldPixelWidth, field.TypeInt)
+	}
+	if value, ok := _u.mutation.PixelHeight(); ok {
+		_spec.SetField(listingmedia.FieldPixelHeight, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedPixelHeight(); ok {
+		_spec.AddField(listingmedia.FieldPixelHeight, field.TypeInt, value)
+	}
+	if _u.mutation.PixelHeightCleared() {
+		_spec.ClearField(listingmedia.FieldPixelHeight, field.TypeInt)
 	}
 	if value, ok := _u.mutation.State(); ok {
 		_spec.SetField(listingmedia.FieldState, field.TypeEnum, value)

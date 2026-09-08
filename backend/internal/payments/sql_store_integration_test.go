@@ -70,7 +70,7 @@ func TestSQLStorePersistsCheckoutAndIdempotentPaidWebhook(t *testing.T) {
 	if err != nil || order.State != StateCheckoutCreated {
 		t.Fatalf("attach order=%#v err=%v", order, err)
 	}
-	event := ProviderEvent{ID: "evt_123synthetic", Kind: EventPaid, ProviderObjectID: "cs_testpayment", OrderID: order.ID, PaymentIntentID: "pi_syntheticpayment", InvoiceID: "in_syntheticpayment", OccurredAt: time.Now().UTC()}
+	event := ProviderEvent{ID: "evt_123synthetic", Kind: EventPaid, ProviderObjectID: "cs_testpayment", OrderID: order.ID, PaymentIntentID: "pi_syntheticpayment", InvoiceID: "in_syntheticpayment", AmountMinor: 12500, Currency: "EUR", OccurredAt: time.Now().UTC()}
 	if err := store.ApplyProviderEvent(ctx, event); err != nil {
 		t.Fatalf("apply event: %v", err)
 	}

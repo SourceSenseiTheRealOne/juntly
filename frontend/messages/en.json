@@ -1,4 +1,19 @@
 {
+  "ListingMedia": {
+    "title": "Photos",
+    "add": "Add photo",
+    "hint": "JPEG, PNG or WebP, up to 10 MB. Maximum 10 photos. Use your own images without personal information.",
+    "publication": "Photos are only public when the listing is approved and active.",
+    "loading": "Loading photos…",
+    "empty": "No photos yet.",
+    "error": "Photos could not be loaded.",
+    "retry": "Try again",
+    "uploading": "Uploading and verifying the photo…",
+    "uploadError": "The photo could not be verified. Try again with the same file.",
+    "saved": "Photo verified and saved.",
+    "limit": "You have reached the limit of 10 photos.",
+    "photoAlt": "{title}, photo {index}"
+  },
   "Metadata": {
     "title": "Vila: Local services, real skills",
     "description": "Find local people and services near you. Vila brings communities, customers and trusted providers closer together."

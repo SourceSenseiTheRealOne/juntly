@@ -8,6 +8,7 @@ import (
 
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/authn"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/contactreveal"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/listingmedia"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/payments"
 )
 
@@ -19,6 +20,7 @@ type runtimeConfig struct {
 	contactCipher  contactreveal.Cipher
 	paymentGateway payments.Gateway
 	platformFeeBPS int
+	mediaStorage   listingmedia.ManagedStorage
 }
 
 func loadRuntimeConfig(lookup func(string) string) (runtimeConfig, error) {
@@ -71,7 +73,17 @@ func loadRuntimeConfig(lookup func(string) string) (runtimeConfig, error) {
 		}
 	}
 
-	return runtimeConfig{databaseURL: databaseURL, verifier: verifier, contactCipher: contactCipher, paymentGateway: paymentGateway, platformFeeBPS: platformFeeBPS}, nil
+	var mediaStorage listingmedia.ManagedStorage
+	storageOrigin := strings.TrimSpace(lookup("JUNTLY_STORAGE_ORIGIN"))
+	storageKey := lookup("JUNTLY_STORAGE_SERVER_KEY")
+	storageBucket := strings.TrimSpace(lookup("JUNTLY_STORAGE_BUCKET"))
+	if storageOrigin != "" || storageKey != "" || storageBucket != "" {
+		mediaStorage, err = listingmedia.NewSupabaseStorage(listingmedia.SupabaseStorageConfig{Origin: storageOrigin, ServerKey: storageKey, Bucket: storageBucket})
+		if err != nil {
+			return runtimeConfig{}, ErrInvalidRuntimeConfig
+		}
+	}
+	return runtimeConfig{databaseURL: databaseURL, verifier: verifier, contactCipher: contactCipher, paymentGateway: paymentGateway, platformFeeBPS: platformFeeBPS, mediaStorage: mediaStorage}, nil
 }
 
 func parseOptionalDuration(value string) (time.Duration, error) {

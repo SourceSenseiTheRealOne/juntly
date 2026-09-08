@@ -250,12 +250,15 @@ func projectStripeEvent(payload []byte) (ProviderEvent, error) {
 			PaymentStatus string            `json:"payment_status"`
 			PaymentIntent string            `json:"payment_intent"`
 			Invoice       string            `json:"invoice"`
+			AmountTotal   int64             `json:"amount_total"`
+			Currency      string            `json:"currency"`
 			Metadata      map[string]string `json:"metadata"`
 		}
 		if json.Unmarshal(envelope.Data.Object, &object) != nil || !strings.HasPrefix(object.ID, "cs_") || object.Metadata["order_id"] == "" {
 			return ProviderEvent{}, ErrInvalid
 		}
 		event.ProviderObjectID, event.OrderID, event.PaymentIntentID, event.InvoiceID = object.ID, object.Metadata["order_id"], object.PaymentIntent, object.Invoice
+		event.AmountMinor, event.Currency = object.AmountTotal, strings.ToUpper(object.Currency)
 		if envelope.Type == "checkout.session.async_payment_failed" {
 			event.Kind = EventFailed
 		} else if object.PaymentStatus == "paid" || envelope.Type == "checkout.session.async_payment_succeeded" {
