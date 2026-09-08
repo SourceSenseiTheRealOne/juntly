@@ -4668,24 +4668,32 @@ func (m *ListingEventMutation) ResetEdge(name string) error {
 // ListingMediaMutation represents an operation that mutates the ListingMedia nodes in the graph.
 type ListingMediaMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *uuid.UUID
-	listing_id       *uuid.UUID
-	ordinal          *int
-	addordinal       *int
-	content_type     *string
-	byte_size        *int64
-	addbyte_size     *int64
-	checksum_sha256  *string
-	object_reference *string
-	state            *listingmedia.State
-	created_at       *time.Time
-	updated_at       *time.Time
-	clearedFields    map[string]struct{}
-	done             bool
-	oldValue         func(context.Context) (*ListingMedia, error)
-	predicates       []predicate.ListingMedia
+	op                        Op
+	typ                       string
+	id                        *uuid.UUID
+	listing_id                *uuid.UUID
+	ordinal                   *int
+	addordinal                *int
+	content_type              *string
+	byte_size                 *int64
+	addbyte_size              *int64
+	checksum_sha256           *string
+	object_reference          *string
+	verified_object_reference *string
+	verified_checksum_sha256  *string
+	verified_byte_size        *int64
+	addverified_byte_size     *int64
+	pixel_width               *int
+	addpixel_width            *int
+	pixel_height              *int
+	addpixel_height           *int
+	state                     *listingmedia.State
+	created_at                *time.Time
+	updated_at                *time.Time
+	clearedFields             map[string]struct{}
+	done                      bool
+	oldValue                  func(context.Context) (*ListingMedia, error)
+	predicates                []predicate.ListingMedia
 }
 
 var _ ent.Mutation = (*ListingMediaMutation)(nil)
@@ -5048,6 +5056,314 @@ func (m *ListingMediaMutation) ResetObjectReference() {
 	m.object_reference = nil
 }
 
+// SetVerifiedObjectReference sets the "verified_object_reference" field.
+func (m *ListingMediaMutation) SetVerifiedObjectReference(s string) {
+	m.verified_object_reference = &s
+}
+
+// VerifiedObjectReference returns the value of the "verified_object_reference" field in the mutation.
+func (m *ListingMediaMutation) VerifiedObjectReference() (r string, exists bool) {
+	v := m.verified_object_reference
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVerifiedObjectReference returns the old "verified_object_reference" field's value of the ListingMedia entity.
+// If the ListingMedia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMediaMutation) OldVerifiedObjectReference(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVerifiedObjectReference is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVerifiedObjectReference requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVerifiedObjectReference: %w", err)
+	}
+	return oldValue.VerifiedObjectReference, nil
+}
+
+// ClearVerifiedObjectReference clears the value of the "verified_object_reference" field.
+func (m *ListingMediaMutation) ClearVerifiedObjectReference() {
+	m.verified_object_reference = nil
+	m.clearedFields[listingmedia.FieldVerifiedObjectReference] = struct{}{}
+}
+
+// VerifiedObjectReferenceCleared returns if the "verified_object_reference" field was cleared in this mutation.
+func (m *ListingMediaMutation) VerifiedObjectReferenceCleared() bool {
+	_, ok := m.clearedFields[listingmedia.FieldVerifiedObjectReference]
+	return ok
+}
+
+// ResetVerifiedObjectReference resets all changes to the "verified_object_reference" field.
+func (m *ListingMediaMutation) ResetVerifiedObjectReference() {
+	m.verified_object_reference = nil
+	delete(m.clearedFields, listingmedia.FieldVerifiedObjectReference)
+}
+
+// SetVerifiedChecksumSha256 sets the "verified_checksum_sha256" field.
+func (m *ListingMediaMutation) SetVerifiedChecksumSha256(s string) {
+	m.verified_checksum_sha256 = &s
+}
+
+// VerifiedChecksumSha256 returns the value of the "verified_checksum_sha256" field in the mutation.
+func (m *ListingMediaMutation) VerifiedChecksumSha256() (r string, exists bool) {
+	v := m.verified_checksum_sha256
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVerifiedChecksumSha256 returns the old "verified_checksum_sha256" field's value of the ListingMedia entity.
+// If the ListingMedia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMediaMutation) OldVerifiedChecksumSha256(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVerifiedChecksumSha256 is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVerifiedChecksumSha256 requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVerifiedChecksumSha256: %w", err)
+	}
+	return oldValue.VerifiedChecksumSha256, nil
+}
+
+// ClearVerifiedChecksumSha256 clears the value of the "verified_checksum_sha256" field.
+func (m *ListingMediaMutation) ClearVerifiedChecksumSha256() {
+	m.verified_checksum_sha256 = nil
+	m.clearedFields[listingmedia.FieldVerifiedChecksumSha256] = struct{}{}
+}
+
+// VerifiedChecksumSha256Cleared returns if the "verified_checksum_sha256" field was cleared in this mutation.
+func (m *ListingMediaMutation) VerifiedChecksumSha256Cleared() bool {
+	_, ok := m.clearedFields[listingmedia.FieldVerifiedChecksumSha256]
+	return ok
+}
+
+// ResetVerifiedChecksumSha256 resets all changes to the "verified_checksum_sha256" field.
+func (m *ListingMediaMutation) ResetVerifiedChecksumSha256() {
+	m.verified_checksum_sha256 = nil
+	delete(m.clearedFields, listingmedia.FieldVerifiedChecksumSha256)
+}
+
+// SetVerifiedByteSize sets the "verified_byte_size" field.
+func (m *ListingMediaMutation) SetVerifiedByteSize(i int64) {
+	m.verified_byte_size = &i
+	m.addverified_byte_size = nil
+}
+
+// VerifiedByteSize returns the value of the "verified_byte_size" field in the mutation.
+func (m *ListingMediaMutation) VerifiedByteSize() (r int64, exists bool) {
+	v := m.verified_byte_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVerifiedByteSize returns the old "verified_byte_size" field's value of the ListingMedia entity.
+// If the ListingMedia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMediaMutation) OldVerifiedByteSize(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVerifiedByteSize is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVerifiedByteSize requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVerifiedByteSize: %w", err)
+	}
+	return oldValue.VerifiedByteSize, nil
+}
+
+// AddVerifiedByteSize adds i to the "verified_byte_size" field.
+func (m *ListingMediaMutation) AddVerifiedByteSize(i int64) {
+	if m.addverified_byte_size != nil {
+		*m.addverified_byte_size += i
+	} else {
+		m.addverified_byte_size = &i
+	}
+}
+
+// AddedVerifiedByteSize returns the value that was added to the "verified_byte_size" field in this mutation.
+func (m *ListingMediaMutation) AddedVerifiedByteSize() (r int64, exists bool) {
+	v := m.addverified_byte_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearVerifiedByteSize clears the value of the "verified_byte_size" field.
+func (m *ListingMediaMutation) ClearVerifiedByteSize() {
+	m.verified_byte_size = nil
+	m.addverified_byte_size = nil
+	m.clearedFields[listingmedia.FieldVerifiedByteSize] = struct{}{}
+}
+
+// VerifiedByteSizeCleared returns if the "verified_byte_size" field was cleared in this mutation.
+func (m *ListingMediaMutation) VerifiedByteSizeCleared() bool {
+	_, ok := m.clearedFields[listingmedia.FieldVerifiedByteSize]
+	return ok
+}
+
+// ResetVerifiedByteSize resets all changes to the "verified_byte_size" field.
+func (m *ListingMediaMutation) ResetVerifiedByteSize() {
+	m.verified_byte_size = nil
+	m.addverified_byte_size = nil
+	delete(m.clearedFields, listingmedia.FieldVerifiedByteSize)
+}
+
+// SetPixelWidth sets the "pixel_width" field.
+func (m *ListingMediaMutation) SetPixelWidth(i int) {
+	m.pixel_width = &i
+	m.addpixel_width = nil
+}
+
+// PixelWidth returns the value of the "pixel_width" field in the mutation.
+func (m *ListingMediaMutation) PixelWidth() (r int, exists bool) {
+	v := m.pixel_width
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPixelWidth returns the old "pixel_width" field's value of the ListingMedia entity.
+// If the ListingMedia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMediaMutation) OldPixelWidth(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPixelWidth is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPixelWidth requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPixelWidth: %w", err)
+	}
+	return oldValue.PixelWidth, nil
+}
+
+// AddPixelWidth adds i to the "pixel_width" field.
+func (m *ListingMediaMutation) AddPixelWidth(i int) {
+	if m.addpixel_width != nil {
+		*m.addpixel_width += i
+	} else {
+		m.addpixel_width = &i
+	}
+}
+
+// AddedPixelWidth returns the value that was added to the "pixel_width" field in this mutation.
+func (m *ListingMediaMutation) AddedPixelWidth() (r int, exists bool) {
+	v := m.addpixel_width
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearPixelWidth clears the value of the "pixel_width" field.
+func (m *ListingMediaMutation) ClearPixelWidth() {
+	m.pixel_width = nil
+	m.addpixel_width = nil
+	m.clearedFields[listingmedia.FieldPixelWidth] = struct{}{}
+}
+
+// PixelWidthCleared returns if the "pixel_width" field was cleared in this mutation.
+func (m *ListingMediaMutation) PixelWidthCleared() bool {
+	_, ok := m.clearedFields[listingmedia.FieldPixelWidth]
+	return ok
+}
+
+// ResetPixelWidth resets all changes to the "pixel_width" field.
+func (m *ListingMediaMutation) ResetPixelWidth() {
+	m.pixel_width = nil
+	m.addpixel_width = nil
+	delete(m.clearedFields, listingmedia.FieldPixelWidth)
+}
+
+// SetPixelHeight sets the "pixel_height" field.
+func (m *ListingMediaMutation) SetPixelHeight(i int) {
+	m.pixel_height = &i
+	m.addpixel_height = nil
+}
+
+// PixelHeight returns the value of the "pixel_height" field in the mutation.
+func (m *ListingMediaMutation) PixelHeight() (r int, exists bool) {
+	v := m.pixel_height
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPixelHeight returns the old "pixel_height" field's value of the ListingMedia entity.
+// If the ListingMedia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ListingMediaMutation) OldPixelHeight(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPixelHeight is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPixelHeight requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPixelHeight: %w", err)
+	}
+	return oldValue.PixelHeight, nil
+}
+
+// AddPixelHeight adds i to the "pixel_height" field.
+func (m *ListingMediaMutation) AddPixelHeight(i int) {
+	if m.addpixel_height != nil {
+		*m.addpixel_height += i
+	} else {
+		m.addpixel_height = &i
+	}
+}
+
+// AddedPixelHeight returns the value that was added to the "pixel_height" field in this mutation.
+func (m *ListingMediaMutation) AddedPixelHeight() (r int, exists bool) {
+	v := m.addpixel_height
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearPixelHeight clears the value of the "pixel_height" field.
+func (m *ListingMediaMutation) ClearPixelHeight() {
+	m.pixel_height = nil
+	m.addpixel_height = nil
+	m.clearedFields[listingmedia.FieldPixelHeight] = struct{}{}
+}
+
+// PixelHeightCleared returns if the "pixel_height" field was cleared in this mutation.
+func (m *ListingMediaMutation) PixelHeightCleared() bool {
+	_, ok := m.clearedFields[listingmedia.FieldPixelHeight]
+	return ok
+}
+
+// ResetPixelHeight resets all changes to the "pixel_height" field.
+func (m *ListingMediaMutation) ResetPixelHeight() {
+	m.pixel_height = nil
+	m.addpixel_height = nil
+	delete(m.clearedFields, listingmedia.FieldPixelHeight)
+}
+
 // SetState sets the "state" field.
 func (m *ListingMediaMutation) SetState(l listingmedia.State) {
 	m.state = &l
@@ -5190,7 +5506,7 @@ func (m *ListingMediaMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ListingMediaMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 14)
 	if m.listing_id != nil {
 		fields = append(fields, listingmedia.FieldListingID)
 	}
@@ -5208,6 +5524,21 @@ func (m *ListingMediaMutation) Fields() []string {
 	}
 	if m.object_reference != nil {
 		fields = append(fields, listingmedia.FieldObjectReference)
+	}
+	if m.verified_object_reference != nil {
+		fields = append(fields, listingmedia.FieldVerifiedObjectReference)
+	}
+	if m.verified_checksum_sha256 != nil {
+		fields = append(fields, listingmedia.FieldVerifiedChecksumSha256)
+	}
+	if m.verified_byte_size != nil {
+		fields = append(fields, listingmedia.FieldVerifiedByteSize)
+	}
+	if m.pixel_width != nil {
+		fields = append(fields, listingmedia.FieldPixelWidth)
+	}
+	if m.pixel_height != nil {
+		fields = append(fields, listingmedia.FieldPixelHeight)
 	}
 	if m.state != nil {
 		fields = append(fields, listingmedia.FieldState)
@@ -5238,6 +5569,16 @@ func (m *ListingMediaMutation) Field(name string) (ent.Value, bool) {
 		return m.ChecksumSha256()
 	case listingmedia.FieldObjectReference:
 		return m.ObjectReference()
+	case listingmedia.FieldVerifiedObjectReference:
+		return m.VerifiedObjectReference()
+	case listingmedia.FieldVerifiedChecksumSha256:
+		return m.VerifiedChecksumSha256()
+	case listingmedia.FieldVerifiedByteSize:
+		return m.VerifiedByteSize()
+	case listingmedia.FieldPixelWidth:
+		return m.PixelWidth()
+	case listingmedia.FieldPixelHeight:
+		return m.PixelHeight()
 	case listingmedia.FieldState:
 		return m.State()
 	case listingmedia.FieldCreatedAt:
@@ -5265,6 +5606,16 @@ func (m *ListingMediaMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldChecksumSha256(ctx)
 	case listingmedia.FieldObjectReference:
 		return m.OldObjectReference(ctx)
+	case listingmedia.FieldVerifiedObjectReference:
+		return m.OldVerifiedObjectReference(ctx)
+	case listingmedia.FieldVerifiedChecksumSha256:
+		return m.OldVerifiedChecksumSha256(ctx)
+	case listingmedia.FieldVerifiedByteSize:
+		return m.OldVerifiedByteSize(ctx)
+	case listingmedia.FieldPixelWidth:
+		return m.OldPixelWidth(ctx)
+	case listingmedia.FieldPixelHeight:
+		return m.OldPixelHeight(ctx)
 	case listingmedia.FieldState:
 		return m.OldState(ctx)
 	case listingmedia.FieldCreatedAt:
@@ -5322,6 +5673,41 @@ func (m *ListingMediaMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetObjectReference(v)
 		return nil
+	case listingmedia.FieldVerifiedObjectReference:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVerifiedObjectReference(v)
+		return nil
+	case listingmedia.FieldVerifiedChecksumSha256:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVerifiedChecksumSha256(v)
+		return nil
+	case listingmedia.FieldVerifiedByteSize:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVerifiedByteSize(v)
+		return nil
+	case listingmedia.FieldPixelWidth:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPixelWidth(v)
+		return nil
+	case listingmedia.FieldPixelHeight:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPixelHeight(v)
+		return nil
 	case listingmedia.FieldState:
 		v, ok := value.(listingmedia.State)
 		if !ok {
@@ -5357,6 +5743,15 @@ func (m *ListingMediaMutation) AddedFields() []string {
 	if m.addbyte_size != nil {
 		fields = append(fields, listingmedia.FieldByteSize)
 	}
+	if m.addverified_byte_size != nil {
+		fields = append(fields, listingmedia.FieldVerifiedByteSize)
+	}
+	if m.addpixel_width != nil {
+		fields = append(fields, listingmedia.FieldPixelWidth)
+	}
+	if m.addpixel_height != nil {
+		fields = append(fields, listingmedia.FieldPixelHeight)
+	}
 	return fields
 }
 
@@ -5369,6 +5764,12 @@ func (m *ListingMediaMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedOrdinal()
 	case listingmedia.FieldByteSize:
 		return m.AddedByteSize()
+	case listingmedia.FieldVerifiedByteSize:
+		return m.AddedVerifiedByteSize()
+	case listingmedia.FieldPixelWidth:
+		return m.AddedPixelWidth()
+	case listingmedia.FieldPixelHeight:
+		return m.AddedPixelHeight()
 	}
 	return nil, false
 }
@@ -5392,6 +5793,27 @@ func (m *ListingMediaMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddByteSize(v)
 		return nil
+	case listingmedia.FieldVerifiedByteSize:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVerifiedByteSize(v)
+		return nil
+	case listingmedia.FieldPixelWidth:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPixelWidth(v)
+		return nil
+	case listingmedia.FieldPixelHeight:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPixelHeight(v)
+		return nil
 	}
 	return fmt.Errorf("unknown ListingMedia numeric field %s", name)
 }
@@ -5399,7 +5821,23 @@ func (m *ListingMediaMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ListingMediaMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(listingmedia.FieldVerifiedObjectReference) {
+		fields = append(fields, listingmedia.FieldVerifiedObjectReference)
+	}
+	if m.FieldCleared(listingmedia.FieldVerifiedChecksumSha256) {
+		fields = append(fields, listingmedia.FieldVerifiedChecksumSha256)
+	}
+	if m.FieldCleared(listingmedia.FieldVerifiedByteSize) {
+		fields = append(fields, listingmedia.FieldVerifiedByteSize)
+	}
+	if m.FieldCleared(listingmedia.FieldPixelWidth) {
+		fields = append(fields, listingmedia.FieldPixelWidth)
+	}
+	if m.FieldCleared(listingmedia.FieldPixelHeight) {
+		fields = append(fields, listingmedia.FieldPixelHeight)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -5412,6 +5850,23 @@ func (m *ListingMediaMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ListingMediaMutation) ClearField(name string) error {
+	switch name {
+	case listingmedia.FieldVerifiedObjectReference:
+		m.ClearVerifiedObjectReference()
+		return nil
+	case listingmedia.FieldVerifiedChecksumSha256:
+		m.ClearVerifiedChecksumSha256()
+		return nil
+	case listingmedia.FieldVerifiedByteSize:
+		m.ClearVerifiedByteSize()
+		return nil
+	case listingmedia.FieldPixelWidth:
+		m.ClearPixelWidth()
+		return nil
+	case listingmedia.FieldPixelHeight:
+		m.ClearPixelHeight()
+		return nil
+	}
 	return fmt.Errorf("unknown ListingMedia nullable field %s", name)
 }
 
@@ -5436,6 +5891,21 @@ func (m *ListingMediaMutation) ResetField(name string) error {
 		return nil
 	case listingmedia.FieldObjectReference:
 		m.ResetObjectReference()
+		return nil
+	case listingmedia.FieldVerifiedObjectReference:
+		m.ResetVerifiedObjectReference()
+		return nil
+	case listingmedia.FieldVerifiedChecksumSha256:
+		m.ResetVerifiedChecksumSha256()
+		return nil
+	case listingmedia.FieldVerifiedByteSize:
+		m.ResetVerifiedByteSize()
+		return nil
+	case listingmedia.FieldPixelWidth:
+		m.ResetPixelWidth()
+		return nil
+	case listingmedia.FieldPixelHeight:
+		m.ResetPixelHeight()
 		return nil
 	case listingmedia.FieldState:
 		m.ResetState()

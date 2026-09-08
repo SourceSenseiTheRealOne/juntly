@@ -391,12 +391,32 @@ func init() {
 			return nil
 		}
 	}()
+	// listingmediaDescVerifiedObjectReference is the schema descriptor for verified_object_reference field.
+	listingmediaDescVerifiedObjectReference := listingmediaFields[7].Descriptor()
+	// listingmedia.VerifiedObjectReferenceValidator is a validator for the "verified_object_reference" field. It is called by the builders before save.
+	listingmedia.VerifiedObjectReferenceValidator = listingmediaDescVerifiedObjectReference.Validators[0].(func(string) error)
+	// listingmediaDescVerifiedChecksumSha256 is the schema descriptor for verified_checksum_sha256 field.
+	listingmediaDescVerifiedChecksumSha256 := listingmediaFields[8].Descriptor()
+	// listingmedia.VerifiedChecksumSha256Validator is a validator for the "verified_checksum_sha256" field. It is called by the builders before save.
+	listingmedia.VerifiedChecksumSha256Validator = listingmediaDescVerifiedChecksumSha256.Validators[0].(func(string) error)
+	// listingmediaDescVerifiedByteSize is the schema descriptor for verified_byte_size field.
+	listingmediaDescVerifiedByteSize := listingmediaFields[9].Descriptor()
+	// listingmedia.VerifiedByteSizeValidator is a validator for the "verified_byte_size" field. It is called by the builders before save.
+	listingmedia.VerifiedByteSizeValidator = listingmediaDescVerifiedByteSize.Validators[0].(func(int64) error)
+	// listingmediaDescPixelWidth is the schema descriptor for pixel_width field.
+	listingmediaDescPixelWidth := listingmediaFields[10].Descriptor()
+	// listingmedia.PixelWidthValidator is a validator for the "pixel_width" field. It is called by the builders before save.
+	listingmedia.PixelWidthValidator = listingmediaDescPixelWidth.Validators[0].(func(int) error)
+	// listingmediaDescPixelHeight is the schema descriptor for pixel_height field.
+	listingmediaDescPixelHeight := listingmediaFields[11].Descriptor()
+	// listingmedia.PixelHeightValidator is a validator for the "pixel_height" field. It is called by the builders before save.
+	listingmedia.PixelHeightValidator = listingmediaDescPixelHeight.Validators[0].(func(int) error)
 	// listingmediaDescCreatedAt is the schema descriptor for created_at field.
-	listingmediaDescCreatedAt := listingmediaFields[8].Descriptor()
+	listingmediaDescCreatedAt := listingmediaFields[13].Descriptor()
 	// listingmedia.DefaultCreatedAt holds the default value on creation for the created_at field.
 	listingmedia.DefaultCreatedAt = listingmediaDescCreatedAt.Default.(func() time.Time)
 	// listingmediaDescUpdatedAt is the schema descriptor for updated_at field.
-	listingmediaDescUpdatedAt := listingmediaFields[9].Descriptor()
+	listingmediaDescUpdatedAt := listingmediaFields[14].Descriptor()
 	// listingmedia.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	listingmedia.DefaultUpdatedAt = listingmediaDescUpdatedAt.Default.(func() time.Time)
 	// listingmedia.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

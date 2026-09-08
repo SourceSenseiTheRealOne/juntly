@@ -2,10 +2,13 @@ package listings
 
 import (
 	"context"
+	"errors"
 	"testing"
 
+	entlisting "github.com/SourceSenseiTheRealOne/juntly/backend/ent/listing"
 	entlistingmedia "github.com/SourceSenseiTheRealOne/juntly/backend/ent/listingmedia"
 	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/listingmedia"
+	"github.com/SourceSenseiTheRealOne/juntly/backend/internal/provideraccess"
 	"github.com/google/uuid"
 )
 
@@ -22,6 +25,12 @@ func TestListingMediaEntRepositoryReservesOwnerPendingMediaWithoutPublicReferenc
 	request := listingmedia.UploadRequest{Ordinal: 1, ContentType: "image/webp", ByteSize: 1024, ChecksumSHA256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
 	privateReference := "storage-internal/media/" + mediaID.String()
 	repository := listingmedia.NewEntRepository(client)
+	if err := repository.RequireEditable(ctx, owner.ID, listing.ID); err != nil {
+		t.Fatal(err)
+	}
+	if err := repository.RequireEditable(ctx, other.ID, listing.ID); !errors.Is(err, provideraccess.ErrForbidden) {
+		t.Fatalf("cross-owner preauthorization: %v", err)
+	}
 	if err := repository.ReservePending(ctx, owner.ID, listing.ID, mediaID, request, privateReference); err != nil {
 		t.Fatalf("reserve: %v", err)
 	}
@@ -35,5 +44,11 @@ func TestListingMediaEntRepositoryReservesOwnerPendingMediaWithoutPublicReferenc
 	count, err := client.ListingMedia.Query().Where(entlistingmedia.ListingIDEQ(listing.ID)).Count(ctx)
 	if err != nil || count != 1 {
 		t.Fatalf("count=%d err=%v", count, err)
+	}
+	if err := client.Listing.UpdateOneID(listing.ID).SetState(entlisting.StatePendingReview).Exec(ctx); err != nil {
+		t.Fatal(err)
+	}
+	if err := repository.RequireEditable(ctx, owner.ID, listing.ID); !errors.Is(err, provideraccess.ErrForbidden) {
+		t.Fatalf("non-editable preauthorization: %v", err)
 	}
 }

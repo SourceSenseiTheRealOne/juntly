@@ -58,6 +58,24 @@ type recordingRepository struct {
 	owner           uuid.UUID
 	objectReference string
 	calls           int
+	editableErr     error
+}
+
+func (r *recordingRepository) RequireEditable(context.Context, uuid.UUID, uuid.UUID) error {
+	return r.editableErr
+}
+
+func (r *recordingRepository) FindReservation(context.Context, uuid.UUID, uuid.UUID, UploadRequest) (uuid.UUID, string, error) {
+	return uuid.Nil, "", nil
+}
+
+func TestServiceRejectsNonEditableListingBeforeStorage(t *testing.T) {
+	storage := &recordingStorage{}
+	repository := &recordingRepository{editableErr: provideraccess.ErrForbidden}
+	_, err := NewService(&recordingAuthorizer{owner: users.InternalUser{ID: uuid.New()}}, repository, storage).CreateUploadIntent(context.Background(), users.VerifiedIdentity{Subject: "provider"}, uuid.New(), validRequest())
+	if !errors.Is(err, provideraccess.ErrForbidden) || storage.calls != 0 || repository.calls != 0 {
+		t.Fatalf("non-editable listing minted storage capability: err=%v storage=%d writes=%d", err, storage.calls, repository.calls)
+	}
 }
 
 func (r *recordingRepository) ReservePending(_ context.Context, owner, listingID, mediaID uuid.UUID, request UploadRequest, objectReference string) error {
