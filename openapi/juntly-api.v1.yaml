@@ -458,6 +458,89 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/listings/{listingId}/media/{mediaId}/finalize:
+    post:
+      operationId: finalizeListingMedia
+      summary: Verify and sanitize an owner upload before marking it ready.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }, { $ref: "#/components/parameters/MediaIdPath" }]
+      responses:
+        "204": { description: Verified image persisted or identical completion replayed. }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/listings/{listingId}/media:
+    get:
+      operationId: listOwnerListingPhotos
+      summary: List verified photos belonging to the authenticated listing owner.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }]
+      responses:
+        "200": { description: Verified photo metadata, content: { application/json: { schema: { $ref: "#/components/schemas/ListingPhotosResponse" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/me/listings/{listingId}/media/{mediaId}:
+    get:
+      operationId: getOwnerListingPhoto
+      summary: Deliver one verified PNG to its listing owner without caching.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }, { $ref: "#/components/parameters/MediaIdPath" }]
+      responses:
+        "200": { description: Verified PNG with private no-store caching policy, content: { image/png: { schema: { type: string, format: binary } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/moderation/listings/{listingId}/media:
+    get:
+      operationId: listModerationListingPhotos
+      summary: List verified photos for a durably granted moderator.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }]
+      responses:
+        "200": { description: Verified photo metadata, content: { application/json: { schema: { $ref: "#/components/schemas/ListingPhotosResponse" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/moderation/listings/{listingId}/media/{mediaId}:
+    get:
+      operationId: getModerationListingPhoto
+      summary: Deliver one verified PNG to a durably granted moderator.
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }, { $ref: "#/components/parameters/MediaIdPath" }]
+      responses:
+        "200": { description: Verified PNG with private no-store caching policy, content: { image/png: { schema: { type: string, format: binary } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/public/listings/{listingId}/media:
+    get:
+      operationId: listPublicListingPhotos
+      summary: List sanitized photos only while the listing is publicly visible.
+      security: []
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }]
+      responses:
+        "200": { description: Verified photo metadata, content: { application/json: { schema: { $ref: "#/components/schemas/ListingPhotosResponse" } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/public/listings/{listingId}/media/{mediaId}:
+    get:
+      operationId: getPublicListingPhoto
+      summary: Deliver sanitized PNG bytes only while the listing is public.
+      security: []
+      parameters: [{ $ref: "#/components/parameters/RequestIdHeader" }, { $ref: "#/components/parameters/ListingIdPath" }, { $ref: "#/components/parameters/MediaIdPath" }]
+      responses:
+        "200": { description: Verified PNG with private no-store caching policy, content: { image/png: { schema: { type: string, format: binary } } } }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
   /api/v1/moderation/listings:
     get:
       operationId: listPendingModerationListings
@@ -965,6 +1048,11 @@ components:
       schema:
         type: string
         enum: [pt-PT, en, es]
+    MediaIdPath:
+      name: mediaId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
     ListingIdPath:
       name: listingId
       in: path
@@ -1066,6 +1154,21 @@ components:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
   schemas:
+    ListingPhoto:
+      type: object
+      additionalProperties: false
+      required: [id, ordinal, width, height]
+      properties:
+        id: { type: string, format: uuid }
+        ordinal: { type: integer, minimum: 1, maximum: 10 }
+        width: { type: integer, minimum: 1, maximum: 8192 }
+        height: { type: integer, minimum: 1, maximum: 8192 }
+    ListingPhotosResponse:
+      type: object
+      additionalProperties: false
+      required: [photos]
+      properties:
+        photos: { type: array, maxItems: 10, items: { $ref: "#/components/schemas/ListingPhoto" } }
     ReadinessResponse:
       type: object
       additionalProperties: false

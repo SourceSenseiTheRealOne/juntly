@@ -9,6 +9,7 @@ import (
 var (
 	ErrInvalidUpload = errors.New("invalid listing media upload")
 	ErrUnavailable   = errors.New("listing media unavailable")
+	ErrConflict      = errors.New("listing media revision conflict")
 )
 
 type UploadRequest struct {

@@ -1,4 +1,19 @@
 {
+  "ListingMedia": {
+    "title": "Fotografías",
+    "add": "Añadir fotografía",
+    "hint": "JPEG, PNG o WebP, hasta 10 MB. Máximo de 10 fotografías. Usa imágenes propias sin datos personales.",
+    "publication": "Las fotografías solo son públicas cuando el anuncio está aprobado y activo.",
+    "loading": "Cargando fotografías…",
+    "empty": "Todavía no hay fotografías.",
+    "error": "No se han podido cargar las fotografías.",
+    "retry": "Intentar de nuevo",
+    "uploading": "Enviando y verificando la fotografía…",
+    "uploadError": "No se ha podido verificar la fotografía. Inténtalo de nuevo con el mismo archivo.",
+    "saved": "Fotografía verificada y guardada.",
+    "limit": "Has alcanzado el límite de 10 fotografías.",
+    "photoAlt": "{title}, fotografía {index}"
+  },
   "Metadata": {
     "title": "Vila: Servicios locales, habilidades reales",
     "description": "Encuentra personas y servicios locales cerca de ti. Vila acerca comunidades, clientes y profesionales de confianza."

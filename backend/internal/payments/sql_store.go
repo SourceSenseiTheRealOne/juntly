@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -193,11 +194,26 @@ func (s sqlStore) ApplyProviderEvent(ctx context.Context, event ProviderEvent) e
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	result, err := tx.ExecContext(ctx, `insert into public.stripe_webhook_receipts(stripe_event_id,event_type,provider_object_id,outcome) values($1,$2,$3,'processing') on conflict do nothing`, event.ID, event.Kind, event.ProviderObjectID)
+	var order Order
+	if event.Kind != EventAccountUpdate {
+		order, err = loadOrderForEvent(ctx, tx, event)
+		if err != nil {
+			return err
+		}
+	}
+	result, err := tx.ExecContext(ctx, `insert into public.stripe_webhook_receipts(stripe_event_id,event_type,provider_object_id,outcome) values($1,$2,$3,'claimed') on conflict do nothing`, event.ID, event.Kind, event.ProviderObjectID)
 	if err != nil {
 		return err
 	}
 	if rows, _ := result.RowsAffected(); rows == 0 {
+		var kind EventKind
+		var objectID, outcome string
+		if err := tx.QueryRowContext(ctx, `select event_type,provider_object_id,outcome from public.stripe_webhook_receipts where stripe_event_id=$1`, event.ID).Scan(&kind, &objectID, &outcome); err != nil {
+			return err
+		}
+		if kind != event.Kind || objectID != event.ProviderObjectID || outcome != string(event.Kind) {
+			return ErrConflict
+		}
 		return tx.Commit()
 	}
 	if event.Kind == EventAccountUpdate {
@@ -214,14 +230,18 @@ func (s sqlStore) ApplyProviderEvent(ctx context.Context, event ProviderEvent) e
 		}
 		return tx.Commit()
 	}
-	order, err := loadOrderForEvent(ctx, tx, event)
-	if err != nil {
-		return err
-	}
 	from := order.State
 	to, eventType, err := eventTransition(from, event.Kind)
 	if err != nil {
 		return err
+	}
+	if from == to {
+		// Distinct Stripe events can describe the same settled payment.
+		// Record delivery without repeating the financial transition/audit.
+		if _, err := tx.ExecContext(ctx, `update public.stripe_webhook_receipts set outcome=$1,processed_at=timezone('utc',now()) where stripe_event_id=$2`, eventType, event.ID); err != nil {
+			return err
+		}
+		return tx.Commit()
 	}
 	_, err = tx.ExecContext(ctx, `update public.payment_orders set state=$1,stripe_checkout_session_id=coalesce(nullif($2,''),stripe_checkout_session_id),stripe_payment_intent_id=coalesce(nullif($3,''),stripe_payment_intent_id),stripe_invoice_id=coalesce(nullif($4,''),stripe_invoice_id),paid_at=case when $1='paid' then coalesce(paid_at,timezone('utc',now())) else paid_at end,refunded_at=case when $1='refunded' then coalesce(refunded_at,timezone('utc',now())) else refunded_at end,updated_at=timezone('utc',now()) where id=$5`, to, checkoutID(event), event.PaymentIntentID, event.InvoiceID, order.ID)
 	if err != nil {
@@ -279,17 +299,49 @@ func (s sqlStore) PrepareRefund(ctx context.Context, actor, orderID uuid.UUID) (
 }
 
 func (s sqlStore) AttachRefund(ctx context.Context, actor, orderID uuid.UUID, refund RefundResult) (Order, error) {
+	if !strings.HasPrefix(refund.ID, "re_") {
+		return Order{}, ErrInvalid
+	}
 	tx, err := s.database.BeginTx(ctx, nil)
 	if err != nil {
 		return Order{}, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	var from State
-	if err := tx.QueryRowContext(ctx, `select state from public.payment_orders where id=$1 for update`, orderID).Scan(&from); errors.Is(err, sql.ErrNoRows) {
-		return Order{}, ErrNotFound
-	} else if err != nil {
+	var authorized bool
+	if err := tx.QueryRowContext(ctx, `select exists(select 1 from public.platform_roles where internal_user_id=$1 and role in('moderator','administrator'))`, actor).Scan(&authorized); err != nil {
 		return Order{}, err
 	}
+	if !authorized {
+		return Order{}, ErrForbidden
+	}
+	order, found, err := loadOrderByID(ctx, tx, orderID, true)
+	if err != nil {
+		return Order{}, err
+	}
+	if !found {
+		return Order{}, ErrNotFound
+	}
+	if order.RefundID != "" && order.RefundID != refund.ID {
+		return Order{}, ErrConflict
+	}
+	if order.State == StateRefunded || order.State == StateRefundPending {
+		// A signed webhook can finish before the provider HTTP response arrives.
+		// Attach the reference without regressing state or adding another event.
+		if order.RefundID == "" {
+			if _, err := tx.ExecContext(ctx, `update public.payment_orders set stripe_refund_id=$1,updated_at=timezone('utc',now()) where id=$2`, refund.ID, orderID); err != nil {
+				return Order{}, err
+			}
+			order, _, err = loadOrderByID(ctx, tx, orderID, false)
+			if err != nil {
+				return Order{}, err
+			}
+		}
+		return order, tx.Commit()
+	}
+	if order.State != StatePaid && order.State != StateDisputeWon {
+		return Order{}, ErrConflict
+	}
+	from := order.State
 	result, err := tx.ExecContext(ctx, `update public.payment_orders set state='refund_pending',stripe_refund_id=$1,updated_at=timezone('utc',now()) where id=$2 and state=$3`, refund.ID, orderID, from)
 	if err != nil {
 		return Order{}, err
@@ -300,7 +352,7 @@ func (s sqlStore) AttachRefund(ctx context.Context, actor, orderID uuid.UUID, re
 	if _, err := tx.ExecContext(ctx, `insert into public.payment_events(payment_order_id,event_type,from_state,to_state,provider_object_id) values($1,'refund_requested',$2,'refund_pending',$3)`, orderID, from, refund.ID); err != nil {
 		return Order{}, err
 	}
-	order, _, err := loadOrderByID(ctx, tx, orderID, false)
+	order, _, err = loadOrderByID(ctx, tx, orderID, false)
 	if err != nil {
 		return Order{}, err
 	}
@@ -343,9 +395,13 @@ func orderScan(order *Order) []any {
 func loadOrderForEvent(ctx context.Context, tx *sql.Tx, event ProviderEvent) (Order, error) {
 	var order Order
 	var row *sql.Row
-	if event.OrderID != "" {
-		row = tx.QueryRowContext(ctx, orderSelect+` where id=$1 for update`, event.OrderID)
-	} else if event.PaymentIntentID != "" {
+	checkout := event.Kind == EventProcessing || event.Kind == EventPaid || event.Kind == EventFailed
+	if checkout {
+		if !strings.HasPrefix(event.ProviderObjectID, "cs_") {
+			return Order{}, ErrInvalid
+		}
+		row = tx.QueryRowContext(ctx, orderSelect+` where stripe_checkout_session_id=$1 for update`, event.ProviderObjectID)
+	} else if strings.HasPrefix(event.PaymentIntentID, "pi_") {
 		row = tx.QueryRowContext(ctx, orderSelect+` where stripe_payment_intent_id=$1 for update`, event.PaymentIntentID)
 	} else {
 		return Order{}, ErrInvalid
@@ -355,12 +411,30 @@ func loadOrderForEvent(ctx context.Context, tx *sql.Tx, event ProviderEvent) (Or
 	} else if err != nil {
 		return Order{}, err
 	}
+	if event.Currency != order.Currency || event.AmountMinor <= 0 {
+		return Order{}, ErrConflict
+	}
+	if checkout && (event.OrderID != order.ID || event.AmountMinor != order.GrossMinor) {
+		return Order{}, ErrConflict
+	}
+	if event.Kind == EventPaid && !strings.HasPrefix(event.PaymentIntentID, "pi_") {
+		return Order{}, ErrConflict
+	}
+	if order.PaymentIntentID != "" && event.PaymentIntentID != order.PaymentIntentID {
+		return Order{}, ErrConflict
+	}
+	if event.Kind == EventRefunded && (event.AmountMinor != order.GrossMinor || !strings.HasPrefix(event.ProviderObjectID, "ch_")) {
+		return Order{}, ErrConflict
+	}
+	if (event.Kind == EventDisputeOpened || event.Kind == EventDisputeWon || event.Kind == EventDisputeLost) && (event.AmountMinor > order.GrossMinor || !strings.HasPrefix(event.ProviderObjectID, "dp_")) {
+		return Order{}, ErrConflict
+	}
 	return order, nil
 }
 func eventTransition(from State, kind EventKind) (State, string, error) {
 	switch kind {
 	case EventProcessing:
-		if from == StateCheckoutCreated {
+		if from == StateCheckoutCreated || from == StateProcessing {
 			return StateProcessing, "processing", nil
 		}
 	case EventPaid:
@@ -371,11 +445,11 @@ func eventTransition(from State, kind EventKind) (State, string, error) {
 			return from, "paid", nil
 		}
 	case EventFailed:
-		if from == StateCheckoutCreated || from == StateProcessing {
+		if from == StateCheckoutCreated || from == StateProcessing || from == StateFailed {
 			return StateFailed, "failed", nil
 		}
 	case EventRefunded:
-		if from == StateRefundPending || from == StatePaid || from == StateDisputed || from == StateDisputeLost {
+		if from == StateRefundPending || from == StatePaid || from == StateDisputed || from == StateDisputeLost || from == StateDisputeWon || from == StateRefunded {
 			return StateRefunded, "refunded", nil
 		}
 	case EventDisputeOpened:
