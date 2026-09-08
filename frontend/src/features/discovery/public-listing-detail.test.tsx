@@ -29,6 +29,8 @@ describe("PublicListingDetail", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async (input: RequestInfo | URL) => {
+        if (String(input).endsWith("/media")) return Response.json({ photos: [] });
+        if (String(input).endsWith("/api/v1/me/listings")) return Response.json({ listings: [] });
         expect(String(input)).toContain(
           "/api/v1/public/listings/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa?locale=pt-PT",
         );
@@ -69,6 +71,7 @@ describe("PublicListingDetail", () => {
       ).toBeInTheDocument(),
     );
     expect(screen.getByText("Prestador local")).toBeInTheDocument();
+    expect(await screen.findByText("Ainda não há fotografias.")).toBeInTheDocument();
     expect(
       screen.queryByText(/internalUserId|phone|email|objectReference|bio/),
     ).not.toBeInTheDocument();
@@ -79,6 +82,7 @@ describe("PublicListingDetail", () => {
       "fetch",
       vi.fn(async (input: RequestInfo | URL) => {
         const url = String(input);
+        if (url.endsWith("/media")) return Response.json({ photos: [] });
         if (url.includes("/api/v1/me/listings")) {
           return Response.json({
             listings: [

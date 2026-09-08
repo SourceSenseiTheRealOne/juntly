@@ -106,6 +106,7 @@ describe("ListingDashboard", () => {
       />,
     );
     expect(await screen.findByText(listing.title)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Fotografias" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: copy.submit }));
     expect(await screen.findByText("pending_review")).toBeInTheDocument();
     expect(document.body.textContent).not.toContain("objectReference");

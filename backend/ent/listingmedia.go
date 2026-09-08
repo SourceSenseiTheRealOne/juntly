@@ -30,6 +30,16 @@ type ListingMedia struct {
 	ChecksumSha256 string `json:"checksum_sha256,omitempty"`
 	// ObjectReference holds the value of the "object_reference" field.
 	ObjectReference string `json:"object_reference,omitempty"`
+	// VerifiedObjectReference holds the value of the "verified_object_reference" field.
+	VerifiedObjectReference *string `json:"verified_object_reference,omitempty"`
+	// VerifiedChecksumSha256 holds the value of the "verified_checksum_sha256" field.
+	VerifiedChecksumSha256 *string `json:"verified_checksum_sha256,omitempty"`
+	// VerifiedByteSize holds the value of the "verified_byte_size" field.
+	VerifiedByteSize *int64 `json:"verified_byte_size,omitempty"`
+	// PixelWidth holds the value of the "pixel_width" field.
+	PixelWidth *int `json:"pixel_width,omitempty"`
+	// PixelHeight holds the value of the "pixel_height" field.
+	PixelHeight *int `json:"pixel_height,omitempty"`
 	// State holds the value of the "state" field.
 	State listingmedia.State `json:"state,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -44,9 +54,9 @@ func (*ListingMedia) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case listingmedia.FieldOrdinal, listingmedia.FieldByteSize:
+		case listingmedia.FieldOrdinal, listingmedia.FieldByteSize, listingmedia.FieldVerifiedByteSize, listingmedia.FieldPixelWidth, listingmedia.FieldPixelHeight:
 			values[i] = new(sql.NullInt64)
-		case listingmedia.FieldContentType, listingmedia.FieldChecksumSha256, listingmedia.FieldObjectReference, listingmedia.FieldState:
+		case listingmedia.FieldContentType, listingmedia.FieldChecksumSha256, listingmedia.FieldObjectReference, listingmedia.FieldVerifiedObjectReference, listingmedia.FieldVerifiedChecksumSha256, listingmedia.FieldState:
 			values[i] = new(sql.NullString)
 		case listingmedia.FieldCreatedAt, listingmedia.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -108,6 +118,41 @@ func (_m *ListingMedia) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field object_reference", values[i])
 			} else if value.Valid {
 				_m.ObjectReference = value.String
+			}
+		case listingmedia.FieldVerifiedObjectReference:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field verified_object_reference", values[i])
+			} else if value.Valid {
+				_m.VerifiedObjectReference = new(string)
+				*_m.VerifiedObjectReference = value.String
+			}
+		case listingmedia.FieldVerifiedChecksumSha256:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field verified_checksum_sha256", values[i])
+			} else if value.Valid {
+				_m.VerifiedChecksumSha256 = new(string)
+				*_m.VerifiedChecksumSha256 = value.String
+			}
+		case listingmedia.FieldVerifiedByteSize:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field verified_byte_size", values[i])
+			} else if value.Valid {
+				_m.VerifiedByteSize = new(int64)
+				*_m.VerifiedByteSize = value.Int64
+			}
+		case listingmedia.FieldPixelWidth:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field pixel_width", values[i])
+			} else if value.Valid {
+				_m.PixelWidth = new(int)
+				*_m.PixelWidth = int(value.Int64)
+			}
+		case listingmedia.FieldPixelHeight:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field pixel_height", values[i])
+			} else if value.Valid {
+				_m.PixelHeight = new(int)
+				*_m.PixelHeight = int(value.Int64)
 			}
 		case listingmedia.FieldState:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -180,6 +225,31 @@ func (_m *ListingMedia) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("object_reference=")
 	builder.WriteString(_m.ObjectReference)
+	builder.WriteString(", ")
+	if v := _m.VerifiedObjectReference; v != nil {
+		builder.WriteString("verified_object_reference=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.VerifiedChecksumSha256; v != nil {
+		builder.WriteString("verified_checksum_sha256=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.VerifiedByteSize; v != nil {
+		builder.WriteString("verified_byte_size=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.PixelWidth; v != nil {
+		builder.WriteString("pixel_width=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.PixelHeight; v != nil {
+		builder.WriteString("pixel_height=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("state=")
 	builder.WriteString(fmt.Sprintf("%v", _m.State))

@@ -137,9 +137,17 @@ func newAPIHandler(config runtimeConfig) (http.Handler, io.Closer, error) {
 	moderatorAuthorizer := moderation.NewService(userService, moderation.NewEntRepository(client))
 	paymentService := payments.NewService(userService, moderatorAuthorizer, payments.NewSQLStore(database), config.paymentGateway, config.platformFeeBPS)
 	listingLifecycle := listings.NewLifecycleService(providerAuthorizer, moderatorAuthorizer, listingRepository)
-	listingMedia := listingmedia.NewService(providerAuthorizer, listingmedia.NewEntRepository(client), listingmedia.NewUnavailableStorage())
+	mediaRepository := listingmedia.NewEntRepository(client)
+	var uploadStorage listingmedia.Storage = listingmedia.NewUnavailableStorage()
+	if config.mediaStorage != nil {
+		uploadStorage = config.mediaStorage
+	}
+	listingMedia := listingmedia.NewService(providerAuthorizer, mediaRepository, uploadStorage)
+	mediaFinalizer := listingmedia.NewFinalizer(providerAuthorizer, mediaRepository, config.mediaStorage)
+	mediaReader := listingmedia.NewReader(userService, mediaRepository, config.mediaStorage)
 	ownerListings := listings.NewOwnerService(listingDrafts, listingLifecycle, listingMedia)
 	moderationQueue := moderation.NewQueueService(moderatorAuthorizer, listingRepository)
 	moderationReview := moderation.NewReviewService(moderationQueue, listingLifecycle)
-	return httpapi.NewRouter(healthService, readinessService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery, contactChannels, contactReveal, messagingService, quotationService, bookingService, reviewService, entitlementService, administrationService, paymentService), client, nil
+	router := httpapi.NewRouter(healthService, readinessService, config.verifier, userService, accountService, referenceService, providerService, ownerListings, moderationReview, publicDiscovery, contactChannels, contactReveal, messagingService, quotationService, bookingService, reviewService, entitlementService, administrationService, paymentService)
+	return httpapi.NewMediaRouter(router, config.verifier, mediaReader, mediaFinalizer), client, nil
 }

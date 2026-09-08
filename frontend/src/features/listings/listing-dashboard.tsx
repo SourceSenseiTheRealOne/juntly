@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import { ListingPhotos } from "@/features/listing-media/listing-photos";
+import { getMediaCopy } from "@/features/listing-media/media-copy";
 type Ref = { id: string; name: string };
 type Listing = {
   id: string;
@@ -295,6 +297,9 @@ export function ListingDashboard({
                 <span className="market-chip">{item.state}</span>
               </div>
               <p className="mt-2 text-sm text-muted">{item.description}</p>
+              <ListingPhotos listingId={item.id} title={item.title} scope="me"
+                copy={getMediaCopy(locale)} editable={["draft", "rejected"].includes(item.state)}
+                busy={saving} onBusyChange={setSaving} onChanged={load} />
               <div className="mt-auto flex flex-wrap gap-2 pt-5">
                 {item.state === "draft" ? (
                   <button
@@ -335,9 +340,7 @@ export function ListingDashboard({
           <p className="market-empty md:col-span-2">{copy.empty}</p>
         )}
       </div>
-      <p className="mt-6 text-sm text-muted">
-        Media upload is unavailable until storage is configured.
-      </p>
+
     </section>
   );
 }

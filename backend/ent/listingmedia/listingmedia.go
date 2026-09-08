@@ -27,6 +27,16 @@ const (
 	FieldChecksumSha256 = "checksum_sha256"
 	// FieldObjectReference holds the string denoting the object_reference field in the database.
 	FieldObjectReference = "object_reference"
+	// FieldVerifiedObjectReference holds the string denoting the verified_object_reference field in the database.
+	FieldVerifiedObjectReference = "verified_object_reference"
+	// FieldVerifiedChecksumSha256 holds the string denoting the verified_checksum_sha256 field in the database.
+	FieldVerifiedChecksumSha256 = "verified_checksum_sha256"
+	// FieldVerifiedByteSize holds the string denoting the verified_byte_size field in the database.
+	FieldVerifiedByteSize = "verified_byte_size"
+	// FieldPixelWidth holds the string denoting the pixel_width field in the database.
+	FieldPixelWidth = "pixel_width"
+	// FieldPixelHeight holds the string denoting the pixel_height field in the database.
+	FieldPixelHeight = "pixel_height"
 	// FieldState holds the string denoting the state field in the database.
 	FieldState = "state"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -46,6 +56,11 @@ var Columns = []string{
 	FieldByteSize,
 	FieldChecksumSha256,
 	FieldObjectReference,
+	FieldVerifiedObjectReference,
+	FieldVerifiedChecksumSha256,
+	FieldVerifiedByteSize,
+	FieldPixelWidth,
+	FieldPixelHeight,
 	FieldState,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -72,6 +87,16 @@ var (
 	ChecksumSha256Validator func(string) error
 	// ObjectReferenceValidator is a validator for the "object_reference" field. It is called by the builders before save.
 	ObjectReferenceValidator func(string) error
+	// VerifiedObjectReferenceValidator is a validator for the "verified_object_reference" field. It is called by the builders before save.
+	VerifiedObjectReferenceValidator func(string) error
+	// VerifiedChecksumSha256Validator is a validator for the "verified_checksum_sha256" field. It is called by the builders before save.
+	VerifiedChecksumSha256Validator func(string) error
+	// VerifiedByteSizeValidator is a validator for the "verified_byte_size" field. It is called by the builders before save.
+	VerifiedByteSizeValidator func(int64) error
+	// PixelWidthValidator is a validator for the "pixel_width" field. It is called by the builders before save.
+	PixelWidthValidator func(int) error
+	// PixelHeightValidator is a validator for the "pixel_height" field. It is called by the builders before save.
+	PixelHeightValidator func(int) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -145,6 +170,31 @@ func ByChecksumSha256(opts ...sql.OrderTermOption) OrderOption {
 // ByObjectReference orders the results by the object_reference field.
 func ByObjectReference(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldObjectReference, opts...).ToFunc()
+}
+
+// ByVerifiedObjectReference orders the results by the verified_object_reference field.
+func ByVerifiedObjectReference(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldVerifiedObjectReference, opts...).ToFunc()
+}
+
+// ByVerifiedChecksumSha256 orders the results by the verified_checksum_sha256 field.
+func ByVerifiedChecksumSha256(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldVerifiedChecksumSha256, opts...).ToFunc()
+}
+
+// ByVerifiedByteSize orders the results by the verified_byte_size field.
+func ByVerifiedByteSize(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldVerifiedByteSize, opts...).ToFunc()
+}
+
+// ByPixelWidth orders the results by the pixel_width field.
+func ByPixelWidth(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPixelWidth, opts...).ToFunc()
+}
+
+// ByPixelHeight orders the results by the pixel_height field.
+func ByPixelHeight(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPixelHeight, opts...).ToFunc()
 }
 
 // ByState orders the results by the state field.

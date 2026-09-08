@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { ContactRevealControl } from "@/features/contact/contact-reveal-control";
 import { StartConversationControl } from "@/features/messaging/start-conversation-control";
+import { ListingPhotos } from "@/features/listing-media/listing-photos";
+import { getMediaCopy } from "@/features/listing-media/media-copy";
 
 type Listing = {
   id: string;
@@ -133,6 +135,7 @@ export function PublicListingDetail({
           <p className="mt-6 max-w-2xl text-lg leading-8 text-muted">
             {listing.description}
           </p>
+          <ListingPhotos listingId={listing.id} title={listing.title} scope="public" copy={getMediaCopy(locale)} />
         </div>
       </div>
       <aside

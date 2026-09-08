@@ -4,6 +4,17 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8080' | (string & {});
 };
 
+export type ListingPhoto = {
+    id: string;
+    ordinal: number;
+    width: number;
+    height: number;
+};
+
+export type ListingPhotosResponse = {
+    photos: Array<ListingPhoto>;
+};
+
 export type ReadinessResponse = {
     ready: boolean;
     database: 'ready' | 'unavailable';
@@ -620,6 +631,8 @@ export type UploadIntentResponse = {
 export type RequestIdHeader = RequestId;
 
 export type LocaleQuery = 'pt-PT' | 'en' | 'es';
+
+export type MediaIdPath = string;
 
 export type ListingIdPath = string;
 
@@ -1542,6 +1555,321 @@ export type CreateListingMediaUploadIntentResponses = {
 };
 
 export type CreateListingMediaUploadIntentResponse = CreateListingMediaUploadIntentResponses[keyof CreateListingMediaUploadIntentResponses];
+
+export type FinalizeListingMediaData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+        mediaId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/listings/{listingId}/media/{mediaId}/finalize';
+};
+
+export type FinalizeListingMediaErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * Provider capability is required.
+     */
+    403: ErrorResponse;
+    /**
+     * The requested listing state or revision is stale.
+     */
+    409: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type FinalizeListingMediaError = FinalizeListingMediaErrors[keyof FinalizeListingMediaErrors];
+
+export type FinalizeListingMediaResponses = {
+    /**
+     * Verified image persisted or identical completion replayed.
+     */
+    204: void;
+};
+
+export type FinalizeListingMediaResponse = FinalizeListingMediaResponses[keyof FinalizeListingMediaResponses];
+
+export type ListOwnerListingPhotosData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/listings/{listingId}/media';
+};
+
+export type ListOwnerListingPhotosErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * The requested public resource is not available.
+     */
+    404: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListOwnerListingPhotosError = ListOwnerListingPhotosErrors[keyof ListOwnerListingPhotosErrors];
+
+export type ListOwnerListingPhotosResponses = {
+    /**
+     * Verified photo metadata
+     */
+    200: ListingPhotosResponse;
+};
+
+export type ListOwnerListingPhotosResponse = ListOwnerListingPhotosResponses[keyof ListOwnerListingPhotosResponses];
+
+export type GetOwnerListingPhotoData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+        mediaId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/listings/{listingId}/media/{mediaId}';
+};
+
+export type GetOwnerListingPhotoErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * The requested public resource is not available.
+     */
+    404: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetOwnerListingPhotoError = GetOwnerListingPhotoErrors[keyof GetOwnerListingPhotoErrors];
+
+export type GetOwnerListingPhotoResponses = {
+    /**
+     * Verified PNG with private no-store caching policy
+     */
+    200: Blob | File;
+};
+
+export type GetOwnerListingPhotoResponse = GetOwnerListingPhotoResponses[keyof GetOwnerListingPhotoResponses];
+
+export type ListModerationListingPhotosData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/moderation/listings/{listingId}/media';
+};
+
+export type ListModerationListingPhotosErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * The requested public resource is not available.
+     */
+    404: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListModerationListingPhotosError = ListModerationListingPhotosErrors[keyof ListModerationListingPhotosErrors];
+
+export type ListModerationListingPhotosResponses = {
+    /**
+     * Verified photo metadata
+     */
+    200: ListingPhotosResponse;
+};
+
+export type ListModerationListingPhotosResponse = ListModerationListingPhotosResponses[keyof ListModerationListingPhotosResponses];
+
+export type GetModerationListingPhotoData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+        mediaId: string;
+    };
+    query?: never;
+    url: '/api/v1/moderation/listings/{listingId}/media/{mediaId}';
+};
+
+export type GetModerationListingPhotoErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * Session authorization is missing or invalid.
+     */
+    401: ErrorResponse;
+    /**
+     * The requested public resource is not available.
+     */
+    404: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetModerationListingPhotoError = GetModerationListingPhotoErrors[keyof GetModerationListingPhotoErrors];
+
+export type GetModerationListingPhotoResponses = {
+    /**
+     * Verified PNG with private no-store caching policy
+     */
+    200: Blob | File;
+};
+
+export type GetModerationListingPhotoResponse = GetModerationListingPhotoResponses[keyof GetModerationListingPhotoResponses];
+
+export type ListPublicListingPhotosData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/public/listings/{listingId}/media';
+};
+
+export type ListPublicListingPhotosErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * The requested public resource is not available.
+     */
+    404: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type ListPublicListingPhotosError = ListPublicListingPhotosErrors[keyof ListPublicListingPhotosErrors];
+
+export type ListPublicListingPhotosResponses = {
+    /**
+     * Verified photo metadata
+     */
+    200: ListingPhotosResponse;
+};
+
+export type ListPublicListingPhotosResponse = ListPublicListingPhotosResponses[keyof ListPublicListingPhotosResponses];
+
+export type GetPublicListingPhotoData = {
+    body?: never;
+    headers?: {
+        /**
+         * Optional client-supplied correlation identifier.
+         */
+        'X-Request-ID'?: RequestId;
+    };
+    path: {
+        listingId: string;
+        mediaId: string;
+    };
+    query?: never;
+    url: '/api/v1/public/listings/{listingId}/media/{mediaId}';
+};
+
+export type GetPublicListingPhotoErrors = {
+    /**
+     * The request is invalid.
+     */
+    400: ErrorResponse;
+    /**
+     * The requested public resource is not available.
+     */
+    404: ErrorResponse;
+    /**
+     * A required dependency is unavailable.
+     */
+    503: ErrorResponse;
+};
+
+export type GetPublicListingPhotoError = GetPublicListingPhotoErrors[keyof GetPublicListingPhotoErrors];
+
+export type GetPublicListingPhotoResponses = {
+    /**
+     * Verified PNG with private no-store caching policy
+     */
+    200: Blob | File;
+};
+
+export type GetPublicListingPhotoResponse = GetPublicListingPhotoResponses[keyof GetPublicListingPhotoResponses];
 
 export type ListPendingModerationListingsData = {
     body?: never;

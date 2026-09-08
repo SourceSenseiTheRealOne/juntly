@@ -28,6 +28,9 @@ func (s service) CreateUploadIntent(ctx context.Context, identity users.Verified
 	if err != nil {
 		return UploadIntent{}, err
 	}
+	if err := s.repository.RequireEditable(ctx, owner.ID, listingID); err != nil {
+		return UploadIntent{}, err
+	}
 	mediaID := uuid.New()
 	reservation, err := s.storage.CreateUploadReservation(ctx, mediaID, request)
 	if err != nil {
