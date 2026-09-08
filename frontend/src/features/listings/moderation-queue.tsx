@@ -22,7 +22,13 @@ export type ModerationQueueCopy = {
   reject: string;
 };
 
-export function ModerationQueue({ copy, locale = "pt-PT" }: { copy: ModerationQueueCopy; locale?: "pt-PT" | "en" | "es" }) {
+export function ModerationQueue({
+  copy,
+  locale = "pt-PT",
+}: {
+  copy: ModerationQueueCopy;
+  locale?: "pt-PT" | "en" | "es";
+}) {
   const [listings, setListings] = useState<Listing[] | null>(null);
   const [failed, setFailed] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -158,7 +164,12 @@ export function ModerationQueue({ copy, locale = "pt-PT" }: { copy: ModerationQu
             <article key={item.id} className="market-card p-5">
               <h2 className="font-semibold">{item.title}</h2>
               <p className="mt-2 text-muted">{item.description}</p>
-              <ListingPhotos listingId={item.id} title={item.title} scope="moderation" copy={getMediaCopy(locale)} />
+              <ListingPhotos
+                listingId={item.id}
+                title={item.title}
+                scope="moderation"
+                copy={getMediaCopy(locale)}
+              />
               <span className="market-chip mt-3">{item.state}</span>
               <button
                 disabled={saving}

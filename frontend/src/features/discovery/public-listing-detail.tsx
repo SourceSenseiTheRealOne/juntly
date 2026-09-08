@@ -135,7 +135,12 @@ export function PublicListingDetail({
           <p className="mt-6 max-w-2xl text-lg leading-8 text-muted">
             {listing.description}
           </p>
-          <ListingPhotos listingId={listing.id} title={listing.title} scope="public" copy={getMediaCopy(locale)} />
+          <ListingPhotos
+            listingId={listing.id}
+            title={listing.title}
+            scope="public"
+            copy={getMediaCopy(locale)}
+          />
         </div>
       </div>
       <aside

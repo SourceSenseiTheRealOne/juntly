@@ -65,6 +65,10 @@ func (r *recordingRepository) RequireEditable(context.Context, uuid.UUID, uuid.U
 	return r.editableErr
 }
 
+func (r *recordingRepository) FindReservation(context.Context, uuid.UUID, uuid.UUID, UploadRequest) (uuid.UUID, string, error) {
+	return uuid.Nil, "", nil
+}
+
 func TestServiceRejectsNonEditableListingBeforeStorage(t *testing.T) {
 	storage := &recordingStorage{}
 	repository := &recordingRepository{editableErr: provideraccess.ErrForbidden}

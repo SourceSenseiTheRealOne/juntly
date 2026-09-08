@@ -297,9 +297,16 @@ export function ListingDashboard({
                 <span className="market-chip">{item.state}</span>
               </div>
               <p className="mt-2 text-sm text-muted">{item.description}</p>
-              <ListingPhotos listingId={item.id} title={item.title} scope="me"
-                copy={getMediaCopy(locale)} editable={["draft", "rejected"].includes(item.state)}
-                busy={saving} onBusyChange={setSaving} onChanged={load} />
+              <ListingPhotos
+                listingId={item.id}
+                title={item.title}
+                scope="me"
+                copy={getMediaCopy(locale)}
+                editable={["draft", "rejected"].includes(item.state)}
+                busy={saving}
+                onBusyChange={setSaving}
+                onChanged={load}
+              />
               <div className="mt-auto flex flex-wrap gap-2 pt-5">
                 {item.state === "draft" ? (
                   <button
@@ -340,7 +347,6 @@ export function ListingDashboard({
           <p className="market-empty md:col-span-2">{copy.empty}</p>
         )}
       </div>
-
     </section>
   );
 }

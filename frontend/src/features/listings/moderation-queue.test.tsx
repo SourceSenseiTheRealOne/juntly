@@ -62,7 +62,9 @@ it("loads pending queue and performs approve without internals", async () => {
   );
   render(<ModerationQueue copy={copy} />);
   expect(await screen.findByText(listing.title)).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Fotografias" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Fotografias" }),
+  ).toBeInTheDocument();
   expect(document.body.textContent).not.toContain("internalUserId");
 });
 
