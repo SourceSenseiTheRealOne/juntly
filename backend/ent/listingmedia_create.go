@@ -57,6 +57,76 @@ func (_c *ListingMediaCreate) SetObjectReference(v string) *ListingMediaCreate {
 	return _c
 }
 
+// SetVerifiedObjectReference sets the "verified_object_reference" field.
+func (_c *ListingMediaCreate) SetVerifiedObjectReference(v string) *ListingMediaCreate {
+	_c.mutation.SetVerifiedObjectReference(v)
+	return _c
+}
+
+// SetNillableVerifiedObjectReference sets the "verified_object_reference" field if the given value is not nil.
+func (_c *ListingMediaCreate) SetNillableVerifiedObjectReference(v *string) *ListingMediaCreate {
+	if v != nil {
+		_c.SetVerifiedObjectReference(*v)
+	}
+	return _c
+}
+
+// SetVerifiedChecksumSha256 sets the "verified_checksum_sha256" field.
+func (_c *ListingMediaCreate) SetVerifiedChecksumSha256(v string) *ListingMediaCreate {
+	_c.mutation.SetVerifiedChecksumSha256(v)
+	return _c
+}
+
+// SetNillableVerifiedChecksumSha256 sets the "verified_checksum_sha256" field if the given value is not nil.
+func (_c *ListingMediaCreate) SetNillableVerifiedChecksumSha256(v *string) *ListingMediaCreate {
+	if v != nil {
+		_c.SetVerifiedChecksumSha256(*v)
+	}
+	return _c
+}
+
+// SetVerifiedByteSize sets the "verified_byte_size" field.
+func (_c *ListingMediaCreate) SetVerifiedByteSize(v int64) *ListingMediaCreate {
+	_c.mutation.SetVerifiedByteSize(v)
+	return _c
+}
+
+// SetNillableVerifiedByteSize sets the "verified_byte_size" field if the given value is not nil.
+func (_c *ListingMediaCreate) SetNillableVerifiedByteSize(v *int64) *ListingMediaCreate {
+	if v != nil {
+		_c.SetVerifiedByteSize(*v)
+	}
+	return _c
+}
+
+// SetPixelWidth sets the "pixel_width" field.
+func (_c *ListingMediaCreate) SetPixelWidth(v int) *ListingMediaCreate {
+	_c.mutation.SetPixelWidth(v)
+	return _c
+}
+
+// SetNillablePixelWidth sets the "pixel_width" field if the given value is not nil.
+func (_c *ListingMediaCreate) SetNillablePixelWidth(v *int) *ListingMediaCreate {
+	if v != nil {
+		_c.SetPixelWidth(*v)
+	}
+	return _c
+}
+
+// SetPixelHeight sets the "pixel_height" field.
+func (_c *ListingMediaCreate) SetPixelHeight(v int) *ListingMediaCreate {
+	_c.mutation.SetPixelHeight(v)
+	return _c
+}
+
+// SetNillablePixelHeight sets the "pixel_height" field if the given value is not nil.
+func (_c *ListingMediaCreate) SetNillablePixelHeight(v *int) *ListingMediaCreate {
+	if v != nil {
+		_c.SetPixelHeight(*v)
+	}
+	return _c
+}
+
 // SetState sets the "state" field.
 func (_c *ListingMediaCreate) SetState(v listingmedia.State) *ListingMediaCreate {
 	_c.mutation.SetState(v)
@@ -211,6 +281,31 @@ func (_c *ListingMediaCreate) check() error {
 			return &ValidationError{Name: "object_reference", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.object_reference": %w`, err)}
 		}
 	}
+	if v, ok := _c.mutation.VerifiedObjectReference(); ok {
+		if err := listingmedia.VerifiedObjectReferenceValidator(v); err != nil {
+			return &ValidationError{Name: "verified_object_reference", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.verified_object_reference": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.VerifiedChecksumSha256(); ok {
+		if err := listingmedia.VerifiedChecksumSha256Validator(v); err != nil {
+			return &ValidationError{Name: "verified_checksum_sha256", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.verified_checksum_sha256": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.VerifiedByteSize(); ok {
+		if err := listingmedia.VerifiedByteSizeValidator(v); err != nil {
+			return &ValidationError{Name: "verified_byte_size", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.verified_byte_size": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.PixelWidth(); ok {
+		if err := listingmedia.PixelWidthValidator(v); err != nil {
+			return &ValidationError{Name: "pixel_width", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.pixel_width": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.PixelHeight(); ok {
+		if err := listingmedia.PixelHeightValidator(v); err != nil {
+			return &ValidationError{Name: "pixel_height", err: fmt.Errorf(`ent: validator failed for field "ListingMedia.pixel_height": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.State(); !ok {
 		return &ValidationError{Name: "state", err: errors.New(`ent: missing required field "ListingMedia.state"`)}
 	}
@@ -283,6 +378,26 @@ func (_c *ListingMediaCreate) createSpec() (*ListingMedia, *sqlgraph.CreateSpec)
 	if value, ok := _c.mutation.ObjectReference(); ok {
 		_spec.SetField(listingmedia.FieldObjectReference, field.TypeString, value)
 		_node.ObjectReference = value
+	}
+	if value, ok := _c.mutation.VerifiedObjectReference(); ok {
+		_spec.SetField(listingmedia.FieldVerifiedObjectReference, field.TypeString, value)
+		_node.VerifiedObjectReference = &value
+	}
+	if value, ok := _c.mutation.VerifiedChecksumSha256(); ok {
+		_spec.SetField(listingmedia.FieldVerifiedChecksumSha256, field.TypeString, value)
+		_node.VerifiedChecksumSha256 = &value
+	}
+	if value, ok := _c.mutation.VerifiedByteSize(); ok {
+		_spec.SetField(listingmedia.FieldVerifiedByteSize, field.TypeInt64, value)
+		_node.VerifiedByteSize = &value
+	}
+	if value, ok := _c.mutation.PixelWidth(); ok {
+		_spec.SetField(listingmedia.FieldPixelWidth, field.TypeInt, value)
+		_node.PixelWidth = &value
+	}
+	if value, ok := _c.mutation.PixelHeight(); ok {
+		_spec.SetField(listingmedia.FieldPixelHeight, field.TypeInt, value)
+		_node.PixelHeight = &value
 	}
 	if value, ok := _c.mutation.State(); ok {
 		_spec.SetField(listingmedia.FieldState, field.TypeEnum, value)
