@@ -28,7 +28,17 @@ func (s service) CreateUploadIntent(ctx context.Context, identity users.Verified
 	if err != nil {
 		return UploadIntent{}, err
 	}
-	mediaID := uuid.New()
+	if err := s.repository.RequireEditable(ctx, owner.ID, listingID); err != nil {
+		return UploadIntent{}, err
+	}
+	mediaID, objectReference, err := s.repository.FindReservation(ctx, owner.ID, listingID, request)
+	if err != nil {
+		return UploadIntent{}, err
+	}
+	reusing := mediaID != uuid.Nil
+	if !reusing {
+		mediaID = uuid.New()
+	}
 	reservation, err := s.storage.CreateUploadReservation(ctx, mediaID, request)
 	if err != nil {
 		return UploadIntent{}, ErrUnavailable
@@ -36,8 +46,14 @@ func (s service) CreateUploadIntent(ctx context.Context, identity users.Verified
 	if reservation.ObjectReference == "" || reservation.Capability.URL == "" || reservation.Capability.Method == "" {
 		return UploadIntent{}, ErrUnavailable
 	}
-	if err := s.repository.ReservePending(ctx, owner.ID, listingID, mediaID, request, reservation.ObjectReference); err != nil {
-		return UploadIntent{}, ErrUnavailable
+	if reusing {
+		if reservation.ObjectReference != objectReference {
+			return UploadIntent{}, ErrUnavailable
+		}
+	} else {
+		if err := s.repository.ReservePending(ctx, owner.ID, listingID, mediaID, request, reservation.ObjectReference); err != nil {
+			return UploadIntent{}, ErrUnavailable
+		}
 	}
 	return UploadIntent{MediaID: mediaID, Capability: reservation.Capability}, nil
 }

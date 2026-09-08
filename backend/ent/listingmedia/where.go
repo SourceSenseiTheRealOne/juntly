@@ -85,6 +85,31 @@ func ObjectReference(v string) predicate.ListingMedia {
 	return predicate.ListingMedia(sql.FieldEQ(FieldObjectReference, v))
 }
 
+// VerifiedObjectReference applies equality check predicate on the "verified_object_reference" field. It's identical to VerifiedObjectReferenceEQ.
+func VerifiedObjectReference(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldEQ(FieldVerifiedObjectReference, v))
+}
+
+// VerifiedChecksumSha256 applies equality check predicate on the "verified_checksum_sha256" field. It's identical to VerifiedChecksumSha256EQ.
+func VerifiedChecksumSha256(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldEQ(FieldVerifiedChecksumSha256, v))
+}
+
+// VerifiedByteSize applies equality check predicate on the "verified_byte_size" field. It's identical to VerifiedByteSizeEQ.
+func VerifiedByteSize(v int64) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldEQ(FieldVerifiedByteSize, v))
+}
+
+// PixelWidth applies equality check predicate on the "pixel_width" field. It's identical to PixelWidthEQ.
+func PixelWidth(v int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldEQ(FieldPixelWidth, v))
+}
+
+// PixelHeight applies equality check predicate on the "pixel_height" field. It's identical to PixelHeightEQ.
+func PixelHeight(v int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldEQ(FieldPixelHeight, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.ListingMedia {
 	return predicate.ListingMedia(sql.FieldEQ(FieldCreatedAt, v))
@@ -408,6 +433,306 @@ func ObjectReferenceEqualFold(v string) predicate.ListingMedia {
 // ObjectReferenceContainsFold applies the ContainsFold predicate on the "object_reference" field.
 func ObjectReferenceContainsFold(v string) predicate.ListingMedia {
 	return predicate.ListingMedia(sql.FieldContainsFold(FieldObjectReference, v))
+}
+
+// VerifiedObjectReferenceEQ applies the EQ predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceEQ(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldEQ(FieldVerifiedObjectReference, v))
+}
+
+// VerifiedObjectReferenceNEQ applies the NEQ predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceNEQ(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNEQ(FieldVerifiedObjectReference, v))
+}
+
+// VerifiedObjectReferenceIn applies the In predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceIn(vs ...string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldIn(FieldVerifiedObjectReference, vs...))
+}
+
+// VerifiedObjectReferenceNotIn applies the NotIn predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceNotIn(vs ...string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNotIn(FieldVerifiedObjectReference, vs...))
+}
+
+// VerifiedObjectReferenceGT applies the GT predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceGT(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldGT(FieldVerifiedObjectReference, v))
+}
+
+// VerifiedObjectReferenceGTE applies the GTE predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceGTE(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldGTE(FieldVerifiedObjectReference, v))
+}
+
+// VerifiedObjectReferenceLT applies the LT predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceLT(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldLT(FieldVerifiedObjectReference, v))
+}
+
+// VerifiedObjectReferenceLTE applies the LTE predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceLTE(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldLTE(FieldVerifiedObjectReference, v))
+}
+
+// VerifiedObjectReferenceContains applies the Contains predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceContains(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldContains(FieldVerifiedObjectReference, v))
+}
+
+// VerifiedObjectReferenceHasPrefix applies the HasPrefix predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceHasPrefix(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldHasPrefix(FieldVerifiedObjectReference, v))
+}
+
+// VerifiedObjectReferenceHasSuffix applies the HasSuffix predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceHasSuffix(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldHasSuffix(FieldVerifiedObjectReference, v))
+}
+
+// VerifiedObjectReferenceIsNil applies the IsNil predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceIsNil() predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldIsNull(FieldVerifiedObjectReference))
+}
+
+// VerifiedObjectReferenceNotNil applies the NotNil predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceNotNil() predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNotNull(FieldVerifiedObjectReference))
+}
+
+// VerifiedObjectReferenceEqualFold applies the EqualFold predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceEqualFold(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldEqualFold(FieldVerifiedObjectReference, v))
+}
+
+// VerifiedObjectReferenceContainsFold applies the ContainsFold predicate on the "verified_object_reference" field.
+func VerifiedObjectReferenceContainsFold(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldContainsFold(FieldVerifiedObjectReference, v))
+}
+
+// VerifiedChecksumSha256EQ applies the EQ predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256EQ(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldEQ(FieldVerifiedChecksumSha256, v))
+}
+
+// VerifiedChecksumSha256NEQ applies the NEQ predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256NEQ(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNEQ(FieldVerifiedChecksumSha256, v))
+}
+
+// VerifiedChecksumSha256In applies the In predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256In(vs ...string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldIn(FieldVerifiedChecksumSha256, vs...))
+}
+
+// VerifiedChecksumSha256NotIn applies the NotIn predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256NotIn(vs ...string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNotIn(FieldVerifiedChecksumSha256, vs...))
+}
+
+// VerifiedChecksumSha256GT applies the GT predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256GT(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldGT(FieldVerifiedChecksumSha256, v))
+}
+
+// VerifiedChecksumSha256GTE applies the GTE predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256GTE(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldGTE(FieldVerifiedChecksumSha256, v))
+}
+
+// VerifiedChecksumSha256LT applies the LT predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256LT(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldLT(FieldVerifiedChecksumSha256, v))
+}
+
+// VerifiedChecksumSha256LTE applies the LTE predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256LTE(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldLTE(FieldVerifiedChecksumSha256, v))
+}
+
+// VerifiedChecksumSha256Contains applies the Contains predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256Contains(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldContains(FieldVerifiedChecksumSha256, v))
+}
+
+// VerifiedChecksumSha256HasPrefix applies the HasPrefix predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256HasPrefix(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldHasPrefix(FieldVerifiedChecksumSha256, v))
+}
+
+// VerifiedChecksumSha256HasSuffix applies the HasSuffix predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256HasSuffix(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldHasSuffix(FieldVerifiedChecksumSha256, v))
+}
+
+// VerifiedChecksumSha256IsNil applies the IsNil predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256IsNil() predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldIsNull(FieldVerifiedChecksumSha256))
+}
+
+// VerifiedChecksumSha256NotNil applies the NotNil predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256NotNil() predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNotNull(FieldVerifiedChecksumSha256))
+}
+
+// VerifiedChecksumSha256EqualFold applies the EqualFold predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256EqualFold(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldEqualFold(FieldVerifiedChecksumSha256, v))
+}
+
+// VerifiedChecksumSha256ContainsFold applies the ContainsFold predicate on the "verified_checksum_sha256" field.
+func VerifiedChecksumSha256ContainsFold(v string) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldContainsFold(FieldVerifiedChecksumSha256, v))
+}
+
+// VerifiedByteSizeEQ applies the EQ predicate on the "verified_byte_size" field.
+func VerifiedByteSizeEQ(v int64) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldEQ(FieldVerifiedByteSize, v))
+}
+
+// VerifiedByteSizeNEQ applies the NEQ predicate on the "verified_byte_size" field.
+func VerifiedByteSizeNEQ(v int64) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNEQ(FieldVerifiedByteSize, v))
+}
+
+// VerifiedByteSizeIn applies the In predicate on the "verified_byte_size" field.
+func VerifiedByteSizeIn(vs ...int64) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldIn(FieldVerifiedByteSize, vs...))
+}
+
+// VerifiedByteSizeNotIn applies the NotIn predicate on the "verified_byte_size" field.
+func VerifiedByteSizeNotIn(vs ...int64) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNotIn(FieldVerifiedByteSize, vs...))
+}
+
+// VerifiedByteSizeGT applies the GT predicate on the "verified_byte_size" field.
+func VerifiedByteSizeGT(v int64) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldGT(FieldVerifiedByteSize, v))
+}
+
+// VerifiedByteSizeGTE applies the GTE predicate on the "verified_byte_size" field.
+func VerifiedByteSizeGTE(v int64) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldGTE(FieldVerifiedByteSize, v))
+}
+
+// VerifiedByteSizeLT applies the LT predicate on the "verified_byte_size" field.
+func VerifiedByteSizeLT(v int64) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldLT(FieldVerifiedByteSize, v))
+}
+
+// VerifiedByteSizeLTE applies the LTE predicate on the "verified_byte_size" field.
+func VerifiedByteSizeLTE(v int64) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldLTE(FieldVerifiedByteSize, v))
+}
+
+// VerifiedByteSizeIsNil applies the IsNil predicate on the "verified_byte_size" field.
+func VerifiedByteSizeIsNil() predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldIsNull(FieldVerifiedByteSize))
+}
+
+// VerifiedByteSizeNotNil applies the NotNil predicate on the "verified_byte_size" field.
+func VerifiedByteSizeNotNil() predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNotNull(FieldVerifiedByteSize))
+}
+
+// PixelWidthEQ applies the EQ predicate on the "pixel_width" field.
+func PixelWidthEQ(v int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldEQ(FieldPixelWidth, v))
+}
+
+// PixelWidthNEQ applies the NEQ predicate on the "pixel_width" field.
+func PixelWidthNEQ(v int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNEQ(FieldPixelWidth, v))
+}
+
+// PixelWidthIn applies the In predicate on the "pixel_width" field.
+func PixelWidthIn(vs ...int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldIn(FieldPixelWidth, vs...))
+}
+
+// PixelWidthNotIn applies the NotIn predicate on the "pixel_width" field.
+func PixelWidthNotIn(vs ...int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNotIn(FieldPixelWidth, vs...))
+}
+
+// PixelWidthGT applies the GT predicate on the "pixel_width" field.
+func PixelWidthGT(v int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldGT(FieldPixelWidth, v))
+}
+
+// PixelWidthGTE applies the GTE predicate on the "pixel_width" field.
+func PixelWidthGTE(v int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldGTE(FieldPixelWidth, v))
+}
+
+// PixelWidthLT applies the LT predicate on the "pixel_width" field.
+func PixelWidthLT(v int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldLT(FieldPixelWidth, v))
+}
+
+// PixelWidthLTE applies the LTE predicate on the "pixel_width" field.
+func PixelWidthLTE(v int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldLTE(FieldPixelWidth, v))
+}
+
+// PixelWidthIsNil applies the IsNil predicate on the "pixel_width" field.
+func PixelWidthIsNil() predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldIsNull(FieldPixelWidth))
+}
+
+// PixelWidthNotNil applies the NotNil predicate on the "pixel_width" field.
+func PixelWidthNotNil() predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNotNull(FieldPixelWidth))
+}
+
+// PixelHeightEQ applies the EQ predicate on the "pixel_height" field.
+func PixelHeightEQ(v int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldEQ(FieldPixelHeight, v))
+}
+
+// PixelHeightNEQ applies the NEQ predicate on the "pixel_height" field.
+func PixelHeightNEQ(v int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNEQ(FieldPixelHeight, v))
+}
+
+// PixelHeightIn applies the In predicate on the "pixel_height" field.
+func PixelHeightIn(vs ...int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldIn(FieldPixelHeight, vs...))
+}
+
+// PixelHeightNotIn applies the NotIn predicate on the "pixel_height" field.
+func PixelHeightNotIn(vs ...int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNotIn(FieldPixelHeight, vs...))
+}
+
+// PixelHeightGT applies the GT predicate on the "pixel_height" field.
+func PixelHeightGT(v int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldGT(FieldPixelHeight, v))
+}
+
+// PixelHeightGTE applies the GTE predicate on the "pixel_height" field.
+func PixelHeightGTE(v int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldGTE(FieldPixelHeight, v))
+}
+
+// PixelHeightLT applies the LT predicate on the "pixel_height" field.
+func PixelHeightLT(v int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldLT(FieldPixelHeight, v))
+}
+
+// PixelHeightLTE applies the LTE predicate on the "pixel_height" field.
+func PixelHeightLTE(v int) predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldLTE(FieldPixelHeight, v))
+}
+
+// PixelHeightIsNil applies the IsNil predicate on the "pixel_height" field.
+func PixelHeightIsNil() predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldIsNull(FieldPixelHeight))
+}
+
+// PixelHeightNotNil applies the NotNil predicate on the "pixel_height" field.
+func PixelHeightNotNil() predicate.ListingMedia {
+	return predicate.ListingMedia(sql.FieldNotNull(FieldPixelHeight))
 }
 
 // StateEQ applies the EQ predicate on the "state" field.
