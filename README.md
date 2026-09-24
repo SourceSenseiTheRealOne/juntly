@@ -1,71 +1,56 @@
-# Juntly
+# Vila
 
-**Local people. Real skills.**
+A local-services marketplace for Portugal, starting with rural communities. Customers find nearby providers, request quotations and arrange bookings; providers manage listings and conversations through the account area.
 
-**Encontra quem sabe fazer.**
+**Status:** pre-launch product with implemented marketplace workflows. No verified public deployment is advertised. The diagram describes the committed architecture, not a hosted demo. The [published dependency audit](docs/publication-status.md#dependency-audit) has unresolved critical/high findings.
 
-Juntly is a Portuguese local-services marketplace designed to help people discover, contact, compare, book, and build trust with nearby service providers—starting in rural communities and designed for later international expansion.
+![Vila architecture: Next.js routes requests through a same-origin API layer to Go, with Clerk identity, PostgreSQL persistence and optional external integrations.](docs/assets/architecture.svg)
 
-## Current status
+## Engineering focus
 
-This repository contains the production-oriented marketplace MVP:
+- Private contacts are encrypted at rest. Revealing one requires provider consent, server-side authorization and a transactional daily allowance; repeat requests do not create duplicate leads.
+- Accepting a quotation locks its request and updates the accepted proposal, competing proposals and notifications in one PostgreSQL transaction.
+- Clerk establishes identity. Go owns permissions, ownership checks and business transitions; a hidden UI control is never an authorization boundary.
+- Booking payments have Stripe Checkout/Connect adapters, webhook verification and durable event deduplication. Integration code is not evidence of completed live payment acceptance.
 
-- Durable product, architecture, security, UI, workflow, and decision context.
-- A localized responsive Next.js frontend shell under `frontend/` after the scaffold commit.
-- pt-PT default, English support, and Spanish-ready routing/messages.
-- A source-level Clerk frontend identity foundation: localized sign-in/sign-up routes, session-aware navigation, and a server-enforced account route.
-- A versioned OpenAPI health contract, generated TypeScript client, same-origin BFF, and narrow Go health API under `backend/`.
-- Durable users, provider profiles, listings, discovery, private contact reveal, messaging, quotations, bookings, verified reviews, promotions, subscriptions, moderation, and bounded administration analytics.
-- Supabase/PostgreSQL migrations and a local frontend/API Compose topology that connects to an explicitly supplied database.
-- A digest-oriented production Compose topology, dependency readiness probe, hardened HTTP/runtime defaults, backup/restore scripts, smoke checks, and operational runbooks.
-- Frontend test, format, lint, type, build, dependency-audit, CI, and runtime-verification foundations.
+## Stack
 
-Paid subscriptions and promotions intentionally remain pending until an external payment provider confirms them; free configured entries activate immediately. Production deployment still requires operator-supplied infrastructure, secrets, DNS/TLS, a managed PostgreSQL target, and a real Clerk test account for authenticated acceptance journeys.
+Next.js, React, TypeScript and next-intl on the frontend; Go, Ent, PostgreSQL and SQL transactions on the backend. A versioned OpenAPI contract generates the frontend client. Clerk handles identity, Supabase adapters handle listing-media storage, and Docker Compose describes local and production topologies.
 
-## Repository layout
+Portuguese (Portugal) is the default locale, with English support and Spanish-ready resources.
 
-```text
-juntly/
-├── frontend/   Next.js frontend (created by the scaffold commit)
-├── backend/    Go API health-tracer foundation
-├── openapi/    versioned API contracts
-├── context/    sanitized durable project reference
-├── compose.yaml local frontend/API development topology
-├── compose.production.yaml hardened immutable-image topology
-├── supabase/   ordered PostgreSQL migrations
-├── scripts/    backup, restore, and smoke operations
-└── AGENTS.md   project operating rules
-```
+## Explore the implementation
 
-Deployment and recovery procedures live in [`docs/operations/`](docs/operations/).
+| Area | Source |
+| --- | --- |
+| Browser routes, account views and same-origin API handlers | [`frontend/`](frontend/) |
+| Marketplace rules, persistence and integration adapters | [`backend/`](backend/) |
+| Shared API contract | [`openapi/juntly-api.v1.yaml`](openapi/juntly-api.v1.yaml) |
+| Database schema and migrations | [`supabase/migrations/`](supabase/migrations/) |
+| Deployment, backups and recovery | [`docs/operations/`](docs/operations/) |
 
-## Context
+[Engineering decisions](docs/engineering.md) · [Local development](docs/local-development.md) · [Release boundaries](docs/publication-status.md) · [Architecture viewer](docs/assets/architecture.html)
 
-Start with [`context/README.md`](context/README.md). The complete source of truth is [`context/product-reference.md`](context/product-reference.md).
+## Run and verify
 
-## Frontend commands
-
-After the scaffold commit:
+Use Node.js from [`.nvmrc`](.nvmrc) and the Go toolchain in [`backend/go.mod`](backend/go.mod).
 
 ```bash
-cd frontend
-npm ci
-npm run verify
-npm run dev
+npm --prefix frontend ci
+npm --prefix frontend run verify
+(cd backend && go test ./...)
 ```
 
-The production shell uses port `4200` for local handoff/probes when explicitly started with that port.
+Configure a development Clerk instance using the [setup guide](docs/local-development.md), then run `npm --prefix frontend run dev:local` and open `http://localhost:4200/`. Complete marketplace journeys also require the Go API and a migrated development database. Verification includes a dependency audit; an old CI result is not a current security report.
 
-## Branch model
+## Release boundaries
 
-After the one-time bootstrap:
+The repository includes discovery, listings, messaging, quotations, bookings, reviews, moderation and administrative views. The Newsprint redesign, launch-plan billing, email delivery and quota changes are separate unpublished work as of 24 September 2026. They are not included in this presentation update.
 
-```text
-feature/* → development → staging → main
-```
+Public launch still needs deployment, legal/operator configuration and authenticated acceptance with external providers. Paid platform subscriptions and promotions must not be treated as active merely because a browser returns from Checkout. See the [dated status and evidence](docs/publication-status.md).
 
-Changes use small reviewed PRs and squash merges. Production/main promotion requires human approval.
+Vila was previously called Juntly. The GitHub repository uses `vila`; Go imports, `JUNTLY_*` configuration, the API filename, Supabase project ID and container image names retain their existing technical identifiers. This rename does not migrate data or infrastructure.
 
-## Licensing
+## License
 
-No open-source license has been selected. Public repository visibility does not grant reuse, modification, or redistribution rights beyond applicable law.
+No open-source license has been selected. Public visibility does not grant reuse, modification or redistribution rights beyond applicable law.
