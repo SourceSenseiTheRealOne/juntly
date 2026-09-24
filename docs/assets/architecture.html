@@ -1,0 +1,57 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vila architecture</title><style>body{margin:0;background:#020617;color:#e2e8f0;font-family:Arial,Helvetica,sans-serif}main{max-width:1120px;margin:0 auto;padding:24px}svg{display:block;width:100%;height:auto}p{line-height:1.6;color:#94a3b8}a{color:#22d3ee}</style></head><body><main><svg xmlns="http://www.w3.org/2000/svg" width="1120" height="820" viewBox="0 0 1120 820" role="img" aria-labelledby="title description">
+<title id="title">Vila: marketplace architecture</title>
+<desc id="description">Source-level architecture, not a live deployment. A browser calls the Next.js same-origin API layer, which forwards to Go. Clerk supplies identity, PostgreSQL stores application state, OpenAPI generates the TypeScript client, and optional Stripe and Supabase adapters cross external service boundaries.</desc>
+<defs>
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern>
+  <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#94a3b8" stroke-width="1.3"/></marker>
+  <marker id="auth-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#fb7185" stroke-width="1.3"/></marker>
+  <style>text{font-family:Arial,Helvetica,sans-serif;fill:#e2e8f0}.title{font-size:30px;font-weight:700}.node{font-size:21px;font-weight:700}.body{font-size:17px}.small{font-size:15px;fill:#94a3b8}.mono{font-family:Consolas,monospace;font-size:13px;letter-spacing:1px}</style>
+</defs>
+<rect width="1120" height="820" rx="12" fill="#020617"/>
+<rect width="1120" height="820" rx="12" fill="url(#grid)"/>
+<text x="40" y="54" class="mono" fill="#94a3b8">VILA / ENGINEERING MAP</text>
+<text x="40" y="100" class="title">A marketplace with server-owned rules</text>
+<text x="40" y="132" class="body" fill="#94a3b8">Pre-launch source architecture. No public deployment or provider acceptance implied.</text>
+<!-- Connections are behind all components. -->
+<g fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)">
+  <path d="M260 235 H310"/><path d="M600 235 H650"/>
+  <path d="M850 425 V485"/>
+  <path d="M455 360 V297" stroke-dasharray="5 5"/>
+  <path d="M1050 360 H1080 V693 H1050" stroke-dasharray="5 5"/>
+</g>
+<g fill="none" stroke="#fb7185" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#auth-arrow)">
+  <path d="M390 485 V445 H285 V315 H340 V297"/>
+  <path d="M600 550 H625 V325 H650"/>
+</g>
+<!-- Browser -->
+<rect x="40" y="180" width="220" height="117" rx="6" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="62" y="215" class="node">Browser</text><text x="62" y="246" class="body">Discovery + accounts</text><text x="62" y="274" class="small">pt-PT / en / es-ready</text>
+<!-- Frontend -->
+<rect x="310" y="180" width="290" height="117" rx="6" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="332" y="215" class="node">Next.js + React</text><text x="332" y="246" class="body">Same-origin API handlers</text><text x="332" y="274" class="small">Generated TypeScript client</text>
+<!-- Backend -->
+<rect x="650" y="180" width="400" height="245" rx="6" fill="#0f172a" stroke="#34d399" stroke-width="1.5"/>
+<text x="676" y="215" class="node">Go API</text><text x="676" y="246" class="body">Verified identity + ownership</text>
+<path d="M676 265 H1024" stroke="#334155"/>
+<text x="676" y="297" class="body">Private contact reveal</text><text x="676" y="328" class="body">Quotations, bookings, reviews</text><text x="676" y="359" class="body">Payments, moderation, listings</text><text x="676" y="401" class="small">Business transitions stay server-side</text>
+<!-- Compile-time contract -->
+<rect x="40" y="360" width="560" height="65" rx="6" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="62" y="388" class="node">OpenAPI contract</text><text x="62" y="412" class="small">Build-time client generation; not a runtime service</text>
+<!-- Identity -->
+<rect x="310" y="485" width="290" height="120" rx="6" fill="#0f172a" stroke="#fb7185" stroke-width="1.5"/>
+<text x="332" y="521" class="node">Clerk</text><text x="332" y="551" class="body">Sessions + identity</text><text x="332" y="579" class="small">Go verifies protected requests</text>
+<!-- Persistence -->
+<text x="870" y="462" class="small">Ent + explicit SQL</text>
+<rect x="650" y="485" width="400" height="120" rx="6" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="676" y="521" class="node">PostgreSQL</text><text x="676" y="551" class="body">Locks, state + deduplicated events</text><text x="676" y="579" class="small">Reviewed migrations; encrypted contacts</text>
+<!-- External integration boundary -->
+<rect x="40" y="650" width="1010" height="104" rx="6" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="62" y="685" class="node">Optional external adapters</text>
+<text x="62" y="715" class="body">Stripe Checkout / Connect / webhooks</text><text x="575" y="715" class="body">Supabase listing-media storage</text>
+<text x="62" y="740" class="small">Separate provider configuration and acceptance. Integration code does not prove a live transaction.</text>
+<!-- Legend outside component boundaries. -->
+<path d="M40 786 H72" stroke="#94a3b8" stroke-width="2"/><text x="82" y="791" class="small">Application path</text>
+<path d="M300 786 H332" stroke="#fb7185" stroke-width="2" stroke-dasharray="5 5"/><text x="342" y="791" class="small">Identity boundary</text>
+<text x="730" y="791" class="small">Committed implementation / September 2026</text>
+</svg>
+<p>This offline diagram describes the committed source. It is not a hosted marketplace preview. Read the <a href="../engineering.md">engineering notes</a> and <a href="../publication-status.md">publication boundaries</a> for decisions and remaining evidence.</p></main></body></html>
